@@ -1,7 +1,7 @@
-# plushie-gleam-frontend
+# collab
 
-Demo project showing 6 different ways to run the same Plushie app -- from
-fully client-side WASM to shared-state WebSocket and SSH.
+Collaborative scratchpad showing 6 different ways to run the same
+Plushie app -- from native desktop to shared-state WebSocket and SSH.
 
 All modes share a single app definition (`src/demo/collab.gleam`) with a
 name input, shared notes, a counter, a dark-mode toggle, and a

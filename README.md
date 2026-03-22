@@ -7,6 +7,6 @@ organized by language.
 
 | Demo | Description |
 |------|-------------|
-| [collab](gleam/collab/) | Collaborative scratchpad showcasing 6 transport modes |
+| [collab](gleam/collab/) | Collaborative scratchpad -- 6 ways to run the same app |
 
 See the [Gleam demos README](gleam/README.md) for setup and details.
