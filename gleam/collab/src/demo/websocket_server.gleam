@@ -16,15 +16,13 @@
 //// Run: gleam run -m demo/websocket_server
 
 import gleam/bit_array
-import gleam/bytes_tree
 import gleam/erlang/process.{type Subject}
 import gleam/http/request.{type Request}
 import gleam/http/response
 import gleam/int
 import gleam/io
-import gleam/option.{None, Some}
+import gleam/option.{Some}
 import gleam/result
-import gleam/string
 import mist.{type WebsocketConnection, type WebsocketMessage}
 import plushie/event.{WidgetToggle}
 import plushie/node
@@ -33,6 +31,7 @@ import plushie/protocol/decode as proto_decode
 import plushie/protocol/encode as proto_encode
 import demo/collab
 import demo/shared.{type ClientMsg, type SharedMsg, ModelChanged}
+import demo/static_server
 
 /// Per-WebSocket-connection state.
 type WsState {
@@ -52,10 +51,10 @@ pub fn main() {
   let assert Ok(_) =
     mist.new(fn(req) { handle_request(req, shared) })
     |> mist.port(8080)
-    |> mist.bind("0.0.0.0")
+    |> mist.bind("127.0.0.1")
     |> mist.start()
 
-  io.println("WebSocket server listening on http://0.0.0.0:8080")
+  io.println("WebSocket server listening on http://localhost:8080")
   process.sleep_forever()
 }
 
@@ -65,7 +64,7 @@ fn handle_request(
 ) -> response.Response(mist.ResponseData) {
   case request.path_segments(req) {
     ["ws"] -> handle_websocket(req, shared)
-    segments -> serve_static(segments)
+    segments -> static_server.serve_static(segments)
   }
 }
 
@@ -195,54 +194,6 @@ fn encode_snapshot(tree: node.Node) -> Result(String, Nil) {
     |> result.unwrap("")
   })
   |> result.replace_error(Nil)
-}
-
-/// Serve static files from the static/ directory.
-fn serve_static(
-  segments: List(String),
-) -> response.Response(mist.ResponseData) {
-  let path = case segments {
-    [] -> "static/index.html"
-    _ -> "static/" <> string.join(segments, "/")
-  }
-
-  let content_type = guess_content_type(path)
-
-  case mist.send_file(path, offset: 0, limit: None) {
-    Ok(file_body) ->
-      response.new(200)
-      |> response.set_header("content-type", content_type)
-      |> response.set_body(file_body)
-    Error(_) ->
-      response.new(404)
-      |> response.set_body(mist.Bytes(
-        bytes_tree.from_string("Not found"),
-      ))
-  }
-}
-
-/// Guess MIME type from file extension.
-fn guess_content_type(path: String) -> String {
-  case string.split(path, ".") |> last_element {
-    "html" -> "text/html; charset=utf-8"
-    "js" -> "application/javascript"
-    "mjs" -> "application/javascript"
-    "css" -> "text/css"
-    "wasm" -> "application/wasm"
-    "json" -> "application/json"
-    "png" -> "image/png"
-    "svg" -> "image/svg+xml"
-    "ico" -> "image/x-icon"
-    _ -> "application/octet-stream"
-  }
-}
-
-fn last_element(items: List(String)) -> String {
-  case items {
-    [] -> ""
-    [x] -> x
-    [_, ..rest] -> last_element(rest)
-  }
 }
 
 @external(erlang, "erlang", "unique_integer")

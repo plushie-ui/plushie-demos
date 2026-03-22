@@ -1,0 +1,8 @@
+/_build/
+/bin/plushie
+/deps/
+*.beam
+.mix/
+
+# Downloaded WASM renderer (users fetch via mix plushie.download --wasm)
+/priv/static/plushie_wasm*

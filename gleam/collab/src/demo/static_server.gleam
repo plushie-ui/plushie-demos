@@ -31,6 +31,13 @@ fn handle_request(
   req: Request(mist.Connection),
 ) -> response.Response(mist.ResponseData) {
   let segments = request.path_segments(req)
+  serve_static(segments)
+}
+
+/// Serve static files from the static/ directory.
+pub fn serve_static(
+  segments: List(String),
+) -> response.Response(mist.ResponseData) {
   let path = case segments {
     [] -> "static/index.html"
     _ -> "static/" <> string.join(segments, "/")

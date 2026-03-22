@@ -16,15 +16,12 @@
 ////   Starts SSH on port 2222 and HTTP+WS on port 8080
 //// Then: plushie --json --exec "ssh -p 2222 -s plushie localhost"
 
-import gleam/bytes_tree
 import gleam/erlang/process.{type Subject}
 import gleam/http/request
-import gleam/http/response
 import gleam/io
-import gleam/option.{None}
-import gleam/string
 import mist
 import demo/shared.{type SharedMsg}
+import demo/static_server
 import demo/websocket_server
 
 /// Start both the SSH daemon and the WebSocket server, sharing state.
@@ -41,64 +38,17 @@ pub fn main() {
     mist.new(fn(req) {
       case request.path_segments(req) {
         ["ws"] -> websocket_server.handle_websocket_public(req, shared)
-        segments -> serve_static(segments)
+        segments -> static_server.serve_static(segments)
       }
     })
     |> mist.port(8080)
-    |> mist.bind("0.0.0.0")
+    |> mist.bind("127.0.0.1")
     |> mist.start()
 
-  io.println("WebSocket server listening on http://0.0.0.0:8080")
+  io.println("WebSocket server listening on http://localhost:8080")
 
   process.sleep_forever()
 }
 
 @external(erlang, "plushie_demo_ssh_ffi", "start_daemon")
 fn do_start_ssh_daemon(shared: Subject(SharedMsg), port: Int) -> Nil
-
-/// Serve static files from the static/ directory.
-fn serve_static(
-  segments: List(String),
-) -> response.Response(mist.ResponseData) {
-  let path = case segments {
-    [] -> "static/index.html"
-    _ -> "static/" <> string.join(segments, "/")
-  }
-
-  let content_type = guess_content_type(path)
-
-  case mist.send_file(path, offset: 0, limit: None) {
-    Ok(file_body) ->
-      response.new(200)
-      |> response.set_header("content-type", content_type)
-      |> response.set_body(file_body)
-    Error(_) ->
-      response.new(404)
-      |> response.set_body(mist.Bytes(
-        bytes_tree.from_string("Not found"),
-      ))
-  }
-}
-
-fn guess_content_type(path: String) -> String {
-  case string.split(path, ".") |> last_element {
-    "html" -> "text/html; charset=utf-8"
-    "js" -> "application/javascript"
-    "mjs" -> "application/javascript"
-    "css" -> "text/css"
-    "wasm" -> "application/wasm"
-    "json" -> "application/json"
-    "png" -> "image/png"
-    "svg" -> "image/svg+xml"
-    "ico" -> "image/x-icon"
-    _ -> "application/octet-stream"
-  }
-}
-
-fn last_element(items: List(String)) -> String {
-  case items {
-    [] -> ""
-    [x] -> x
-    [_, ..rest] -> last_element(rest)
-  }
-}

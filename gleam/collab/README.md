@@ -52,6 +52,20 @@ field from SSH and the browser tabs update.
 The dark-mode toggle is per-client -- each user picks their own
 theme without affecting others.
 
+## Security
+
+This demo is for **local development only**. All services bind to
+localhost (127.0.0.1) and are not safe for public networks:
+
+- The SSH daemon has **no authentication** (`no_auth_needed: true`).
+  Anyone who can reach the port gets full access.
+- The WebSocket server has **no origin checking or authentication**.
+  Any page can connect and send events.
+- Host keys are **auto-generated in /tmp** and the SSH client skips
+  host-key verification (`StrictHostKeyChecking=no`).
+
+Do not expose these ports to the internet or untrusted networks.
+
 ## Modifying the app
 
 The app definition lives in `src/demo/collab.gleam`. It's a standard

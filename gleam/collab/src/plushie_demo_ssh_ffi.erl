@@ -21,7 +21,7 @@ start_daemon(Shared, Port) ->
 
     SystemDir = ensure_host_keys(),
 
-    {ok, _Pid} = ssh:daemon(Port, [
+    {ok, _Pid} = ssh:daemon({127,0,0,1}, Port, [
         {system_dir, SystemDir},
         {no_auth_needed, true},
         {subsystems, [
@@ -136,13 +136,14 @@ handle_line(Line, State) ->
     LineWithNewline = <<Line/binary, "\n">>,
     case 'plushie@protocol@decode':decode_message(LineWithNewline, json) of
         {ok, {event_message, Event}} ->
-            #ch_state{shared = Shared, client_id = ClientId} = State,
-            'gleam@erlang@process':send(Shared, {client_event, ClientId, Event}),
-            %% Check if this is a dark_mode toggle (theme widget)
+            %% Check if this is a dark_mode toggle (theme widget).
+            %% Theme is per-client, not shared -- don't forward it.
             case Event of
                 {widget_toggle, <<"theme">>, _, Checked} ->
                     State#ch_state{dark_mode = Checked};
                 _ ->
+                    #ch_state{shared = Shared, client_id = ClientId} = State,
+                    'gleam@erlang@process':send(Shared, {client_event, ClientId, Event}),
                     State
             end;
         {ok, {hello, _, _, _, _, _, _}} ->
@@ -163,15 +164,11 @@ handle_line(Line, State) ->
 
 %% Check if a JSON line is a settings message
 is_settings_message(Line) ->
-    case catch jsx:decode(Line) of
-        _ ->
-            %% Simple string match since we don't have jsx
-            binary:match(Line, <<"\"type\":\"settings\"">>) =/= nomatch
-    end.
+    binary:match(Line, <<"\"type\":\"settings\"">>) =/= nomatch.
 
 %% Send hello message to the SSH client
 send_hello(#ch_state{conn = Conn, channel = Channel}) ->
-    Hello = <<"{\"type\":\"hello\",\"protocol\":1,\"version\":\"0.1.0\","
+    Hello = <<"{\"type\":\"hello\",\"protocol\":1,\"version\":\"0.4.1\","
               "\"name\":\"plushie-demo\",\"backend\":\"gleam\","
               "\"extensions\":[],\"transport\":\"ssh\"}\n">>,
     ssh_connection:send(Conn, Channel, Hello).
