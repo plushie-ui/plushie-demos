@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plushie Demo - Standalone</title>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1em;
+      background: #1a1a2e;
+      color: #a8d8ea;
+      font-family: system-ui, sans-serif;
+      font-size: 1.2em;
+      z-index: 10;
+    }
+    #loading.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading plushie-wasm...</div>
+  <script type="module">
+    // Mode 1: Standalone client-side app.
+    //
+    // Runs entirely in the browser. plushie-wasm provides the iced
+    // renderer in WebAssembly. The app logic is a minimal counter
+    // embedded directly in this page (the full Gleam-compiled JS
+    // version would replace this).
+    //
+    // Each browser tab has its own independent state -- no server
+    // communication, no shared state.
+
+    const loading = document.getElementById('loading');
+
+    async function init() {
+      let wasmInit, PlushieApp;
+      try {
+        const wasm = await import('./plushie_wasm.js');
+        wasmInit = wasm.default;
+        PlushieApp = wasm.PlushieApp;
+        await wasmInit();
+      } catch (e) {
+        loading.innerHTML =
+          '<div>plushie-wasm not found.</div>' +
+          '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
+          'Copy plushie_wasm.js and plushie_wasm_bg.wasm to the static/ directory.' +
+          '</div>';
+        return;
+      }
+
+      const settings = JSON.stringify({
+        type: "settings",
+        session: "",
+        protocol_version: 1,
+        antialiasing: true,
+        default_text_size: 16.0,
+        vsync: true,
+        scale_factor: 1.0,
+        default_event_rate: 30,
+      });
+
+      // Simple standalone counter state
+      let model = { name: "", notes: "", count: 0, dark_mode: false };
+
+      function renderSnapshot() {
+        const theme_wrapper = model.dark_mode
+          ? { type: "themer", id: "theme-root", props: { theme: "dark" }, children: [content()] }
+          : { type: "themer", id: "theme-root", props: { theme: "light" }, children: [content()] };
+
+        return JSON.stringify({
+          type: "snapshot",
+          session: "",
+          tree: {
+            type: "window",
+            id: "main",
+            props: { title: "Plushie Demo (Standalone)", width: 500, height: 450 },
+            children: [theme_wrapper],
+          },
+        });
+      }
+
+      function content() {
+        return {
+          type: "column", id: "root",
+          props: { padding: 20, spacing: 16, width: "fill" },
+          children: [
+            { type: "text", id: "header", props: { content: "Plushie Demo (Standalone)", size: 24.0 } },
+            { type: "text", id: "status", props: { content: "Running locally in the browser" } },
+            { type: "text_input", id: "name", props: { value: model.name, placeholder: "Your name" } },
+            { type: "row", id: "counter-row", props: { spacing: 8 }, children: [
+              { type: "button", id: "dec", props: { label: "-" } },
+              { type: "text", id: "count", props: { content: "Count: " + model.count } },
+              { type: "button", id: "inc", props: { label: "+" } },
+            ]},
+            { type: "checkbox", id: "theme", props: { label: "Dark mode", is_checked: model.dark_mode } },
+            { type: "text_input", id: "notes", props: { value: model.notes, placeholder: "Notes...", width: "fill" } },
+          ],
+        };
+      }
+
+      const app = new PlushieApp(settings, (eventJson) => {
+        const event = JSON.parse(eventJson);
+        if (event.type !== "event") return;
+
+        switch (event.family) {
+          case "click":
+            if (event.id === "inc") model.count++;
+            if (event.id === "dec") model.count--;
+            break;
+          case "input":
+            if (event.id === "name") model.name = event.data.value;
+            if (event.id === "notes") model.notes = event.data.value;
+            break;
+          case "toggle":
+            if (event.id === "theme") model.dark_mode = event.data.value;
+            break;
+          default:
+            return;
+        }
+
+        app.send_message(renderSnapshot());
+      });
+
+      // Send initial snapshot
+      app.send_message(renderSnapshot());
+      loading.classList.add('hidden');
+    }
+
+    init();
+  </script>
+</body>
+</html>

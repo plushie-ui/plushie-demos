@@ -1,0 +1,12 @@
+name = "plushie_demo"
+version = "0.1.0"
+target = "erlang"
+
+[dependencies]
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+gleam_erlang = ">= 0.29.0 and < 2.0.0"
+gleam_otp = ">= 0.14.0 and < 2.0.0"
+gleam_json = ">= 3.0.0 and < 4.0.0"
+gleam_http = ">= 4.0.0 and < 5.0.0"
+mist = ">= 4.0.0 and < 7.0.0"
+plushie_gleam = { path = "../../../plushie-gleam" }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plushie Demo - WebSocket</title>
+  <style>
+    body { margin: 0; padding: 0; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1em;
+      background: #1a1a2e;
+      color: #a8d8ea;
+      font-family: system-ui, sans-serif;
+      font-size: 1.2em;
+      z-index: 10;
+    }
+    #loading.hidden { display: none; }
+    #status { color: #666; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div>Loading...</div>
+    <div id="status"></div>
+  </div>
+  <script type="module">
+    // Mode 2: WebSocket shared-state app.
+    //
+    // Loads plushie-wasm for rendering, connects to the server via
+    // WebSocket. The server holds the shared app state and broadcasts
+    // snapshots to all connected clients.
+    //
+    // Flow:
+    // 1. Load plushie-wasm
+    // 2. Connect WebSocket to /ws
+    // 3. Create PlushieApp -- events go to server via WebSocket
+    // 4. Server snapshots come back via WebSocket to the renderer
+
+    const loading = document.getElementById('loading');
+    const status = document.getElementById('status');
+
+    async function init() {
+      // Load plushie-wasm
+      status.textContent = 'Loading WASM...';
+      let wasmInit, PlushieApp;
+      try {
+        const wasm = await import('./plushie_wasm.js');
+        wasmInit = wasm.default;
+        PlushieApp = wasm.PlushieApp;
+        await wasmInit();
+      } catch (e) {
+        loading.innerHTML =
+          '<div>plushie-wasm not found.</div>' +
+          '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
+          'Copy plushie_wasm.js and plushie_wasm_bg.wasm to the static/ directory.' +
+          '</div>';
+        return;
+      }
+
+      // Connect WebSocket
+      status.textContent = 'Connecting...';
+      const ws = new WebSocket(`ws://${location.host}/ws`);
+
+      ws.onopen = () => {
+        status.textContent = 'Connected. Waiting for first snapshot...';
+
+        const settings = JSON.stringify({
+          type: "settings",
+          session: "",
+          protocol_version: 1,
+          antialiasing: true,
+          default_text_size: 16.0,
+          vsync: true,
+          scale_factor: 1.0,
+          default_event_rate: 30,
+        });
+
+        const app = new PlushieApp(settings, (eventJson) => {
+          // Forward renderer events to server
+          ws.send(eventJson);
+        });
+
+        ws.onmessage = (msg) => {
+          // Forward server snapshots to renderer
+          app.send_message(msg.data);
+          loading.classList.add('hidden');
+        };
+      };
+
+      ws.onclose = () => {
+        status.textContent = 'Disconnected from server.';
+        loading.classList.remove('hidden');
+      };
+
+      ws.onerror = () => {
+        status.textContent = 'Connection error. Is the server running?';
+      };
+    }
+
+    init();
+  </script>
+</body>
+</html>
