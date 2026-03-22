@@ -6,11 +6,10 @@
 ////
 //// Run: ./bin/native_gleam.sh
 
-import gleam/erlang/process
 import plushie
 import demo/collab
 
 pub fn main() {
-  let _ = plushie.start(collab.app(), plushie.default_start_opts())
-  process.sleep_forever()
+  let assert Ok(rt) = plushie.start(collab.app(), plushie.default_start_opts())
+  plushie.wait(rt)
 }

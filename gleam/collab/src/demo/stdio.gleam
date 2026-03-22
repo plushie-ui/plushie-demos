@@ -7,13 +7,12 @@
 //// Run: ./bin/native_rust.sh
 ////   (which runs: plushie --exec "gleam run -m demo/stdio")
 
-import gleam/erlang/process
 import plushie
 import demo/collab
 
 pub fn main() {
   let opts =
     plushie.StartOpts(..plushie.default_start_opts(), transport: plushie.Stdio)
-  let _ = plushie.start(collab.app(), opts)
-  process.sleep_forever()
+  let assert Ok(rt) = plushie.start(collab.app(), opts)
+  plushie.wait(rt)
 }
