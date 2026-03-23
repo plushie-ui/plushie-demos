@@ -36,7 +36,7 @@ impl WidgetExtension for CrashExtension {
         _env: &WidgetEnv<'a>,
     ) -> Element<'a, Message> {
         let props = node.props();
-        let label = prop_str(props, "label").unwrap_or("Widget OK");
+        let label = prop_str(props, "label").unwrap_or_else(|| "Widget OK".to_string());
 
         container(
             text(label)
