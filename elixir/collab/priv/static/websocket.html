@@ -71,10 +71,13 @@
         PlushieApp = wasm.PlushieApp;
         await wasmInit();
       } catch (e) {
+        console.error('WASM load failed:', e);
         loading.innerHTML =
-          '<div>plushie-wasm not found.</div>' +
+          '<div>Failed to load plushie-wasm.</div>' +
           '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
-          'Copy plushie_renderer_wasm.js and plushie_renderer_wasm_bg.wasm to the static/ directory.' +
+          '<p>' + e.message + '</p>' +
+          '<p>Make sure plushie_renderer_wasm.js and plushie_renderer_wasm_bg.wasm ' +
+          'are in the static/ directory (run <code>mix plushie.download</code>).</p>' +
           '</div>';
         return;
       }
