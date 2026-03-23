@@ -4,8 +4,8 @@
 //! Demonstrates the WidgetExtension trait with prepare, render,
 //! handle_command, and new_instance.
 
-use plushie_core::iced;
-use plushie_core::prelude::*;
+use plushie_ext::iced;
+use plushie_ext::prelude::*;
 
 /// Gauge extension -- renders a numeric gauge with label and color.
 pub struct GaugeExtension;
