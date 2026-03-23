@@ -1,0 +1,51 @@
+name,age,city,department,salary,start_date,is_active,rating
+Alice Chen,34,San Francisco,Engineering,145000.00,2019-03-15,True,4.8
+Bob Martinez,28,New York,Marketing,82000.00,2021-07-01,True,3.9
+Carol Wright,45,Chicago,Engineering,162000.00,2015-01-10,True,4.5
+David Kim,31,San Francisco,Design,98000.00,2020-11-20,True,4.2
+Elena Petrova,52,Boston,Engineering,175000.00,2012-06-01,True,
+Frank Osei,26,Austin,Marketing,72000.00,2022-09-14,True,3.5
+Grace Liu,38,San Francisco,Engineering,155000.00,2017-04-22,True,4.7
+Hiro Tanaka,41,New York,Sales,110000.00,2016-08-30,False,4.1
+Ingrid Svensson,29,Chicago,Design,92000.00,2021-02-15,True,
+James O'Brien,55,Boston,Engineering,180000.00,2010-01-05,True,4.9
+Karen Nwosu,33,Austin,Marketing,85000.00,2019-12-01,True,3.8
+Leo Rossi,27,San Francisco,Engineering,125000.00,2022-03-07,True,4.0
+Maria Santos,44,New York,Sales,115000.00,2014-09-18,True,4.3
+Nadia Hussain,36,Chicago,Engineering,148000.00,2018-05-12,True,4.6
+Oscar Lindberg,30,Austin,Design,95000.00,2020-08-25,True,
+Priya Sharma,48,Boston,Engineering,170000.00,2013-02-28,True,4.8
+Quinn Donovan,25,San Francisco,Marketing,70000.00,2023-01-09,True,3.2
+Rachel Zheng,39,New York,Engineering,152000.00,2017-11-03,True,4.4
+Sam Jackson,42,Chicago,Sales,108000.00,2015-07-20,False,3.7
+Tanya Kowalski,35,Austin,Engineering,140000.00,2019-06-15,True,4.1
+Uma Patel,29,San Francisco,Design,96000.00,2021-04-10,True,4.3
+Victor Alonso,50,Boston,Engineering,168000.00,2011-10-01,True,
+Wendy Chu,32,New York,Marketing,88000.00,2020-01-22,True,3.9
+Xavier Dupont,46,Chicago,Engineering,160000.00,2014-03-17,True,4.7
+Yuki Watanabe,28,Austin,Design,90000.00,2022-06-30,True,4.0
+Zara Okonkwo,37,San Francisco,Sales,112000.00,2018-09-05,True,4.2
+Aaron Brooks,43,Boston,Engineering,158000.00,2016-02-14,True,4.5
+Beth Larsen,26,New York,Marketing,74000.00,2023-04-01,True,
+Carlos Mendez,40,Chicago,Sales,105000.00,2017-08-12,False,3.6
+Diana Reed,33,Austin,Engineering,138000.00,2019-10-28,True,4.3
+Ethan Park,51,San Francisco,Engineering,172000.00,2012-12-15,True,4.9
+Fiona Gallagher,30,Boston,Design,94000.00,2020-07-08,True,4.1
+George Adeyemi,35,New York,Engineering,146000.00,2018-01-20,True,
+Hannah Mueller,27,Chicago,Marketing,78000.00,2022-02-14,True,3.4
+Ivan Volkov,47,Austin,Engineering,164000.00,2013-05-22,True,4.6
+Julia Fernandez,32,San Francisco,Sales,109000.00,2019-11-11,True,4.0
+Kevin O'Neal,38,Boston,Engineering,153000.00,2016-06-30,True,4.4
+Lily Chang,24,New York,Design,86000.00,2023-08-15,True,3.8
+Mohamed Hassan,49,Chicago,Engineering,166000.00,2012-04-03,True,
+Nora Eriksson,31,Austin,Marketing,83000.00,2021-01-18,True,3.7
+Oliver Tan,44,San Francisco,Engineering,159000.00,2015-08-25,True,4.5
+Patricia Gomez,36,Boston,Sales,111000.00,2018-03-10,True,4.2
+Quentin Moreau,29,New York,Engineering,132000.00,2020-12-05,True,
+Rosa Bianchi,53,Chicago,Engineering,176000.00,2011-07-14,True,4.8
+Stefan Novak,34,Austin,Design,97000.00,2019-04-22,True,4.1
+Tina Washington,41,San Francisco,Marketing,91000.00,2016-10-08,False,3.9
+Ulrich Weber,28,Boston,Engineering,128000.00,2022-05-17,True,4.0
+Valentina Cruz,39,New York,Sales,113000.00,2017-09-29,True,4.3
+Wesley Okafor,46,Chicago,Engineering,161000.00,2014-11-06,True,4.7
+Xena Papadopoulos,33,Austin,Engineering,142000.00,2019-07-23,True,4.2
