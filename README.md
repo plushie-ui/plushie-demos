@@ -11,6 +11,7 @@ organized by language.
 | [gauge-demo](elixir/gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](elixir/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
 | [notes](elixir/notes/) | Pure Elixir widgets + state helpers -- no Rust required |
+| [crash-test](elixir/crash-test/) | Error resilience -- Rust panic isolation and Elixir runtime recovery |
 | [examples](https://github.com/plushie-ui/plushie-elixir/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
 
 See the [Elixir demos README](elixir/README.md) for setup and details.

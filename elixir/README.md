@@ -61,3 +61,12 @@ Undo (editor history), Data (search and sort), and keyboard shortcuts
 with a context-aware hint bar.
 
 See [notes/README.md](notes/README.md) for setup instructions.
+
+### [crash-test](crash-test/)
+
+Error resilience demo exercising three failure paths: Elixir-side
+exceptions (`RuntimeError` in `update/2` and `view/1`) and a Rust-side
+panic in `handle_command`. A working counter proves the app keeps
+functioning through all crashes.
+
+See [crash-test/README.md](crash-test/README.md) for setup instructions.
