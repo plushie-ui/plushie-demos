@@ -9,6 +9,7 @@ Example applications for
 |------|-------------|
 | [data-explorer](data-explorer/) | Data query pipeline + SEA standalone packaging -- browse, search, sort countries |
 | [collab](collab/) | Collaborative scratchpad -- 6 ways to run the same app (native, WebSocket, SSH, WASM) |
+| [crash-test](crash-test/) | Error resilience -- Rust panic isolation and TypeScript runtime recovery |
 | [gauge-demo](gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
 | [examples](https://github.com/plushie-ui/plushie-typescript/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
