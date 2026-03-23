@@ -11,6 +11,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pyright"]
 
+[tool.plushie]
+artifacts = ["bin", "wasm"]
+wasm_dir = "static"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = ["-ra", "--strict-markers", "-p", "no:plushie"]

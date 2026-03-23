@@ -19,9 +19,11 @@ pip install -e ".[dev]"
 Download the plushie binary and WASM renderer:
 
 ```bash
-python -m plushie download --bin
-python -m plushie download --wasm --wasm-dir static
+python -m plushie download
 ```
+
+This downloads both the native binary and WASM files (to `static/`)
+as configured in `pyproject.toml`.
 
 ## Quick start
 
@@ -112,7 +114,7 @@ Do not expose these ports to the internet.
 **"plushie binary not found"** -- Run `python -m plushie download` first.
 
 **Browser shows "plushie-renderer-wasm not found"** -- Run
-`python -m plushie download --wasm --wasm-dir static`.
+`python -m plushie download` (downloads both bin and WASM per pyproject.toml config).
 
 **SSH connection refused** -- Start the server first
 (`python -m collab_demo.server`).

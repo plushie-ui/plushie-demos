@@ -8,7 +8,7 @@ dependencies = ["plushie>=0.1.0"]
 dev = ["pytest", "ruff", "pyright"]
 
 [tool.plushie]
-source_path = "../../../plushie"
+source_path = "../../../plushie-renderer"
 
 [[tool.plushie.extensions]]
 kind = "sparkline"
