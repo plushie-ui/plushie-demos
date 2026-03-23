@@ -55,3 +55,11 @@ custom message types (`app.application`), multi-view routing, undo/redo,
 search filtering, and keyboard shortcuts with a context-aware hint bar.
 
 See [notes/README.md](notes/README.md) for setup instructions.
+
+### [crash-lab](crash-lab/)
+
+Error resilience demonstration showing Rust extension panic isolation
+vs Gleam runtime crash recovery. Extension panics are caught and
+contained; Gleam panics reset the model.
+
+See [crash-lab/README.md](crash-lab/README.md) for setup instructions.

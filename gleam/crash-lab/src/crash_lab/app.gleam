@@ -110,23 +110,31 @@ pub fn view(model: Model) -> Node {
         [ui.text("title", "Crash Lab", [ui.font_size(24.0)])],
         // Counter section
         [
-          ui.container("counter-section", [
-            ui.padding(padding.all(12.0)),
-            ui.background(section_bg),
-            ui.width(length.Fill),
-          ], [
-            ui.column("counter-col", [ui.spacing(8), ui.align_x(alignment.Center)], [
-              ui.text("counter-label", "Counter (proof of life)", [
-                ui.font_size(12.0),
-                ui.text_color(muted),
-              ]),
-              ui.row("counter-row", [ui.spacing(8)], [
-                ui.button_("dec", "-"),
-                ui.text_("count", int.to_string(model.count)),
-                ui.button_("inc", "+"),
-              ]),
-            ]),
-          ]),
+          ui.container(
+            "counter-section",
+            [
+              ui.padding(padding.all(12.0)),
+              ui.background(section_bg),
+              ui.width(length.Fill),
+            ],
+            [
+              ui.column(
+                "counter-col",
+                [ui.spacing(8), ui.align_x(alignment.Center)],
+                [
+                  ui.text("counter-label", "Counter (proof of life)", [
+                    ui.font_size(12.0),
+                    ui.text_color(muted),
+                  ]),
+                  ui.row("counter-row", [ui.spacing(8)], [
+                    ui.button_("dec", "-"),
+                    ui.text_("count", int.to_string(model.count)),
+                    ui.button_("inc", "+"),
+                  ]),
+                ],
+              ),
+            ],
+          ),
         ],
         // Crash widget section
         widget_nodes,
@@ -140,10 +148,14 @@ pub fn view(model: Model) -> Node {
         ],
         // Explanation
         [
-          ui.text("hint", "Panic Extension poisons the widget. Remove and Restore to recover. Panic Gleam crashes the runtime and resets the counter.", [
-            ui.font_size(11.0),
-            ui.text_color(muted),
-          ]),
+          ui.text(
+            "hint",
+            "Panic Extension poisons the widget. Remove and Restore to recover. Panic Gleam crashes the runtime and resets the counter.",
+            [
+              ui.font_size(11.0),
+              ui.text_color(muted),
+            ],
+          ),
         ],
       ]),
     ),
