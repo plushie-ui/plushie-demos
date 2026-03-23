@@ -46,6 +46,21 @@
     const loading = document.getElementById('loading');
     const status = document.getElementById('status');
 
+    // Load a font file and return its base64-encoded contents.
+    // The WASM renderer has no access to system fonts -- fonts must
+    // be provided as inline base64 data in the settings JSON.
+    async function loadFontBase64(url) {
+      const resp = await fetch(url);
+      if (!resp.ok) return null;
+      const buf = await resp.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
     async function init() {
       // Load plushie-wasm
       status.textContent = 'Loading WASM...';
@@ -64,6 +79,12 @@
         return;
       }
 
+      // Load the font for the WASM renderer. Without this, all text
+      // renders as blank because cosmic-text has no system fonts in WASM.
+      status.textContent = 'Loading font...';
+      const fontData = await loadFontBase64('./FiraSans-Regular.ttf');
+      const fonts = fontData ? [{ data: fontData }] : [];
+
       // Connect WebSocket
       status.textContent = 'Connecting...';
       const ws = new WebSocket(`ws://${location.host}/ws`);
@@ -80,6 +101,7 @@
           vsync: true,
           scale_factor: 1.0,
           default_event_rate: 30,
+          fonts: fonts,
         });
 
         const app = new PlushieApp(settings, (eventJson) => {
