@@ -41,6 +41,15 @@ class GaugeExtensionTest < Minitest::Test
     assert_includes names, :event_rate
   end
 
+  def test_command_declarations
+    commands = GaugeExtension.instance_variable_get(:@_extension_commands)
+    names = commands.map { |c| c[:name] }
+    assert_equal [:set_value, :animate_to], names
+
+    set_value = commands.find { |c| c[:name] == :set_value }
+    assert_equal({value: :number}, set_value[:params])
+  end
+
   def test_props_metadata
     props = GaugeExtension.extension_props
 
