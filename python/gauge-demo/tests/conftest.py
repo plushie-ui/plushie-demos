@@ -1,4 +1,9 @@
-"""Shared fixtures for gauge-demo tests."""
+"""Shared fixtures for gauge-demo tests.
+
+The plushie pytest plugin is disabled (pyproject.toml) because its
+``pytest_configure`` hook hangs if the binary is missing. We provide
+our own ``plushie_pool`` fixture that skips cleanly.
+"""
 
 from __future__ import annotations
 
@@ -13,14 +18,8 @@ if src not in sys.path:
     sys.path.insert(0, src)
 
 
-def _has_extension_binary() -> bool:
-    """Check whether a custom-built binary with the gauge extension exists.
-
-    The extension binary is produced by ``python -m plushie build`` and
-    lives in the build output directory. Without it, integration tests
-    that exercise the full wire protocol (Python -> msgpack -> Rust
-    extension -> msgpack -> Python) cannot run.
-    """
+def _has_plushie_binary() -> bool:
+    """Check whether the plushie binary is available."""
     try:
         from plushie.binary import resolve
 
@@ -31,7 +30,14 @@ def _has_extension_binary() -> bool:
 
 
 @pytest.fixture(scope="session")
-def needs_extension_binary() -> None:
-    """Skip the calling test if the gauge extension binary is not available."""
-    if not _has_extension_binary():
-        pytest.skip("gauge extension binary not built -- run: python -m plushie build")
+def plushie_pool():  # type: ignore[no-untyped-def]
+    """Provide a SessionPool if the binary is available, else skip."""
+    if not _has_plushie_binary():
+        pytest.skip("plushie binary not available")
+
+    from plushie.testing.pool import SessionPool
+
+    pool = SessionPool(mode="mock", max_sessions=8)
+    pool.start()
+    yield pool
+    pool.stop()

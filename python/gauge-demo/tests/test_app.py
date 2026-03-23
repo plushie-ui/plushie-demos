@@ -7,11 +7,16 @@ simulated by constructing WidgetEvent instances.
 Wire-level gauge prop tests verify that the view tree carries the
 correct extension type, value, color, and label after each interaction.
 This proves that props cross the wire to the extension widget.
+
+AppFixture integration tests exercise the full init -> update -> view ->
+normalize -> renderer cycle against a real plushie binary.
 """
 
 from __future__ import annotations
 
 from dataclasses import replace
+
+import pytest
 
 from gauge_demo.app import (
     Model,
@@ -494,3 +499,115 @@ class TestSettings:
         cfg = app.settings()["extension_config"]["gauge"]
         assert cfg["arcWidth"] == 8
         assert cfg["tickCount"] == 10
+
+
+# ---------------------------------------------------------------------------
+# AppFixture integration tests (require plushie renderer)
+# ---------------------------------------------------------------------------
+
+
+class TestAppFixtureGauge:
+    """Integration tests using AppFixture against the real binary.
+
+    These exercise the full init -> update -> view -> normalize ->
+    renderer cycle. The binary must include the gauge extension.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _require_pool(self, plushie_pool: object) -> None:
+        self._pool = plushie_pool
+
+    def test_window_exists(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            assert app.tree is not None
+            assert app.tree["type"] == "window"
+
+    def test_initial_model(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            assert app.model.temperature == 20.0
+            assert app.model.target_temp == 20.0
+            assert app.model.history == (20.0,)
+
+    def test_gauge_widget_exists(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.assert_exists("#temp")
+            el = app.find("#temp")
+            assert el.type == "gauge"
+
+    def test_gauge_props_correct(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            el = app.find("#temp")
+            assert el.props["value"] == 20.0
+            assert el.props["min"] == 0
+            assert el.props["max"] == 100
+            assert el.props["color"] == "#3498db"
+
+    def test_click_high_updates_model(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.click("#high")
+            assert app.model.target_temp == 90.0
+
+    def test_click_reset_updates_model(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.click("#high")
+            app.click("#reset")
+            assert app.model.target_temp == 20.0
+
+    def test_slider_updates_target(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.slide("#target", 65.0)
+            assert app.model.target_temp == 65.0
+            # Slider doesn't change current temperature (only animate_to)
+            assert app.model.temperature == 20.0
+
+    def test_view_structure(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.assert_exists("#title")
+            app.assert_exists("#temp")
+            app.assert_exists("#status")
+            app.assert_exists("#reading")
+            app.assert_exists("#target")
+            app.assert_exists("#reset")
+            app.assert_exists("#high")
+            app.assert_exists("#history")
+
+    def test_title_text(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.assert_text("#title", "Temperature Monitor")
+
+    def test_status_text_initial(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            text = app.text("#status")
+            assert text is not None
+            assert "Cool" in text
+
+    def test_high_then_reset_journey(self) -> None:
+        """Click high, verify target, click reset, verify target."""
+        from plushie.testing import AppFixture
+
+        with AppFixture(TemperatureMonitor, self._pool) as app:
+            app.click("#high")
+            assert app.model.target_temp == 90.0
+
+            app.click("#reset")
+            assert app.model.target_temp == 20.0

@@ -7,12 +7,17 @@ TimerTick instances.
 Wire-level sparkline prop tests verify that the view tree carries the
 correct extension type, data, color, and fill after each interaction.
 This proves that props cross the wire to the extension widget.
+
+AppFixture integration tests exercise the full init -> update -> view ->
+normalize -> renderer cycle against a real plushie binary.
 """
 
 from __future__ import annotations
 
 import math
 from dataclasses import replace
+
+import pytest
 
 from sparkline_dashboard.app import (
     MAX_SAMPLES,
@@ -457,3 +462,132 @@ class TestRapidInteractions:
 #
 # There is no reverse path (no events from the extension). This is
 # the simplest extension pattern: pure props in, rendered pixels out.
+
+
+# ---------------------------------------------------------------------------
+# AppFixture integration tests (require plushie renderer)
+# ---------------------------------------------------------------------------
+
+
+class TestAppFixtureDashboard:
+    """Integration tests using AppFixture against the real binary.
+
+    These exercise the full init -> update -> view -> normalize ->
+    renderer cycle. The binary must include the sparkline extension.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _require_pool(self, plushie_pool: object) -> None:
+        self._pool = plushie_pool
+
+    def test_window_exists(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            assert app.tree is not None
+            assert app.tree["type"] == "window"
+            assert app.tree["id"] == "main"
+
+    def test_initial_model(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            assert app.model.cpu_samples == ()
+            assert app.model.running is True
+            assert app.model.tick_count == 0
+
+    def test_sparkline_widgets_exist(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            # Sparklines are inside named containers (cpu_card, etc.)
+            # so their wire IDs are scoped: cpu_card/cpu_spark
+            for card, spark in [
+                ("cpu_card", "cpu_spark"),
+                ("mem_card", "mem_spark"),
+                ("net_card", "net_spark"),
+            ]:
+                app.assert_exists(f"#{card}/{spark}")
+                el = app.find(f"#{card}/{spark}")
+                assert el.type == "sparkline"
+
+    def test_sparkline_initial_props(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            el = app.find("#cpu_card/cpu_spark")
+            assert el.props["data"] == []
+            assert el.props["color"] == "#4CAF50"
+            assert el.props["fill"] is True
+
+    def test_view_structure(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            app.assert_exists("#title")
+            app.assert_exists("#toggle_running")
+            app.assert_exists("#clear")
+            app.assert_exists("#status")
+            app.assert_exists("#cpu_card/cpu_spark")
+            app.assert_exists("#mem_card/mem_spark")
+            app.assert_exists("#net_card/net_spark")
+            app.assert_exists("#cpu_card/cpu_label")
+            app.assert_exists("#mem_card/mem_label")
+            app.assert_exists("#net_card/net_label")
+
+    def test_title_text(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            app.assert_text("#title", "System Monitor")
+
+    def test_pause_button_label(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            # Initially running -> button says "Pause"
+            app.assert_text("#toggle_running", "Pause")
+
+    def test_click_toggle_pauses(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            app.click("#toggle_running")
+            assert app.model.running is False
+            app.assert_text("#toggle_running", "Resume")
+
+    def test_click_toggle_resumes(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            app.click("#toggle_running")
+            assert app.model.running is False
+            app.click("#toggle_running")
+            assert app.model.running is True
+            app.assert_text("#toggle_running", "Pause")
+
+    def test_click_clear(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as app:
+            app.click("#clear")
+            assert app.model.cpu_samples == ()
+            assert app.model.tick_count == 0
+
+    def test_subscribe_returns_timer_when_running(self) -> None:
+        """Verify the app declares a timer subscription when running."""
+        app = Dashboard()
+        model = app.init()
+        subs = app.subscribe(model)
+        assert len(subs) == 1
+        assert subs[0].tag == "sample"
+        assert subs[0].interval_ms == 500
+
+    def test_subscribe_empty_when_paused(self) -> None:
+        """Verify no subscriptions when paused."""
+        from plushie.testing import AppFixture
+
+        with AppFixture(Dashboard, self._pool) as fixture:
+            fixture.click("#toggle_running")
+            subs = Dashboard().subscribe(fixture.model)
+            assert subs == []

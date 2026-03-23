@@ -1,8 +1,11 @@
 """Tests for the crash test application.
 
-These are pure Python tests that verify crash recovery behavior
-without needing the renderer binary.
+Pure Python tests verify crash recovery behavior without needing the
+renderer binary. AppFixture integration tests exercise the full cycle
+against the real binary with the crasher extension compiled in.
 """
+
+from __future__ import annotations
 
 import pytest
 
@@ -138,7 +141,6 @@ class TestViewStructure:
 
     def test_contains_counter(self, app: CrashTestApp, model: Model) -> None:
         tree = app.view(model)
-        # Walk children looking for the counter value text
         all_ids = _collect_ids(tree)
         assert "counter-value" in all_ids
         assert "inc" in all_ids
@@ -165,3 +167,134 @@ def _collect_ids(node: dict) -> set[str]:
     for child in node.get("children", []):
         ids |= _collect_ids(child)
     return ids
+
+
+# ---------------------------------------------------------------------------
+# AppFixture integration tests (require plushie renderer)
+# ---------------------------------------------------------------------------
+
+
+class TestAppFixtureCrashTest:
+    """Integration tests using AppFixture against the real binary.
+
+    These exercise the full init -> update -> view -> normalize ->
+    renderer cycle. The binary must include the crasher extension.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _require_pool(self, plushie_pool: object) -> None:
+        self._pool = plushie_pool
+
+    def test_window_exists(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            assert app.tree is not None
+            assert app.tree["type"] == "window"
+            assert app.tree["id"] == "main"
+
+    def test_initial_model(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            assert app.model.count == 0
+            assert app.model.error_count == 0
+            assert app.model.last_error == ""
+
+    def test_counter_increment(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.click("#inc")
+            assert app.model.count == 1
+
+    def test_counter_decrement(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.click("#dec")
+            assert app.model.count == -1
+
+    def test_counter_multiple_clicks(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.click("#inc")
+            app.click("#inc")
+            app.click("#inc")
+            assert app.model.count == 3
+
+    def test_crash_buttons_exist(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            # Crash buttons are inside the "python-crashes" named container
+            app.assert_exists("#python-crashes/crash-update")
+            app.assert_exists("#python-crashes/crash-view")
+            app.assert_exists("#python-crashes/return-none")
+
+    def test_crasher_widget_exists(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.assert_exists("#crash-widget")
+
+    def test_python_crash_recovery_model_unchanged(self) -> None:
+        """Click crash-update, verify model is unchanged.
+
+        AppFixture's _dispatch_event catches the RuntimeError from
+        update(), leaving the model at its pre-crash state.
+        """
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.click("#inc")
+            assert app.model.count == 1
+
+            # crash-update raises RuntimeError, caught by AppFixture
+            app.click("#crash-update")
+            assert app.model.count == 1  # unchanged
+
+    def test_counter_works_after_crash(self) -> None:
+        """Verify the app keeps functioning after a crash in update."""
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.click("#inc")
+            assert app.model.count == 1
+
+            # Crash
+            app.click("#crash-update")
+
+            # Counter still works
+            app.click("#inc")
+            assert app.model.count == 2
+
+    def test_counter_text_updates(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            app.assert_text("#counter-section/counter-value", "0")
+            app.click("#inc")
+            app.assert_text("#counter-section/counter-value", "1")
+
+    def test_view_structure(self) -> None:
+        from plushie.testing import AppFixture
+
+        with AppFixture(CrashTestApp, self._pool) as app:
+            # Top-level (no named container scope)
+            app.assert_exists("#title")
+            app.assert_exists("#status")
+            app.assert_exists("#alive")
+            app.assert_exists("#crash-widget")
+            # Inside "counter-section"
+            app.assert_exists("#counter-section/counter-value")
+            app.assert_exists("#counter-section/inc")
+            app.assert_exists("#counter-section/dec")
+            # Inside "python-crashes"
+            app.assert_exists("#python-crashes/crash-update")
+            app.assert_exists("#python-crashes/crash-view")
+            app.assert_exists("#python-crashes/return-none")
+            # Inside "rust-crashes"
+            app.assert_exists("#rust-crashes/panic-render")
+            app.assert_exists("#rust-crashes/panic-command")

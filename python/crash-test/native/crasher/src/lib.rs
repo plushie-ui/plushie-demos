@@ -17,6 +17,10 @@ impl WidgetExtension for CrasherExtension {
         "crasher"
     }
 
+    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+        Box::new(CrasherExtension::new())
+    }
+
     fn render<'a>(
         &self,
         node: &'a TreeNode,
