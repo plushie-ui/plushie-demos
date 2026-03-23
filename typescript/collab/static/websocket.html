@@ -26,9 +26,26 @@
       overlay.classList.remove('hidden')
     }
 
+    // The WASM renderer has no system fonts; provide one explicitly.
+    async function loadFontBase64(url) {
+      const resp = await fetch(url)
+      if (!resp.ok) return null
+      const buf = await resp.arrayBuffer()
+      const bytes = new Uint8Array(buf)
+      let binary = ''
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i])
+      }
+      return btoa(binary)
+    }
+
     try {
       status('Loading WASM...')
       await init()
+
+      status('Loading font...')
+      const fontData = await loadFontBase64('./FiraSans-Regular.ttf')
+      const fonts = fontData ? [{ data: fontData }] : []
 
       status('Connecting...')
       const proto = location.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -46,6 +63,7 @@
       const app = new PlushieApp({
         antialiasing: true,
         default_event_rate: 30,
+        fonts,
         on_event: (eventJson) => {
           // Forward renderer events to the server
           ws.send(eventJson)
@@ -60,7 +78,16 @@
       }
 
     } catch (err) {
-      status(`Error: ${err.message}`, true)
+      console.error('WASM load failed:', err)
+      overlay.innerHTML =
+        '<div>Failed to load plushie-wasm.</div>' +
+        '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
+        `<p>${err.message}</p>` +
+        '<p>Make sure plushie_renderer_wasm.js and plushie_renderer_wasm_bg.wasm ' +
+        'are in the static/ directory.</p>' +
+        '</div>'
+      overlay.className = 'error'
+      overlay.classList.remove('hidden')
     }
   </script>
 </body>

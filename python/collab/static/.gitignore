@@ -1,0 +1,8 @@
+# Ignore everything by default (downloaded WASM files etc.)
+*
+
+# Track source files
+!.gitignore
+!index.html
+!websocket.html
+!FiraSans-Regular.ttf

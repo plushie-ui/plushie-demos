@@ -2,7 +2,7 @@
 name = "sparkline-dashboard"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["plushie>=0.1.0"]
+dependencies = ["plushie==0.5.0"]
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pyright"]

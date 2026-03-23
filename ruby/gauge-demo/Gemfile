@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-gem "plushie", path: "../../../plushie-ruby"
+gem "plushie", "0.5.0"
 
 group :development, :test do
   gem "minitest", "~> 5.16"

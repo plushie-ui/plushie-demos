@@ -2,7 +2,7 @@
 name = "data-explorer"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["plushie>=0.1.0", "pandas>=2.0"]
+dependencies = ["plushie==0.5.0", "pandas>=2.0"]
 
 [project.optional-dependencies]
 excel = ["openpyxl>=3.0"]

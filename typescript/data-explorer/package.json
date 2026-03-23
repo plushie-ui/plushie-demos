@@ -12,7 +12,7 @@
     "package": "bash scripts/package.sh"
   },
   "dependencies": {
-    "plushie": "file:../../../plushie-typescript"
+    "plushie": "0.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

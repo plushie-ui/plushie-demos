@@ -6,4 +6,3 @@
 Gemfile.lock
 /public/plushie_renderer_wasm*
 /public/package.json
-/public/.gitignore
