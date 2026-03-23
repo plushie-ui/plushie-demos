@@ -1,0 +1,18 @@
+# frozen_string_literal: true
+
+require "minitest/test_task"
+
+Minitest::TestTask.create
+
+require "standard/rake"
+
+require "plushie"
+require_relative "lib/sparkline_extension"
+
+Plushie.configure do |config|
+  config.extensions = [SparklineExtension]
+end
+
+require "plushie/rake"
+
+task default: %i[test standard]
