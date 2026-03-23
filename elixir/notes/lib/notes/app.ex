@@ -115,7 +115,7 @@ defmodule Notes.App do
     import Plushie.UI
 
     window "main", title: "Plushie Notes", size: {600, 500} do
-      column padding: 20, spacing: 0, height: :fill, width: :fill do
+      column padding: 20, spacing: 8, height: :fill, width: :fill do
         case Plushie.Route.current(model.route) do
           "/list" -> list_view(model)
           _editor -> editor_view(model)
@@ -351,11 +351,10 @@ defmodule Notes.App do
     # Each expression becomes a sibling in the layout.
     [
       Toolbar.new("toolbar", title: "Plushie Notes", actions: actions),
-      row padding: {8, 0}, spacing: 8, width: :fill do
+      row padding: {12, 0}, spacing: 8, width: :fill do
         text_input("search", model.search, placeholder: "Search notes...", width: :fill)
         pick_list("sort", @sort_options, sort_label(model.sort_by))
       end,
-      Plushie.Widget.Rule.new("list_divider"),
       scrollable "note_list", height: :fill, width: :fill do
         column padding: {8, 0}, spacing: 8, width: :fill do
           if notes == [] do
