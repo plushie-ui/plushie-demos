@@ -1,0 +1,3 @@
+node_modules/
+static/plushie_wasm*
+static/collab-bundle.js

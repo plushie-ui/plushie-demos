@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Collab - Plushie TypeScript Demo</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 640px;
+      margin: 60px auto;
+      padding: 0 20px;
+      color: #e0e0e0;
+      background: #1a1a2e;
+    }
+    h1 { color: #fff; }
+    a { color: #82aaff; }
+    table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+    td, th { padding: 8px 12px; text-align: left; border-bottom: 1px solid #333; }
+    th { color: #999; font-weight: normal; font-size: 0.9em; }
+    code { background: #2a2a3e; padding: 2px 6px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>Collaborative Scratchpad</h1>
+  <p>6 ways to run the same TypeScript app.</p>
+
+  <table>
+    <tr><th>#</th><th>Mode</th><th>Link / Command</th></tr>
+    <tr>
+      <td>1</td>
+      <td>Client-side WASM</td>
+      <td><a href="/standalone.html">standalone.html</a></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>WebSocket (shared state)</td>
+      <td><a href="/websocket.html">websocket.html</a></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Native desktop</td>
+      <td><code>npx plushie run src/collab.tsx</code></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Renderer spawns Node</td>
+      <td><code>bin/stdio.sh</code></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>SSH + WebSocket server</td>
+      <td><code>npx tsx server/ssh.ts</code></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>SSH client</td>
+      <td><code>bin/ssh-client.sh</code></td>
+    </tr>
+  </table>
+</body>
+</html>
