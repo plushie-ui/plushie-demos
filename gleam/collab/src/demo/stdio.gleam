@@ -7,8 +7,8 @@
 //// Run: ./bin/native_rust.sh
 ////   (which runs: plushie --exec "gleam run -m demo/stdio")
 
-import plushie
 import demo/collab
+import plushie
 
 pub fn main() {
   let opts =

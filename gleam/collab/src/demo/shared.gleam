@@ -5,12 +5,12 @@
 //// the view, and broadcasts the new snapshot to ALL connected clients.
 //// The dark_mode field is per-client and not broadcast.
 
+import demo/collab
 import gleam/dict.{type Dict}
 import gleam/erlang/process.{type Subject}
 import gleam/int
 import gleam/otp/actor
 import plushie/event.{type Event}
-import demo/collab
 
 /// Message type for the shared actor.
 pub type SharedMsg {
@@ -30,10 +30,7 @@ pub type ClientMsg {
 
 /// Internal state of the shared actor.
 type SharedState {
-  SharedState(
-    model: collab.Model,
-    clients: Dict(String, Subject(ClientMsg)),
-  )
+  SharedState(model: collab.Model, clients: Dict(String, Subject(ClientMsg)))
 }
 
 /// Start the shared actor. Returns a Subject for sending SharedMsg.
@@ -89,10 +86,7 @@ fn handle_message(
       // Preserve status (managed by the actor, not the app)
       let count = dict.size(state.clients)
       let new_model =
-        collab.Model(
-          ..new_model,
-          status: int.to_string(count) <> " connected",
-        )
+        collab.Model(..new_model, status: int.to_string(count) <> " connected")
       // Broadcast to all clients
       broadcast_model(state.clients, new_model)
       actor.continue(SharedState(model: new_model, clients: state.clients))

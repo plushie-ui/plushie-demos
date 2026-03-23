@@ -1,0 +1,37 @@
+[project]
+name = "crash-test"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["plushie>=0.1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "pyright"]
+
+[tool.plushie]
+source_path = "../../../plushie"
+
+[[tool.plushie.extensions]]
+kind = "crasher"
+rust_crate = "native/crasher"
+rust_constructor = "crasher::CrasherExtension::new()"
+
+[[tool.plushie.extensions.props]]
+name = "message"
+prop_type = "string"
+
+[[tool.plushie.extensions.props]]
+name = "panic_on_render"
+prop_type = "bool"
+
+[[tool.plushie.extensions.commands]]
+name = "panic"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.pyright]
+pythonVersion = "3.12"

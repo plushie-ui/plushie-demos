@@ -52,9 +52,7 @@ pub fn serve_static(
       |> response.set_body(file_body)
     Error(_) ->
       response.new(404)
-      |> response.set_body(mist.Bytes(
-        bytes_tree.from_string("Not found"),
-      ))
+      |> response.set_body(mist.Bytes(bytes_tree.from_string("Not found")))
   }
 }
 

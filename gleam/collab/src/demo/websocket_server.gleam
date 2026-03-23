@@ -15,6 +15,9 @@
 ////
 //// Run: gleam run -m demo/websocket_server
 
+import demo/collab
+import demo/shared.{type ClientMsg, type SharedMsg, ModelChanged}
+import demo/static_server
 import gleam/bit_array
 import gleam/erlang/process.{type Subject}
 import gleam/http/request.{type Request}
@@ -29,9 +32,6 @@ import plushie/node
 import plushie/protocol
 import plushie/protocol/decode as proto_decode
 import plushie/protocol/encode as proto_encode
-import demo/collab
-import demo/shared.{type ClientMsg, type SharedMsg, ModelChanged}
-import demo/static_server
 
 /// Per-WebSocket-connection state.
 type WsState {
@@ -80,8 +80,7 @@ fn handle_websocket(
   req: Request(mist.Connection),
   shared: Subject(SharedMsg),
 ) -> response.Response(mist.ResponseData) {
-  let client_id =
-    "ws-" <> int.to_string(erlang_unique_integer())
+  let client_id = "ws-" <> int.to_string(erlang_unique_integer())
 
   let #(initial_model, _) = collab.init()
 
@@ -109,9 +108,7 @@ fn handle_websocket(
         Some(selector),
       )
     },
-    handler: fn(state, msg, conn) {
-      handle_ws_message(state, msg, conn)
-    },
+    handler: fn(state, msg, conn) { handle_ws_message(state, msg, conn) },
     on_close: fn(state) {
       process.send(state.shared, shared.ClientDisconnect(state.id))
     },
@@ -141,10 +138,7 @@ fn handle_ws_message(
             }
             _ -> {
               // Forward all other events to shared actor
-              process.send(
-                state.shared,
-                shared.ClientEvent(state.id, event),
-              )
+              process.send(state.shared, shared.ClientEvent(state.id, event))
               mist.continue(state)
             }
           }

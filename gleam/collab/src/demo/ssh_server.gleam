@@ -16,13 +16,13 @@
 ////   Starts SSH on port 2222 and HTTP+WS on port 8080
 //// Then: plushie --json --exec "ssh -p 2222 -s plushie localhost"
 
+import demo/shared.{type SharedMsg}
+import demo/static_server
+import demo/websocket_server
 import gleam/erlang/process.{type Subject}
 import gleam/http/request
 import gleam/io
 import mist
-import demo/shared.{type SharedMsg}
-import demo/static_server
-import demo/websocket_server
 
 /// Start both the SSH daemon and the WebSocket server, sharing state.
 pub fn main() {

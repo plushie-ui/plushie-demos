@@ -1,5 +1,5 @@
-use plushie_core::iced;
-use plushie_core::prelude::*;
+use plushie_ext::iced;
+use plushie_ext::prelude::*;
 
 pub struct SparklineExtension;
 

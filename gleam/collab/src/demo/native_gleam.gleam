@@ -6,8 +6,8 @@
 ////
 //// Run: ./bin/native_gleam.sh
 
-import plushie
 import demo/collab
+import plushie
 
 pub fn main() {
   let assert Ok(rt) = plushie.start(collab.app(), plushie.default_start_opts())

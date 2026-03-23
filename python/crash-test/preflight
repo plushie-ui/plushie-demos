@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# preflight -- mirrors CI checks for the crash-test project.
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+echo "==> ruff format --check"
+ruff format --check src tests
+
+echo "==> ruff check"
+ruff check src tests
+
+echo "==> pyright"
+pyright src
+
+echo "==> pytest"
+pytest -v
+
+echo "==> all checks passed"

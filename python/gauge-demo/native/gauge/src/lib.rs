@@ -1,4 +1,4 @@
-use plushie_core::prelude::*;
+use plushie_ext::prelude::*;
 use serde_json::json;
 
 pub struct GaugeExtension;
