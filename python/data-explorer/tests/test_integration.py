@@ -13,7 +13,7 @@ from typing import Any
 
 from data_explorer.app import DataExplorer, Model
 from plushie.commands import Command
-from plushie.events import AsyncResult, EffectResult, Sort, Submit
+from plushie.events import AsyncResult, Click, EffectResult, Sort, Submit
 from plushie.tree import find, normalize
 
 SAMPLE_CSV = str(Path(__file__).resolve().parent.parent / "sample_data" / "sample.csv")
@@ -102,6 +102,62 @@ class TestSearchAfterLoad:
         assert isinstance(new_model, Model)
         assert new_model.total_rows < 50
         assert new_model.total_rows > 0
+
+
+class TestPaginationAfterLoad:
+    """Pagination with real data."""
+
+    def _load(self) -> tuple[DataExplorer, Model]:
+        app = DataExplorer()
+        model = app.init()
+        event = EffectResult(
+            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+        )
+        model, cmd = _unwrap(app.update(model, event))
+        loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
+        model, _ = _unwrap(
+            app.update(model, AsyncResult(tag="file_loaded", value=loaded))
+        )
+        return app, model
+
+    def test_paginate_small_page(self) -> None:
+        app, model = self._load()
+        # Use a small page size to force multiple pages
+        model = replace(model, page_size=10)
+        new_model, _ = _unwrap(app.update(model, Click(id="next_page")))
+        assert new_model.page == 2
+        assert len(new_model.rows) == 10
+
+    def test_last_page_has_no_next(self) -> None:
+        app, model = self._load()
+        # page_size=100, total_rows=50: already on last page
+        result = app.update(model, Click(id="next_page"))
+        assert result is model
+
+
+class TestSearchEdgeCases:
+    """Edge cases for search."""
+
+    def _load(self) -> tuple[DataExplorer, Model]:
+        app = DataExplorer()
+        model = app.init()
+        event = EffectResult(
+            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+        )
+        model, cmd = _unwrap(app.update(model, event))
+        loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
+        model, _ = _unwrap(
+            app.update(model, AsyncResult(tag="file_loaded", value=loaded))
+        )
+        return app, model
+
+    def test_no_results_search(self) -> None:
+        app, model = self._load()
+        model = replace(model, search_query="zzzznonexistent")
+        new_model = app.update(model, Submit(id="search", value="zzzznonexistent"))
+        assert isinstance(new_model, Model)
+        assert new_model.total_rows == 0
+        assert len(new_model.rows) == 0
 
 
 class TestSortAfterLoad:

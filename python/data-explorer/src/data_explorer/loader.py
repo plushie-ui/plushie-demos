@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +30,8 @@ def _format_value(val: Any) -> str:
     if pd.isna(val):
         return ""
     if isinstance(val, float):
+        if not math.isfinite(val):
+            return str(val)
         if val == int(val):
             return str(int(val))
         return f"{val:.2f}"

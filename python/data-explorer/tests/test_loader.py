@@ -65,6 +65,29 @@ class TestDfToRows:
         rows = df_to_rows(df, 0, 10)
         assert rows[1]["val"] == ""
 
+    def test_empty_dataframe(self) -> None:
+        df = pd.DataFrame({"a": pd.Series([], dtype="int64")})
+        rows = df_to_rows(df, 0, 10)
+        assert rows == ()
+
+    def test_single_row(self) -> None:
+        df = pd.DataFrame({"x": [42]})
+        rows = df_to_rows(df, 0, 10)
+        assert len(rows) == 1
+        assert rows[0]["x"] == "42"
+
+    def test_single_column(self) -> None:
+        df = pd.DataFrame({"only": ["a", "b", "c"]})
+        rows = df_to_rows(df, 0, 10)
+        assert len(rows) == 3
+        assert all("only" in r for r in rows)
+
+    def test_inf_formatting(self) -> None:
+        df = pd.DataFrame({"val": [float("inf"), float("-inf")]})
+        rows = df_to_rows(df, 0, 10)
+        assert rows[0]["val"] == "inf"
+        assert rows[1]["val"] == "-inf"
+
 
 class TestDfColumns:
     """df_columns returns a tuple of column names."""

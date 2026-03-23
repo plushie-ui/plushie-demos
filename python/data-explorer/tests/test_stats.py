@@ -56,6 +56,26 @@ class TestColumnStatsNulls:
         assert stats["count"] == 2
 
 
+class TestColumnStatsAllNulls:
+    """column_stats handles columns with all null values."""
+
+    def test_numeric_all_nulls(self) -> None:
+        df = pd.DataFrame({"val": pd.Series([None, None, None], dtype="float64")})
+        stats = column_stats(df, "val")
+        assert stats["count"] == 0
+        assert stats["nulls"] == 3
+        assert stats["mean"] is None
+        assert stats["min"] is None
+        assert stats["max"] is None
+
+    def test_string_all_nulls(self) -> None:
+        df = pd.DataFrame({"name": pd.Series([None, None], dtype="object")})
+        stats = column_stats(df, "name")
+        assert stats["count"] == 0
+        assert stats["nulls"] == 2
+        assert stats["top_freq"] == 0
+
+
 class TestSummaryStats:
     """summary_stats returns overall DataFrame summary."""
 

@@ -150,26 +150,7 @@ class DataExplorer(plushie.App[Model]):
         """Filter the DataFrame and update visible rows."""
         if self._df is None:
             return model
-        df = self._df
-        if model.search_query.strip():
-            mask = pd.Series(False, index=df.index)
-            for col in df.select_dtypes(include=["object", "string"]).columns:
-                mask |= (
-                    df[col]
-                    .astype(str)
-                    .str.contains(model.search_query, case=False, na=False)
-                )
-            df = df[mask]
-        if model.sort_column and model.sort_column in df.columns:
-            df = df.sort_values(model.sort_column, ascending=model.sort_ascending)  # type: ignore[call-overload]
-        rows = df_to_rows(df, 0, model.page_size)  # type: ignore[arg-type]
-        return replace(
-            model,
-            rows=rows,
-            total_rows=len(df),
-            page=1,
-            status=f"{len(df):,} rows x {len(self._df.columns)} columns",
-        )
+        return self._refresh_page(replace(model, page=1))
 
     def _apply_sort(self, model: Model, column: str) -> Model:
         """Sort and re-paginate."""
