@@ -1,15 +1,14 @@
 /**
  * Unit tests for the data explorer app.
  *
- * Tests the Data.query pipeline, view rendering, and update logic
- * directly. No binary needed.
+ * Tests the Data.query pipeline, view rendering, and dataset
+ * integrity. No binary needed.
  */
 
 import { describe, expect, test } from "vitest"
 import { Data } from "plushie"
 import { COUNTRIES } from "../src/countries.js"
 import { init, view } from "../src/app.js"
-import type { Model } from "../src/app.js"
 
 // -- Data.query pipeline ----------------------------------------------------
 
