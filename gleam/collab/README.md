@@ -11,13 +11,13 @@ Gleam 1.0+, Erlang/OTP 26+.
 ```bash
 cd gleam/collab
 gleam deps download
+gleam run -m plushie/download
 ```
 
-For browser modes, also fetch the WASM renderer:
-
-```bash
-gleam run -m plushie/download -- --wasm --wasm-dir static
-```
+The download command reads `gleam.toml` and fetches both the native
+binary and the WASM browser renderer (configured in the `[plushie]`
+section). WASM files are placed in `static/` where the HTTP server
+serves them.
 
 ## Quick start
 
@@ -139,7 +139,7 @@ Do not expose these ports to the internet.
 `gleam run -m plushie/download` or `gleam run -m plushie/build`.
 
 **Browser shows "plushie-wasm not found"** -- Run
-`gleam run -m plushie/download -- --wasm --wasm-dir static`.
+`gleam run -m plushie/download` (config downloads WASM to `static/`).
 
 **SSH connection refused** -- Start the server first
 (`./bin/ssh_server.sh`).

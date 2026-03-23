@@ -11,5 +11,9 @@ gleam_http = ">= 4.0.0 and < 5.0.0"
 mist = ">= 4.0.0 and < 7.0.0"
 plushie_gleam = { path = "../../../plushie-gleam" }
 
+[plushie]
+artifacts = ["bin", "wasm"]
+wasm_dir = "static"
+
 [dev-dependencies]
 gleeunit = ">= 1.0.0 and < 2.0.0"
