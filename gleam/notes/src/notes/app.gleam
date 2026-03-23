@@ -13,7 +13,8 @@ import gleam/int
 import gleam/list
 import gleam/string
 import notes/model.{
-  type Model, type Note, type View, EditorView, ListView, Model, Note,
+  type Model, type Note, type View, EditorView, ListView, Model, Note, find_note,
+  push_undo, replace_note,
 }
 import notes/msg.{
   type Msg, CreateNote, DeleteNote, EditBody, EditTitle, FocusSearch, NoOp,
@@ -21,8 +22,6 @@ import notes/msg.{
 }
 import plushie/app
 import plushie/command.{type Command}
-
-// event module not directly used -- on_event in msg.gleam handles the mapping
 import plushie/node.{type Node}
 import plushie/prop/alignment
 import plushie/prop/color
@@ -84,7 +83,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Command(Msg)) {
         [prev, ..rest], Ok(current) -> #(
           Model(
             ..model,
-            notes: model.replace_note(model.notes, prev),
+            notes: replace_note(model.notes, prev),
             undo_stack: rest,
             redo_stack: [current, ..model.redo_stack],
           ),
@@ -98,7 +97,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Command(Msg)) {
         [next, ..rest], Ok(current) -> #(
           Model(
             ..model,
-            notes: model.replace_note(model.notes, next),
+            notes: replace_note(model.notes, next),
             redo_stack: rest,
             undo_stack: [current, ..model.undo_stack],
           ),
@@ -212,7 +211,7 @@ fn empty_state(message: String) -> Node {
 // -- Editor view -------------------------------------------------------------
 
 fn editor_view(model: Model, note_id: String) -> Node {
-  case model.find_note(model.notes, note_id) {
+  case find_note(model.notes, note_id) {
     Ok(note) -> {
       let has_undo = !list.is_empty(model.undo_stack)
       let has_redo = !list.is_empty(model.redo_stack)
@@ -302,7 +301,7 @@ pub fn filter_notes(notes: List(Note), search: String) -> List(Note) {
 /// Get the note currently being edited, if in editor view.
 fn current_note(model: Model) -> Result(Note, Nil) {
   case model.current_view {
-    EditorView(id) -> model.find_note(model.notes, id)
+    EditorView(id) -> find_note(model.notes, id)
     ListView -> Error(Nil)
   }
 }
@@ -315,9 +314,9 @@ fn edit_note(
   case current_note(model) {
     Ok(note) -> {
       let updated = transform(note)
-      let model = model.push_undo(model, note)
+      let model = push_undo(model, note)
       #(
-        Model(..model, notes: model.replace_note(model.notes, updated)),
+        Model(..model, notes: replace_note(model.notes, updated)),
         command.none(),
       )
     }
