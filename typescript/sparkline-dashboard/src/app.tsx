@@ -86,13 +86,13 @@ export default app<Model>({
 
   view: (state) => (
     <Window id="main" title="Sparkline Dashboard">
-      <Column id="root" padding={20} spacing={16}>
+      <Column padding={20} spacing={16}>
         <Text id="title" size={24}>
           System Monitor
         </Text>
 
         {/* Controls */}
-        <Row id="controls" spacing={12}>
+        <Row spacing={12}>
           <Button id="toggle_running" onClick={toggleRunning}>
             {state.running ? "Pause" : "Resume"}
           </Button>
@@ -128,9 +128,9 @@ function sparklineCard(
   const lastValue = data.length > 0 ? data[data.length - 1]! : null
 
   return (
-    <Container id={`${id}_card`} padding={12}>
-      <Column id={`${id}_content`} spacing={4}>
-        <Row id={`${id}_header`} spacing={8}>
+    <Container padding={12}>
+      <Column spacing={4}>
+        <Row spacing={8}>
           <Text id={`${id}_label`} size={14} color="#666666">
             {label}
           </Text>

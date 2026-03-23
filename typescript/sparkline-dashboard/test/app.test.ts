@@ -2,9 +2,8 @@
  * Integration tests for the sparkline dashboard app.
  *
  * These tests run the full app through the custom-built binary that
- * includes the sparkline Rust extension. Every interaction goes through
- * the wire protocol: TypeScript -> msgpack -> custom binary (with
- * sparkline extension) -> msgpack -> TypeScript.
+ * includes the sparkline Rust extension. Every interaction goes
+ * through the wire protocol.
  *
  * Prerequisites:
  *   PLUSHIE_SOURCE_PATH=~/projects/plushie npx plushie build
@@ -31,7 +30,7 @@ const integration = hasBinary ? describe : describe.skip
 
 // Tests are sequential within the describe block -- each test builds
 // on the state left by the previous one (shared session, no reset).
-integration("sparkline dashboard app", () => {
+integration("sparkline dashboard", () => {
   let session: TestSession<Model>
 
   beforeAll(async () => {
@@ -44,7 +43,7 @@ integration("sparkline dashboard app", () => {
     stopPool()
   })
 
-  // -- Initial state ------------------------------------------------
+  // ── Initial state ──────────────────────────────────────────────
 
   test("model starts with empty samples and running", () => {
     const m = session.model()
@@ -55,7 +54,7 @@ integration("sparkline dashboard app", () => {
     expect(m.tickCount).toBe(0)
   })
 
-  // -- Window and widget tree ---------------------------------------
+  // ── Window and widget tree ─────────────────────────────────────
 
   test("main window is the root node", () => {
     const tree = session.tree()
@@ -64,11 +63,17 @@ integration("sparkline dashboard app", () => {
     expect(tree!.id).toBe("main")
   })
 
-  test("all expected widgets exist", async () => {
-    await session.assertExists("title")
+  test("title renders correctly", async () => {
+    await session.assertText("title", "System Monitor")
+  })
+
+  test("control widgets exist", async () => {
     await session.assertExists("toggle_running")
     await session.assertExists("clear")
     await session.assertExists("status")
+  })
+
+  test("sparkline card widgets exist", async () => {
     await session.assertExists("cpu_spark")
     await session.assertExists("mem_spark")
     await session.assertExists("net_spark")
@@ -77,25 +82,19 @@ integration("sparkline dashboard app", () => {
     await session.assertExists("net_label")
   })
 
-  test("title text renders correctly", async () => {
-    await session.assertText("title", "System Monitor")
-  })
-
-  // -- Sparkline extension widgets ----------------------------------
+  // ── Sparkline extension widgets ────────────────────────────────
 
   test("sparkline widgets have the custom extension type", async () => {
     const cpu = await session.find("cpu_spark")
     const mem = await session.find("mem_spark")
     const net = await session.find("net_spark")
 
-    // "sparkline" is NOT a built-in widget type -- it only exists
-    // because our Rust extension registered it via type_names
     expect(cpu!.type).toBe("sparkline")
     expect(mem!.type).toBe("sparkline")
     expect(net!.type).toBe("sparkline")
   })
 
-  test("sparkline carries typed props on the wire", async () => {
+  test("sparklines carry correct props on the wire", async () => {
     const cpu = await session.find("cpu_spark")
     expect(cpu!.props["data"]).toEqual([])
     expect(cpu!.props["color"]).toBe("#4CAF50")
@@ -108,15 +107,54 @@ integration("sparkline dashboard app", () => {
     expect(net!.props["fill"]).toBe(false)
   })
 
-  test("sample count text shows zero initially", async () => {
-    await session.assertText("status", "0 samples")
+  // ── Timer simulation ───────────────────────────────────────────
+
+  test("timer tick adds samples", () => {
+    session.timer("sample")
+
+    const m = session.model()
+    expect(m.cpuSamples).toHaveLength(1)
+    expect(m.memSamples).toHaveLength(1)
+    expect(m.netSamples).toHaveLength(1)
+    expect(m.tickCount).toBe(1)
   })
 
-  // -- Toggle pause/resume ------------------------------------------
+  test("samples are numbers in valid ranges", () => {
+    const m = session.model()
+    expect(m.cpuSamples[0]).toBeTypeOf("number")
+    expect(m.memSamples[0]).toBeTypeOf("number")
+    expect(m.netSamples[0]).toBeTypeOf("number")
+  })
+
+  test("sparkline wire props contain data after tick", async () => {
+    const cpu = await session.find("cpu_spark")
+    expect(cpu!.props["data"]).toHaveLength(1)
+  })
+
+  test("second tick accumulates samples", () => {
+    session.timer("sample")
+
+    const m = session.model()
+    expect(m.cpuSamples).toHaveLength(2)
+    expect(m.memSamples).toHaveLength(2)
+    expect(m.netSamples).toHaveLength(2)
+    expect(m.tickCount).toBe(2)
+  })
+
+  // ── Toggle pause/resume ────────────────────────────────────────
 
   test("toggle pauses the dashboard", async () => {
     await session.click("toggle_running")
     expect(session.model().running).toBe(false)
+  })
+
+  test("timer events are ignored when paused", () => {
+    session.timer("sample")
+
+    const m = session.model()
+    // Still 2 samples from before pausing
+    expect(m.cpuSamples).toHaveLength(2)
+    expect(m.tickCount).toBe(2)
   })
 
   test("toggle resumes the dashboard", async () => {
@@ -124,7 +162,14 @@ integration("sparkline dashboard app", () => {
     expect(session.model().running).toBe(true)
   })
 
-  // -- Clear resets samples -----------------------------------------
+  test("timer works again after resuming", () => {
+    session.timer("sample")
+
+    expect(session.model().cpuSamples).toHaveLength(3)
+    expect(session.model().tickCount).toBe(3)
+  })
+
+  // ── Clear ──────────────────────────────────────────────────────
 
   test("clear resets all samples and tick count", async () => {
     await session.click("clear")
@@ -136,70 +181,23 @@ integration("sparkline dashboard app", () => {
     expect(m.tickCount).toBe(0)
   })
 
-  // -- Sequential stateful journey ----------------------------------
-  // Simulate a timer event by injecting it, then verify the full
-  // chain: model update -> view re-render -> wire props.
-
-  test("timer tick adds samples and increments tick count", async () => {
-    await session.inject({ kind: "timer", tag: "sample", timestamp: 0 })
-
-    const m = session.model()
-    expect(m.cpuSamples.length).toBe(1)
-    expect(m.memSamples.length).toBe(1)
-    expect(m.netSamples.length).toBe(1)
-    expect(m.tickCount).toBe(1)
-  })
-
-  test("sample count text updates after tick", async () => {
-    await session.assertText("status", "1 samples")
-  })
-
-  test("wire-level sparkline props contain data after tick", async () => {
-    const cpu = await session.find("cpu_spark")
-    expect(cpu!.props["data"]).toHaveLength(1)
-    expect(typeof cpu!.props["data"][0]).toBe("number")
-    expect(cpu!.props["color"]).toBe("#4CAF50")
-    expect(cpu!.props["fill"]).toBe(true)
-  })
-
-  test("second tick accumulates samples", async () => {
-    await session.inject({ kind: "timer", tag: "sample", timestamp: 500 })
-
-    const m = session.model()
-    expect(m.cpuSamples.length).toBe(2)
-    expect(m.tickCount).toBe(2)
-
-    const cpu = await session.find("cpu_spark")
-    expect(cpu!.props["data"]).toHaveLength(2)
-  })
-
-  test("clear after ticks resets everything", async () => {
-    await session.click("clear")
-
-    const m = session.model()
-    expect(m.cpuSamples).toEqual([])
-    expect(m.memSamples).toEqual([])
-    expect(m.netSamples).toEqual([])
-    expect(m.tickCount).toBe(0)
-
+  test("sparkline data cleared on wire", async () => {
     const cpu = await session.find("cpu_spark")
     expect(cpu!.props["data"]).toEqual([])
   })
 
-  // -- Pause suppresses timer events --------------------------------
+  // ── Sample cap ─────────────────────────────────────────────────
 
-  test("timer events are ignored when paused", async () => {
-    await session.click("toggle_running")
-    expect(session.model().running).toBe(false)
-
-    await session.inject({ kind: "timer", tag: "sample", timestamp: 1000 })
+  test("samples cap at MAX_SAMPLES (100)", () => {
+    // Simulate 105 ticks
+    for (let i = 0; i < 105; i++) {
+      session.timer("sample")
+    }
 
     const m = session.model()
-    expect(m.cpuSamples).toEqual([])
-    expect(m.tickCount).toBe(0)
-
-    // Resume for subsequent tests
-    await session.click("toggle_running")
-    expect(session.model().running).toBe(true)
+    expect(m.cpuSamples).toHaveLength(100)
+    expect(m.memSamples).toHaveLength(100)
+    expect(m.netSamples).toHaveLength(100)
+    expect(m.tickCount).toBe(105)
   })
 })

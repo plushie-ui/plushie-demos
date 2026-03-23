@@ -1,22 +1,21 @@
 /**
  * Unit tests for the sparkline extension definition.
  *
- * These verify the TypeScript side of the extension: widget builders
- * produce correct UINode shapes, config matches what
- * plushie.extensions.json expects.
+ * Mirrors the Ruby SparklineExtensionTest -- verifies the TypeScript
+ * side produces correct widget nodes and config metadata.
  *
- * No binary needed -- pure TypeScript logic.
+ * No binary needed.
  */
 
 import { describe, expect, test } from "vitest"
 import { Sparkline, sparklineConfig } from "../src/sparkline.js"
 
 describe("sparklineConfig", () => {
-  test("has the correct type name", () => {
+  test("type is sparkline", () => {
     expect(sparklineConfig.type).toBe("sparkline")
   })
 
-  test("declares all expected props", () => {
+  test("declares all props with correct types", () => {
     expect(sparklineConfig.props).toEqual({
       data: { list: "number" },
       color: "color",
@@ -32,31 +31,57 @@ describe("sparklineConfig", () => {
       "sparkline::SparklineExtension::new()",
     )
   })
+
+  test("has no declared commands (render-only extension)", () => {
+    expect(sparklineConfig.commands).toBeUndefined()
+  })
+
+  test("has no declared events", () => {
+    expect(sparklineConfig.events).toBeUndefined()
+  })
+
+  test("is not a container", () => {
+    expect(sparklineConfig.container).toBeUndefined()
+  })
 })
 
 describe("Sparkline widget builder", () => {
-  test("produces a UINode with correct type", () => {
-    const node = Sparkline("my-spark", { data: [1, 2, 3] })
+  test("produces node with correct type and id", () => {
+    const node = Sparkline("s1", { data: [1, 2, 3] })
     expect(node.type).toBe("sparkline")
-    expect(node.id).toBe("my-spark")
+    expect(node.id).toBe("s1")
   })
 
-  test("passes props to the node", () => {
+  test("passes data array as prop", () => {
+    const node = Sparkline("s1", { data: [10, 20, 30] })
+    expect(node.props["data"]).toEqual([10, 20, 30])
+  })
+
+  test("passes all declared props", () => {
     const node = Sparkline("s1", {
-      data: [10, 20, 30],
-      color: "#ff0000",
+      data: [1, 2],
+      color: "#FF0000",
       stroke_width: 3.0,
       fill: true,
       height: 80.0,
     })
-    expect(node.props["data"]).toEqual([10, 20, 30])
-    expect(node.props["color"]).toBe("#ff0000")
+    expect(node.props["color"]).toBe("#FF0000")
     expect(node.props["stroke_width"]).toBe(3.0)
     expect(node.props["fill"]).toBe(true)
     expect(node.props["height"]).toBe(80.0)
   })
 
-  test("auto-generates an ID when given empty string", () => {
+  test("omits undefined props from wire output", () => {
+    const node = Sparkline("s1", {})
+    expect(Object.keys(node.props)).toEqual([])
+  })
+
+  test("empty data array passes through", () => {
+    const node = Sparkline("s1", { data: [] })
+    expect(node.props["data"]).toEqual([])
+  })
+
+  test("auto-generates ID for empty string", () => {
     const node = Sparkline("", { data: [] })
     expect(node.id).toMatch(/^auto:/)
   })
