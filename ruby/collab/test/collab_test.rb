@@ -149,6 +149,78 @@ class CollabTest < Minitest::Test
     assert_nil status_node
   end
 
+  # -- view: tree structure --
+
+  def test_view_contains_all_expected_widgets
+    model = @app.init({}).with(status: "1 connected")
+    tree = @app.view(model)
+
+    %w[header status name counter_row dec count inc theme notes].each do |id|
+      assert find_node(tree, id), "expected widget ##{id} in tree"
+    end
+  end
+
+  def test_view_counter_row_has_buttons_and_count
+    model = @app.init({}).with(count: 7)
+    tree = @app.view(model)
+
+    row = find_node(tree, "counter_row")
+    child_ids = row.children.map(&:id)
+    assert_equal %w[dec count inc], child_ids
+  end
+
+  def test_view_notes_input_shows_value
+    model = @app.init({}).with(notes: "Remember the milk")
+    tree = @app.view(model)
+    notes_node = find_node(tree, "notes")
+    assert_equal "Remember the milk", notes_node.props[:value]
+  end
+
+  def test_view_themer_uses_dark_theme
+    model = @app.init({}).with(dark_mode: true)
+    tree = @app.view(model)
+    themer_node = find_node(tree, "theme_root")
+    assert_equal "dark", themer_node.props[:theme]
+  end
+
+  def test_view_themer_uses_light_theme
+    model = @app.init({})
+    tree = @app.view(model)
+    themer_node = find_node(tree, "theme_root")
+    assert_equal "light", themer_node.props[:theme]
+  end
+
+  def test_view_header_text
+    model = @app.init({})
+    tree = @app.view(model)
+    header = find_node(tree, "header")
+    assert_equal "Plushie Demo", header.props[:content]
+  end
+
+  # -- update: field isolation --
+
+  def test_name_input_preserves_count
+    model = @app.init({}).with(count: 10)
+    event = Plushie::Event::Widget.new(
+      type: :input, id: "name", scope: [],
+      data: {"value" => "Bob"}
+    )
+    updated = @app.update(model, event)
+    assert_equal "Bob", updated.name
+    assert_equal 10, updated.count
+  end
+
+  def test_toggle_preserves_notes
+    model = @app.init({}).with(notes: "Keep this")
+    event = Plushie::Event::Widget.new(
+      type: :toggle, id: "theme", scope: [],
+      data: {"value" => true}
+    )
+    updated = @app.update(model, event)
+    assert_equal true, updated.dark_mode
+    assert_equal "Keep this", updated.notes
+  end
+
   # -- settings --
 
   def test_settings_event_rate

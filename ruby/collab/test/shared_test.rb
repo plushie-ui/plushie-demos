@@ -78,6 +78,72 @@ class SharedTest < Minitest::Test
     # Should not raise
   end
 
+  def test_all_disconnected_shows_zero
+    @shared.connect("c1") { |_| }
+    @shared.disconnect("c1")
+    model = @shared.connect("c2") { |_| }
+    # c2 is the only one connected now
+    assert_equal "1 connected", model.status
+  end
+
+  def test_multiple_increments_are_atomic
+    @shared.connect("c1") { |_| }
+    inc = Plushie::Event::Widget.new(
+      type: :click, id: "inc", scope: [], data: nil
+    )
+    5.times { @shared.event("c1", inc) }
+    model = @shared.connect("c2") { |_| }
+    assert_equal 5, model.count
+  end
+
+  def test_concurrent_events_from_multiple_threads
+    @shared.connect("c1") { |_| }
+    @shared.connect("c2") { |_| }
+
+    inc = Plushie::Event::Widget.new(
+      type: :click, id: "inc", scope: [], data: nil
+    )
+
+    threads = 10.times.map do |i|
+      Thread.new { 10.times { @shared.event("c#{(i % 2) + 1}", inc) } }
+    end
+    threads.each(&:join)
+
+    model = @shared.connect("c3") { |_| }
+    assert_equal 100, model.count
+  end
+
+  def test_event_does_not_overwrite_status_with_app_update
+    # The app's update doesn't touch status, but verify the broker
+    # preserves it even when the app returns a model without changes
+    @shared.connect("c1") { |_| }
+    @shared.connect("c2") { |_| }
+
+    name_event = Plushie::Event::Widget.new(
+      type: :input, id: "name", scope: [],
+      data: {"value" => "Alice"}
+    )
+    @shared.event("c1", name_event)
+
+    model = @shared.connect("c3") { |_| }
+    assert_equal "Alice", model.name
+    assert_equal "3 connected", model.status
+  end
+
+  def test_disconnect_then_reconnect
+    @shared.connect("c1") { |_| }
+    inc = Plushie::Event::Widget.new(
+      type: :click, id: "inc", scope: [], data: nil
+    )
+    @shared.event("c1", inc)
+    @shared.disconnect("c1")
+
+    # Reconnect -- should see the accumulated state
+    model = @shared.connect("c1") { |_| }
+    assert_equal 1, model.count
+    assert_equal "1 connected", model.status
+  end
+
   def test_broken_callback_does_not_block_others
     good_received = []
     @shared.connect("bad") { |_| raise "boom" }
