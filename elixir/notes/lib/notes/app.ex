@@ -355,8 +355,9 @@ defmodule Notes.App do
         text_input("search", model.search, placeholder: "Search notes...", width: :fill)
         pick_list("sort", @sort_options, sort_label(model.sort_by))
       end,
+      Plushie.Widget.Rule.new("list_divider"),
       scrollable "note_list", height: :fill, width: :fill do
-        column padding: {4, 16}, spacing: 6, width: :fill do
+        column padding: {8, 16}, spacing: 4, width: :fill do
           if notes == [] do
             text("empty", "No notes found.", size: 14, color: "#888888")
           end

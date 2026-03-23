@@ -31,7 +31,7 @@ defmodule Notes.Widgets.NoteCard do
     # "select_<note_id>" by replacing the prefix.
     note_id = String.replace_prefix(id, "note_", "")
 
-    row id: "#{id}_row", padding: 12, spacing: 12, width: :fill do
+    row id: "#{id}_row", padding: {6, 12}, spacing: 12, width: :fill, align_y: :center do
       checkbox("select_#{note_id}", props.selected)
 
       column id: "#{id}_body", spacing: 4, width: :fill do
