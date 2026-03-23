@@ -1,0 +1,11 @@
+name = "sparkline_dashboard"
+version = "0.1.0"
+target = "erlang"
+
+[dependencies]
+gleam_stdlib = ">= 0.44.0 and < 2.0.0"
+gleam_erlang = ">= 0.29.0 and < 2.0.0"
+plushie_gleam = { path = "../../../plushie-gleam" }
+
+[dev-dependencies]
+gleeunit = ">= 1.0.0 and < 2.0.0"

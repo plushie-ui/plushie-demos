@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#
+# Build a custom plushie binary with the sparkline extension compiled in.
+#
+# Requires:
+#   - Rust toolchain (rustc >= 1.92)
+#   - PLUSHIE_SOURCE_PATH or ~/projects/plushie-renderer
+#   - plushie-iced checkout as sibling of plushie-renderer
+#
+# Usage:
+#   bin/build            # debug build
+#   bin/build --release  # optimised build
+
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+RELEASE=""
+PROFILE="debug"
+for arg in "$@"; do
+  case "$arg" in
+    --release) RELEASE="--release"; PROFILE="release" ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
+# Locate plushie-renderer source
+RENDERER="${PLUSHIE_SOURCE_PATH:-$HOME/projects/plushie-renderer}"
+if [[ ! -d "$RENDERER/plushie-ext" ]]; then
+  echo "error: plushie-renderer not found at $RENDERER" >&2
+  echo "Set PLUSHIE_SOURCE_PATH to the plushie-renderer checkout." >&2
+  exit 1
+fi
+
+# Derive plushie-iced path (sibling of renderer)
+ICED="$(cd "$RENDERER/.." && pwd)/plushie-iced"
+if [[ ! -d "$ICED" ]]; then
+  echo "error: plushie-iced not found at $ICED" >&2
+  exit 1
+fi
+
+BUILD_DIR="_build/custom_binary"
+mkdir -p "$BUILD_DIR/src"
+
+# Absolute paths for Cargo.toml
+SPARKLINE_CRATE="$(pwd)/native/sparkline"
+
+# Generate Cargo.toml
+cat > "$BUILD_DIR/Cargo.toml" <<EOF
+[package]
+name = "sparkline-dashboard-plushie"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plushie-ext = { path = "$RENDERER/plushie-ext" }
+plushie-renderer = { path = "$RENDERER/plushie-renderer" }
+sparkline = { path = "$SPARKLINE_CRATE" }
+iced = { version = "0.7", package = "plushie-iced", features = ["tokio", "advanced", "sysinfo", "a11y"] }
+env_logger = "0.11"
+log = "0.4"
+
+[patch.crates-io]
+plushie-iced = { path = "$ICED" }
+plushie-iced-widget = { path = "$ICED/widget" }
+plushie-iced-core = { path = "$ICED/core" }
+plushie-iced-runtime = { path = "$ICED/runtime" }
+plushie-iced-winit = { path = "$ICED/winit" }
+plushie-iced-renderer = { path = "$ICED/renderer" }
+plushie-iced-graphics = { path = "$ICED/graphics" }
+plushie-iced-wgpu = { path = "$ICED/wgpu" }
+plushie-iced-tiny-skia = { path = "$ICED/tiny_skia" }
+plushie-iced-futures = { path = "$ICED/futures" }
+plushie-iced-highlighter = { path = "$ICED/highlighter" }
+EOF
+
+# Generate main.rs
+cat > "$BUILD_DIR/src/main.rs" <<'EOF'
+fn main() -> iced::Result {
+    env_logger::init();
+    let builder = plushie_ext::app::PlushieAppBuilder::new()
+        .extension(sparkline::SparklineExtension::new());
+    plushie_renderer::run(builder)
+}
+EOF
+
+echo "Building custom binary ($PROFILE)..."
+cargo build $RELEASE --manifest-path "$BUILD_DIR/Cargo.toml"
+
+# Install
+BINARY="$BUILD_DIR/target/$PROFILE/sparkline-dashboard-plushie"
+INSTALL_DIR="build/plushie/bin"
+mkdir -p "$INSTALL_DIR"
+cp "$BINARY" "$INSTALL_DIR/sparkline-dashboard-plushie"
+
+echo "Installed: $INSTALL_DIR/sparkline-dashboard-plushie"

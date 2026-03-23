@@ -30,3 +30,20 @@ Start the SSH+WebSocket server, open two browser tabs and an SSH
 client, and watch changes propagate across all of them.
 
 See [collab/README.md](collab/README.md) for full instructions.
+
+### [gauge-demo](gauge-demo/)
+
+Temperature monitor with a native Rust gauge extension widget.
+Demonstrates extension commands (`set_value`, `animate_to`), the
+optimistic update pattern, and the custom binary build workflow.
+
+See [gauge-demo/README.md](gauge-demo/README.md) for setup instructions.
+
+### [sparkline-dashboard](sparkline-dashboard/)
+
+Live system monitor with three sparkline charts for CPU, memory, and
+network metrics. Demonstrates a render-only Rust canvas extension,
+timer subscriptions, and simulated live data.
+
+See [sparkline-dashboard/README.md](sparkline-dashboard/README.md) for
+setup instructions.

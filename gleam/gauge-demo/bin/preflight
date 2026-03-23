@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+echo "--- format --check"
+gleam format --check
+
+echo "--- build"
+gleam build
+
+echo "--- test"
+gleam test
+
+echo "--- all clear"
