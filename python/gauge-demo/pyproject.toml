@@ -1,0 +1,68 @@
+[project]
+name = "gauge-demo"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["plushie>=0.1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "pyright"]
+
+[tool.plushie]
+source_path = "../../../plushie"
+
+[[tool.plushie.extensions]]
+kind = "gauge"
+rust_crate = "native/gauge"
+rust_constructor = "gauge::GaugeExtension::new()"
+
+[[tool.plushie.extensions.props]]
+name = "value"
+prop_type = "number"
+
+[[tool.plushie.extensions.props]]
+name = "min"
+prop_type = "number"
+
+[[tool.plushie.extensions.props]]
+name = "max"
+prop_type = "number"
+
+[[tool.plushie.extensions.props]]
+name = "color"
+prop_type = "color"
+
+[[tool.plushie.extensions.props]]
+name = "label"
+prop_type = "string"
+
+[[tool.plushie.extensions.props]]
+name = "width"
+prop_type = "length"
+
+[[tool.plushie.extensions.props]]
+name = "height"
+prop_type = "length"
+
+[[tool.plushie.extensions.commands]]
+name = "set_value"
+
+[[tool.plushie.extensions.commands.params]]
+name = "value"
+param_type = "number"
+
+[[tool.plushie.extensions.commands]]
+name = "animate_to"
+
+[[tool.plushie.extensions.commands.params]]
+name = "value"
+param_type = "number"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.pyright]
+pythonVersion = "3.12"

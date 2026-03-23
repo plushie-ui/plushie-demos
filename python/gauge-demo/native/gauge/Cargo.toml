@@ -1,0 +1,9 @@
+[package]
+name = "gauge"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plushie-core = { path = "../../../../../plushie/plushie-core" }
+iced = { version = "0.7", package = "plushie-iced", features = ["advanced"] }
+serde_json = "1"
