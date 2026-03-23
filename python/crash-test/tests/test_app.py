@@ -97,12 +97,11 @@ class TestViewCrash:
 
 
 class TestReturnNone:
-    """The return-none button exercises the no-return path."""
+    """The return-none button returns None (unexpected value)."""
 
-    def test_returns_model(self, app: CrashTestApp, model: Model) -> None:
-        # The handler has a fallback return, so it returns the model
+    def test_returns_none(self, app: CrashTestApp, model: Model) -> None:
         result = app.update(model, Click(id="return-none", scope=()))
-        assert isinstance(result, Model)
+        assert result is None
 
 
 class TestUnknownEvent:

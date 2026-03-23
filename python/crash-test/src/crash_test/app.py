@@ -17,7 +17,7 @@ from plushie.events import Click
 from crash_test.crasher import crasher, trigger_panic
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Model:
     """Application state."""
 
@@ -50,10 +50,9 @@ class CrashTestApp(App[Model]):
             case Click(id="crash-view"):
                 return replace(model, view_crash_armed=True)
 
-            # -- Python crash: return None (no catch-all) --
+            # -- Python crash: return None (unexpected value) --
             case Click(id="return-none"):
-                # Intentionally no return -- falls through to None
-                pass
+                return None  # type: ignore[return-value]
 
             # -- Rust crash: panic on render --
             case Click(id="panic-render"):
@@ -65,8 +64,6 @@ class CrashTestApp(App[Model]):
 
             case _:
                 return model
-        # return-none path: implicit None return
-        return model  # type: ignore[return-value]
 
     def view(self, model: Model) -> dict:
         if model.view_crash_armed:
