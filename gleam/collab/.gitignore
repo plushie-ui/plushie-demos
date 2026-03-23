@@ -1,3 +1,7 @@
+/_build/
 /build/
-/dist/
-/node_modules/
+/bin/plushie
+
+# Downloaded WASM artifacts (fetched by gleam run -m plushie/download)
+/static/plushie_renderer_wasm*
+/static/package.json
