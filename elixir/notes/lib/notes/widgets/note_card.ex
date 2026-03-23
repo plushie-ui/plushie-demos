@@ -34,7 +34,7 @@ defmodule Notes.Widgets.NoteCard do
     row id: "#{id}_row", padding: 12, spacing: 12, width: :fill do
       checkbox("select_#{note_id}", props.selected)
 
-      column spacing: 4, width: :fill do
+      column id: "#{id}_body", spacing: 4, width: :fill do
         button(id, props.title)
 
         if props.preview != "" do

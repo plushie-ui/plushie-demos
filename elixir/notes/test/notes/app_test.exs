@@ -35,8 +35,10 @@ defmodule Notes.AppTest do
   defp current_route(model), do: Plushie.Route.current(model.route)
   defp route_params(model), do: Plushie.Route.params(model.route)
 
-  # Note card buttons are scoped: scrollable "note_list" > row "note_<id>_row"
-  defp card_btn(note_id), do: "note_list/note_#{note_id}_row/note_#{note_id}"
+  # Note card buttons are scoped:
+  #   scrollable "note_list" > row "note_<id>_row" > column "note_<id>_body"
+  defp card_btn(note_id),
+    do: "note_list/note_#{note_id}_row/note_#{note_id}_body/note_#{note_id}"
 
   # Navigate to editor for the given note
   defp open_editor(model, note_id) do
