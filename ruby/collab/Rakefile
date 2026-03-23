@@ -5,6 +5,13 @@ require "minitest/test_task"
 Minitest::TestTask.create
 
 require "standard/rake"
+
+require "plushie"
+Plushie.configure do |config|
+  config.artifacts = [:bin, :wasm]
+  config.wasm_dir = "public"
+end
+
 require "plushie/rake"
 
 task default: %i[test standard]
