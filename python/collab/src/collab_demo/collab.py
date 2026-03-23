@@ -35,9 +35,11 @@ class Collab(App[Model]):
     """Collaborative scratchpad app."""
 
     def init(self) -> Model:
+        """Return the initial model with empty fields and running state."""
         return Model()
 
     def update(self, model: Model, event: Any) -> Model:
+        """Handle widget events: counter, text inputs, theme toggle."""
         match event:
             case Click(id="inc"):
                 return replace(model, count=model.count + 1)
@@ -53,6 +55,7 @@ class Collab(App[Model]):
                 return model
 
     def view(self, model: Model) -> dict[str, Any]:
+        """Render the scratchpad UI: header, inputs, counter, theme toggle."""
         theme = "dark" if model.dark_mode else "light"
 
         return ui.window(
@@ -93,4 +96,5 @@ class Collab(App[Model]):
         )
 
     def settings(self) -> dict[str, Any]:
+        """Rate-limit coalescable events to 30/sec."""
         return {"default_event_rate": 30}
