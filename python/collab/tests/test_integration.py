@@ -132,7 +132,6 @@ class TestStandalone:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.renderer
 class TestAppFixture:
     """Integration tests using AppFixture (requires plushie renderer)."""
 
