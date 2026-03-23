@@ -9,7 +9,7 @@ hiddenimports += collect_submodules('pandas')
 a = Analysis(
     ['src/data_explorer/__main__.py'],
     pathex=[],
-    binaries=[('/home/devuser/.local/share/plushie/bin/plushie-linux-x86_64', '.')],
+    binaries=[('/home/devuser/.local/share/plushie/bin/plushie-renderer-linux-x86_64', '.')],
     datas=[('sample_data', 'sample_data')],
     hiddenimports=hiddenimports,
     hookspath=[],
