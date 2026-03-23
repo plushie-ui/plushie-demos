@@ -18,6 +18,10 @@ impl WidgetExtension for SparklineExtension {
         "sparkline"
     }
 
+    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+        Box::new(SparklineExtension::new())
+    }
+
     fn render<'a>(
         &self,
         node: &'a TreeNode,
