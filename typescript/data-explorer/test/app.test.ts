@@ -1,14 +1,18 @@
 /**
- * Unit tests for the data explorer app.
+ * Data explorer tests.
  *
- * Tests the Data.query pipeline, view rendering, and dataset
- * integrity. No binary needed.
+ * Pure function tests verify the Data.query pipeline and dataset
+ * integrity. Integration tests run the full app through the real
+ * plushie-renderer binary in headless mode.
  */
 
-import { describe, expect, test } from "vitest"
+import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { Data } from "plushie"
+import { createSession, stopPool } from "plushie/testing"
+import type { TestSession } from "plushie/testing"
 import { COUNTRIES } from "../src/countries.js"
-import { init, view } from "../src/app.js"
+import app from "../src/app.js"
+import type { Model } from "../src/app.js"
 
 // -- Data.query pipeline ----------------------------------------------------
 
@@ -106,54 +110,6 @@ describe("Data.query", () => {
   })
 })
 
-// -- Init -------------------------------------------------------------------
-
-describe("init", () => {
-  test("returns model with all countries loaded", () => {
-    const m = init()
-    expect(m.records).toHaveLength(50)
-    expect(m.search).toBe("")
-    expect(m.sortField).toBe("name")
-    expect(m.sortDir).toBe("asc")
-    expect(m.page).toBe(1)
-    expect(m.pageSize).toBe(10)
-  })
-})
-
-// -- View -------------------------------------------------------------------
-
-describe("view", () => {
-  test("returns a window node", () => {
-    const tree = view(init())
-    expect(tree.type).toBe("window")
-    expect(tree.id).toBe("main")
-  })
-
-  test("table widget exists", () => {
-    const tree = view(init())
-    const table = findNode(tree, "data")
-    expect(table).not.toBeNull()
-    expect(table!.type).toBe("table")
-  })
-
-  test("search input exists", () => {
-    const tree = view(init())
-    const search = findNode(tree, "search")
-    expect(search).not.toBeNull()
-  })
-
-  test("pagination buttons exist", () => {
-    const tree = view(init())
-    expect(findNode(tree, "prev")).not.toBeNull()
-    expect(findNode(tree, "next")).not.toBeNull()
-  })
-
-  test("page size picker exists", () => {
-    const tree = view(init())
-    expect(findNode(tree, "page_size")).not.toBeNull()
-  })
-})
-
 // -- Countries dataset ------------------------------------------------------
 
 describe("countries dataset", () => {
@@ -180,22 +136,94 @@ describe("countries dataset", () => {
   })
 })
 
-// -- Helpers ----------------------------------------------------------------
+// -- Integration tests (headless renderer) ----------------------------------
 
-function findNode(
-  node: { id: string; children?: readonly unknown[] },
-  id: string,
-): { id: string; type: string; props: Record<string, unknown> } | null {
-  const n = node as {
-    id: string
-    type: string
-    props: Record<string, unknown>
-    children?: readonly unknown[]
-  }
-  if (n.id === id) return n
-  for (const child of n.children ?? []) {
-    const found = findNode(child as typeof node, id)
-    if (found) return found
-  }
-  return null
-}
+describe("data explorer (integration)", () => {
+  let session: TestSession<Model>
+
+  beforeAll(async () => {
+    session = await createSession(app, { mode: "headless" })
+    await session.start()
+  })
+
+  afterAll(() => {
+    session?.stop()
+    stopPool()
+  })
+
+  // ── Initial state ──────────────────────────────────────────────
+
+  test("model starts with correct defaults", () => {
+    const m = session.model()
+    expect(m.records).toHaveLength(50)
+    expect(m.search).toBe("")
+    expect(m.sortField).toBe("name")
+    expect(m.sortDir).toBe("asc")
+    expect(m.page).toBe(1)
+    expect(m.pageSize).toBe(10)
+  })
+
+  // ── Window and widget tree ─────────────────────────────────────
+
+  test("window tree exists", () => {
+    const tree = session.tree()
+    expect(tree).not.toBeNull()
+    expect(tree!.type).toBe("window")
+    expect(tree!.id).toBe("main")
+  })
+
+  test("table widget exists on the wire", async () => {
+    const table = await session.find("data")
+    expect(table).not.toBeNull()
+    expect(table!.type).toBe("table")
+  })
+
+  test("all expected widgets exist", async () => {
+    await session.assertExists("search")
+    await session.assertExists("prev")
+    await session.assertExists("next")
+    await session.assertExists("page_size")
+    await session.assertExists("status")
+  })
+
+  // ── Search ─────────────────────────────────────────────────────
+
+  test("typing in search updates model.search", async () => {
+    await session.typeText("search", "united")
+    expect(session.model().search).toBe("united")
+    // Search resets to page 1
+    expect(session.model().page).toBe(1)
+  })
+
+  test("search filters visible status text", async () => {
+    // "united" matches 2 countries
+    await session.assertText("status", "2 of 50 records")
+  })
+
+  test("clearing search restores full dataset", async () => {
+    await session.click("clear_search")
+    expect(session.model().search).toBe("")
+    await session.assertText("status", "50 records")
+  })
+
+  // ── Pagination ─────────────────────────────────────────────────
+
+  test("clicking next advances page", async () => {
+    await session.click("next")
+    expect(session.model().page).toBe(2)
+  })
+
+  test("page info reflects current page", async () => {
+    await session.assertText("page_info", "Page 2 of 5")
+  })
+
+  test("clicking prev goes back", async () => {
+    await session.click("prev")
+    expect(session.model().page).toBe(1)
+  })
+
+  test("prev does not go below page 1", async () => {
+    await session.click("prev")
+    expect(session.model().page).toBe(1)
+  })
+})

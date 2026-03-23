@@ -1,120 +1,110 @@
 /**
- * Unit tests for the collab app logic.
+ * Collab app tests.
  *
- * Tests the pure init/update/view functions directly -- no binary,
- * no server, no transport.
+ * Integration tests run through the real plushie-renderer binary in
+ * headless mode. Pure function tests cover init/update/view logic.
  */
 
-import { describe, expect, test } from "vitest"
-import { init, update, view } from "../src/collab.js"
+import { afterAll, beforeAll, describe, expect, test } from "vitest"
+import { createSession, stopPool } from "plushie/testing"
+import type { TestSession } from "plushie/testing"
+import collabApp, { init, update, view } from "../src/collab.js"
 import type { Model } from "../src/collab.js"
 
-describe("init", () => {
-  test("returns default model", () => {
-    const m = init()
+// -- Integration tests (real binary) -----------------------------------------
+
+// Tests are sequential -- shared session, no reset between tests.
+describe("collab (integration)", () => {
+  let session: TestSession<Model>
+
+  beforeAll(async () => {
+    session = await createSession(collabApp, { mode: "headless" })
+    await session.start()
+  })
+
+  afterAll(() => {
+    session?.stop()
+    stopPool()
+  })
+
+  test("model starts with correct defaults", () => {
+    const m = session.model()
     expect(m.name).toBe("")
     expect(m.notes).toBe("")
     expect(m.count).toBe(0)
     expect(m.darkMode).toBe(false)
     expect(m.status).toBe("")
   })
+
+  test("window tree exists", () => {
+    const tree = session.tree()
+    expect(tree).not.toBeNull()
+    expect(tree!.type).toBe("window")
+    expect(tree!.id).toBe("main")
+  })
+
+  test("all key widgets exist", async () => {
+    await session.assertExists("title")
+    await session.assertExists("name")
+    await session.assertExists("inc")
+    await session.assertExists("dec")
+    await session.assertExists("count")
+    await session.assertExists("theme")
+    await session.assertExists("notes")
+  })
+
+  test("status widget absent when status is empty", async () => {
+    await session.assertNotExists("status")
+  })
+
+  test("clicking inc increments count", async () => {
+    await session.click("inc")
+    expect(session.model().count).toBe(1)
+
+    await session.click("inc")
+    expect(session.model().count).toBe(2)
+  })
+
+  test("clicking dec decrements count", async () => {
+    await session.click("dec")
+    expect(session.model().count).toBe(1)
+  })
+
+  test("typing in name input updates model", async () => {
+    await session.typeText("name", "Alice")
+    expect(session.model().name).toBe("Alice")
+  })
+
+  test("toggling dark mode checkbox", async () => {
+    await session.toggle("theme")
+    expect(session.model().darkMode).toBe(true)
+
+    await session.toggle("theme")
+    expect(session.model().darkMode).toBe(false)
+  })
+
+  test("title text renders", async () => {
+    await session.assertText("title", "Collaborative Scratchpad")
+  })
 })
 
-describe("update", () => {
-  test("click inc increments count", () => {
-    const m = update(init(), "click", "inc")
-    expect(m.count).toBe(1)
-  })
+// -- Pure function tests (no binary) ------------------------------------------
 
-  test("click dec decrements count", () => {
-    const m = update(init(), "click", "dec")
-    expect(m.count).toBe(-1)
-  })
-
-  test("input name updates name", () => {
-    const m = update(init(), "input", "name", "Alice")
-    expect(m.name).toBe("Alice")
-  })
-
-  test("input notes updates notes", () => {
-    const m = update(init(), "input", "notes", "Hello world")
-    expect(m.notes).toBe("Hello world")
-  })
-
-  test("toggle theme flips darkMode", () => {
-    const m1 = update(init(), "toggle", "theme")
-    expect(m1.darkMode).toBe(true)
-
-    const m2 = update(m1, "toggle", "theme")
-    expect(m2.darkMode).toBe(false)
-  })
-
-  test("unknown event returns model unchanged", () => {
+describe("update (pure)", () => {
+  test("click inc", () => expect(update(init(), "click", "inc").count).toBe(1))
+  test("click dec", () => expect(update(init(), "click", "dec").count).toBe(-1))
+  test("input name", () => expect(update(init(), "input", "name", "Alice").name).toBe("Alice"))
+  test("toggle theme", () => expect(update(init(), "toggle", "theme").darkMode).toBe(true))
+  test("unknown event unchanged", () => {
     const m = init()
-    const updated = update(m, "click", "nonexistent")
-    expect(updated).toBe(m)
-  })
-
-  test("unknown family returns model unchanged", () => {
-    const m = init()
-    const updated = update(m, "scroll", "something")
-    expect(updated).toBe(m)
+    expect(update(m, "click", "nonexistent")).toBe(m)
   })
 })
 
-describe("view", () => {
+describe("view (pure)", () => {
   test("returns a window node", () => {
     const tree = view(init())
     expect(tree.type).toBe("window")
     expect(tree.id).toBe("main")
   })
-
-  test("counter text exists", () => {
-    const m: Model = { ...init(), count: 42 }
-    const tree = view(m)
-    const count = findNode(tree, "count")
-    expect(count).not.toBeNull()
-    expect(count!.type).toBe("text")
-  })
-
-  test("name input has model value", () => {
-    const m: Model = { ...init(), name: "Alice" }
-    const tree = view(m)
-    const name = findNode(tree, "name")
-    expect(name).not.toBeNull()
-    expect(name!.props["value"]).toBe("Alice")
-  })
-
-  test("status text exists when set", () => {
-    const m: Model = { ...init(), status: "3 connected" }
-    const tree = view(m)
-    const status = findNode(tree, "status")
-    expect(status).not.toBeNull()
-    expect(status!.type).toBe("text")
-  })
-
-  test("status text absent when empty", () => {
-    const tree = view(init())
-    const status = findNode(tree, "status")
-    expect(status).toBeNull()
-  })
 })
-
-// Recursive node search
-function findNode(
-  node: { id: string; children?: readonly unknown[] },
-  id: string,
-): { id: string; type: string; props: Record<string, unknown> } | null {
-  const n = node as {
-    id: string
-    type: string
-    props: Record<string, unknown>
-    children?: readonly unknown[]
-  }
-  if (n.id === id) return n
-  for (const child of n.children ?? []) {
-    const found = findNode(child as typeof node, id)
-    if (found) return found
-  }
-  return null
-}
