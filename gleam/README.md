@@ -47,3 +47,11 @@ timer subscriptions, and simulated live data.
 
 See [sparkline-dashboard/README.md](sparkline-dashboard/README.md) for
 setup instructions.
+
+### [notes](notes/)
+
+Note-taking app with pure Gleam widgets and no Rust extension. Demonstrates
+custom message types (`app.application`), multi-view routing, undo/redo,
+search filtering, and keyboard shortcuts with a context-aware hint bar.
+
+See [notes/README.md](notes/README.md) for setup instructions.
