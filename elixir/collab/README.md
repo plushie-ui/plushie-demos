@@ -11,11 +11,12 @@ Elixir 1.15+ and Erlang/OTP 26+.
 ```bash
 cd elixir/collab
 mix deps.get
-mix plushie.download --bin --wasm --wasm-dir priv/static
+mix plushie.download
 ```
 
-This fetches the native renderer binary and the WASM browser
-renderer. A `bin/plushie` symlink is created for convenience.
+This fetches both the native renderer binary and the WASM browser
+renderer (configured in `config/config.exs`). WASM files are placed
+in `priv/static/` where the HTTP server serves them.
 
 ## Quick start
 
@@ -113,6 +114,6 @@ Do not expose these ports to the internet.
 **"plushie binary not found"** -- Run `mix plushie.download` first.
 
 **Browser shows "plushie-wasm not found"** -- Run
-`mix plushie.download --wasm --wasm-dir priv/static`.
+`mix plushie.download` (config downloads WASM to `priv/static/`).
 
 **SSH connection refused** -- Start the server first (`mix collab.server`).
