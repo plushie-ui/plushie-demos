@@ -18,11 +18,12 @@ pnpm install
 
 ### Browser modes (1 and 2)
 
-The browser modes require plushie-wasm files in `static/`. Download
-them or copy from a local build:
+The browser modes require the WASM renderer in `static/`. The project
+config (`plushie.extensions.json`) declares `artifacts: ["bin", "wasm"]`
+and `wasm_dir: "static"`, so a single download fetches everything:
 
 ```bash
-npx plushie download --wasm --wasm-dir static/
+npx plushie download
 ```
 
 Or from a local Rust build:

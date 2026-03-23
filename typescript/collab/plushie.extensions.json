@@ -1,0 +1,4 @@
+{
+  "artifacts": ["bin", "wasm"],
+  "wasm_dir": "static"
+}
