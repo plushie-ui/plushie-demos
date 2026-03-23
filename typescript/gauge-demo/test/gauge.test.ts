@@ -1,7 +1,7 @@
 /**
- * Unit tests for the gauge extension definition.
+ * Unit tests for the gauge extension definition and builder functions.
  *
- * These verify the TypeScript side of the extension: widget builders
+ * Verifies the TypeScript side of the extension: widget builders
  * produce correct UINode shapes, command constructors return proper
  * Command objects, and the config matches what plushie.extensions.json
  * expects.
@@ -12,12 +12,14 @@
 import { describe, expect, test } from "vitest"
 import { Gauge, GaugeCmds, gaugeConfig } from "../src/gauge.js"
 
+// -- Config -----------------------------------------------------------------
+
 describe("gaugeConfig", () => {
-  test("has the correct type name", () => {
+  test("type is gauge", () => {
     expect(gaugeConfig.type).toBe("gauge")
   })
 
-  test("declares all expected props", () => {
+  test("declares all props with correct types", () => {
     expect(gaugeConfig.props).toEqual({
       value: "number",
       min: "number",
@@ -29,8 +31,8 @@ describe("gaugeConfig", () => {
     })
   })
 
-  test("has no declared events (optimistic update pattern)", () => {
-    expect(gaugeConfig.events).toBeUndefined()
+  test("declares value_changed event", () => {
+    expect(gaugeConfig.events).toEqual(["value_changed"])
   })
 
   test("declares extension commands", () => {
@@ -43,14 +45,16 @@ describe("gaugeConfig", () => {
   })
 })
 
+// -- Widget builder ---------------------------------------------------------
+
 describe("Gauge widget builder", () => {
-  test("produces a UINode with correct type", () => {
+  test("produces node with correct type and id", () => {
     const node = Gauge("my-gauge", { value: 50 })
     expect(node.type).toBe("gauge")
     expect(node.id).toBe("my-gauge")
   })
 
-  test("passes props to the node", () => {
+  test("passes all props to the node", () => {
     const node = Gauge("g1", {
       value: 72,
       min: 0,
@@ -65,7 +69,7 @@ describe("Gauge widget builder", () => {
     expect(node.props["label"]).toBe("72%")
   })
 
-  test("auto-generates an ID when given empty string", () => {
+  test("auto-generates ID for empty string", () => {
     const node = Gauge("", { value: 0 })
     expect(node.id).toMatch(/^auto:/)
   })
@@ -79,7 +83,26 @@ describe("Gauge widget builder", () => {
     const node = Gauge("g1", { value: 0 })
     expect(Object.isFrozen(node)).toBe(true)
   })
+
+  test("node has only structural keys", () => {
+    const node = Gauge("g1", { value: 0 })
+    expect(Object.keys(node).sort()).toEqual(
+      ["children", "id", "props", "type"].sort(),
+    )
+  })
+
+  test("strips handler props from wire output", () => {
+    const node = Gauge("g1", {
+      value: 50,
+      onValueChanged: () => ({}),
+    })
+    // Handler registered internally, not on the wire
+    expect(node.props["onValueChanged"]).toBeUndefined()
+    expect(node.props["value"]).toBe(50)
+  })
 })
+
+// -- Commands ---------------------------------------------------------------
 
 describe("GaugeCmds", () => {
   test("set_value produces an extension_command", () => {
@@ -111,5 +134,19 @@ describe("GaugeCmds", () => {
   test("commands are frozen", () => {
     const cmd = GaugeCmds.animate_to("g1", { value: 50 })
     expect(Object.isFrozen(cmd)).toBe(true)
+  })
+
+  test("payload has standard three-key shape", () => {
+    const cmd = GaugeCmds.set_value("g1", { value: 0 })
+    expect(Object.keys(cmd.payload).sort()).toEqual(
+      ["node_id", "op", "payload"].sort(),
+    )
+  })
+
+  test("different node IDs target correctly", () => {
+    const a = GaugeCmds.set_value("gauge-a", { value: 10 })
+    const b = GaugeCmds.set_value("gauge-b", { value: 20 })
+    expect(a.payload["node_id"]).toBe("gauge-a")
+    expect(b.payload["node_id"]).toBe("gauge-b")
   })
 })

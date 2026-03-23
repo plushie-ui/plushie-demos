@@ -1,14 +1,18 @@
 # Gauge Demo
 
-A native Rust widget extension for plushie, built with the TypeScript
-SDK. Demonstrates:
+Temperature monitor built with plushie and a native Rust gauge widget
+extension. The gauge is rendered by Rust/iced; the app logic lives in
+TypeScript.
+
+Demonstrates:
 
 - Defining a custom widget type (`gauge`) in TypeScript
 - Implementing `WidgetExtension` in Rust
 - Extension commands (`set_value`, `animate_to`)
+- Extension events (`value_changed` from Rust back to TypeScript)
 - Extension config via `settings.extensionConfig`
 - Building a custom binary with `npx plushie build`
-- Testing extension widgets through the real binary
+- Testing extension widgets through pure functions and the real binary
 
 ## Setup
 
@@ -18,11 +22,11 @@ pnpm install
 
 ## Build the extension binary
 
-Requires the [plushie source](https://github.com/plushie-ui/plushie)
+Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
 checked out locally:
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
 npx plushie build
 ```
 
@@ -38,15 +42,19 @@ npx plushie run src/app.tsx
 
 ## Test
 
-Unit tests (extension definition, commands) run without the binary.
-Integration tests require the extension binary built above.
-
 ```sh
-pnpm test            # run all tests
+pnpm test
 ```
 
-Integration tests are skipped automatically if the binary hasn't
-been built.
+Unit tests cover the extension definition, builder functions, app
+update logic (with simulated extension events), view tree structure,
+gauge wire props, settings, and a stateful journey test. No renderer
+binary needed -- these are pure TypeScript tests.
+
+Integration tests (when the extension binary is built) verify the
+wire-level interaction: gauge type on the wire, prop encoding, button
+clicks, and slider interactions. They are skipped automatically if
+the binary hasn't been built.
 
 ## Project structure
 
@@ -56,7 +64,7 @@ src/
   app.tsx               # App using the gauge widget
 test/
   gauge.test.ts         # Unit tests: config, builder, commands
-  app.test.ts           # Integration tests: full app via custom binary
+  app.test.ts           # App tests: helpers, update, view, settings, journey
 native/
   gauge/
     Cargo.toml          # Rust crate for the extension
@@ -73,16 +81,23 @@ widgets. The TypeScript side defines the widget's props, events, and
 commands via `defineExtensionWidget`. The Rust side implements
 `WidgetExtension` to render the gauge and handle commands.
 
-The `npx plushie build` command reads `plushie.extensions.json`,
-generates a Cargo workspace with a custom `main.rs` that registers
-the gauge extension, and builds the binary.
+`npx plushie build` reads `plushie.extensions.json`, generates a
+Cargo workspace with a custom `main.rs` that registers the gauge
+extension, and builds the binary.
 
-At runtime, the TypeScript SDK communicates with this custom binary.
-The gauge widget appears in the view tree like any built-in widget.
-Extension commands bypass the tree diff/patch cycle and go directly
-to the Rust extension's `handle_command` method.
+### Extension command wire path
 
-The app uses **optimistic updates** -- button handlers update the
-model immediately for responsive UI and send extension commands to
-sync the Rust-side state. This is the recommended pattern for
-extension commands that originate from the TypeScript side.
+When the user clicks "High (90)", the following happens:
+
+1. TypeScript `setHigh()` handler returns `[{...model, targetTemp: 90}, GaugeCmds.set_value("temp", {value: 90})]`
+2. The runtime encodes the `extension_command` as msgpack
+3. The custom binary receives the command
+4. Rust `GaugeExtension::handle_command` processes `set_value`
+5. The gauge re-renders with the new value
+6. Rust emits `value_changed` event back over the wire
+7. TypeScript `update()` receives the event and updates `model.temperature`
+
+The `temperature` field only changes when the Rust extension confirms
+the change via a `value_changed` event. Button handlers set `targetTemp`
+immediately for responsive UI; the extension is the source of truth
+for the actual displayed value.

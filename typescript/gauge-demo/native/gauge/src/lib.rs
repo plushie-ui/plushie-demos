@@ -1,10 +1,11 @@
 //! Gauge widget extension for plushie.
 //!
 //! Renders a temperature gauge using iced container and text widgets.
-//! Demonstrates the WidgetExtension trait with prepare, render,
-//! handle_command, and new_instance.
+//! Demonstrates the full WidgetExtension lifecycle: prepare, render,
+//! handle_command (with event echo), and new_instance.
 
 use plushie_ext::prelude::*;
+use serde_json::json;
 
 /// Gauge extension -- renders a numeric gauge with label and color.
 pub struct GaugeExtension;
@@ -16,19 +17,17 @@ impl GaugeExtension {
 }
 
 /// Per-node state stored in ExtensionCaches.
-///
-/// Tracks Rust-side value for commands that need to update state
-/// without a full tree round-trip (e.g. animate_to).
 struct GaugeState {
-    /// The value as set by the most recent set_value command.
-    /// Overwritten by prepare() each frame from the TS-side prop,
-    /// so this only matters between command receipt and next render.
-    rust_value: f32,
+    current_value: f32,
+    target_value: f32,
 }
 
 impl GaugeState {
     fn new(value: f32) -> Self {
-        Self { rust_value: value }
+        Self {
+            current_value: value,
+            target_value: value,
+        }
     }
 }
 
@@ -57,8 +56,7 @@ impl WidgetExtension for GaugeExtension {
             &node.id,
             || GaugeState::new(value),
         );
-        // Sync from TypeScript props each frame
-        state.rust_value = value;
+        state.current_value = value;
     }
 
     fn render<'a>(
@@ -107,13 +105,19 @@ impl WidgetExtension for GaugeExtension {
                     if let Some(v) =
                         payload.get("value").and_then(|v| v.as_f64())
                     {
-                        state.rust_value = v as f32;
+                        state.current_value = v as f32;
+
+                        // Echo the confirmed value back to TypeScript.
+                        // The TypeScript update() handles this event and
+                        // sets model.temperature -- the extension is the
+                        // source of truth for the actual value.
+                        return vec![OutgoingEvent::extension_event(
+                            "value_changed".to_string(),
+                            node_id.to_string(),
+                            Some(json!({"value": v})),
+                        )];
                     }
                 }
-                // No event emitted -- the TypeScript side updates the
-                // model optimistically in the handler that sent this
-                // command. Echoing an event back would create a race
-                // condition with rapid button clicks.
                 vec![]
             }
             "animate_to" => {
@@ -123,7 +127,7 @@ impl WidgetExtension for GaugeExtension {
                     if let Some(v) =
                         payload.get("value").and_then(|v| v.as_f64())
                     {
-                        state.rust_value = v as f32;
+                        state.target_value = v as f32;
                     }
                 }
                 vec![]
