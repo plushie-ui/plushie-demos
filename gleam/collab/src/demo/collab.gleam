@@ -36,7 +36,7 @@ pub type Model {
   )
 }
 
-pub fn init() {
+pub fn init() -> #(Model, command.Command(Event)) {
   #(
     Model(name: "", notes: "", count: 0, dark_mode: False, status: ""),
     command.none(),
@@ -45,18 +45,28 @@ pub fn init() {
 
 /// Route widget events to model updates. Each branch matches a
 /// widget by its ID and extracts the relevant event data.
-pub fn update(model: Model, event: Event) {
+pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
   case event {
-    WidgetClick(id: "inc", ..) ->
-      #(Model(..model, count: model.count + 1), command.none())
-    WidgetClick(id: "dec", ..) ->
-      #(Model(..model, count: model.count - 1), command.none())
-    WidgetInput(id: "name", value:, ..) ->
-      #(Model(..model, name: value), command.none())
-    WidgetInput(id: "notes", value:, ..) ->
-      #(Model(..model, notes: value), command.none())
-    WidgetToggle(id: "theme", value: checked, ..) ->
-      #(Model(..model, dark_mode: checked), command.none())
+    WidgetClick(id: "inc", ..) -> #(
+      Model(..model, count: model.count + 1),
+      command.none(),
+    )
+    WidgetClick(id: "dec", ..) -> #(
+      Model(..model, count: model.count - 1),
+      command.none(),
+    )
+    WidgetInput(id: "name", value:, ..) -> #(
+      Model(..model, name: value),
+      command.none(),
+    )
+    WidgetInput(id: "notes", value:, ..) -> #(
+      Model(..model, notes: value),
+      command.none(),
+    )
+    WidgetToggle(id: "theme", value: checked, ..) -> #(
+      Model(..model, dark_mode: checked),
+      command.none(),
+    )
     _ -> #(model, command.none())
   }
 }
@@ -87,10 +97,7 @@ pub fn view(model: Model) -> Node {
           ]),
           ui.row("counter-row", [ui.spacing(8)], [
             ui.button_("dec", "-"),
-            ui.text_(
-              "count",
-              "Count: " <> int.to_string(model.count),
-            ),
+            ui.text_("count", "Count: " <> int.to_string(model.count)),
             ui.button_("inc", "+"),
           ]),
           ui.checkbox("theme", "Dark mode", model.dark_mode, []),
@@ -110,9 +117,6 @@ pub fn view(model: Model) -> Node {
 pub fn app() {
   app.simple(init, update, view)
   |> app.with_settings(fn() {
-    app.Settings(
-      ..app.default_settings(),
-      default_event_rate: option.Some(30),
-    )
+    app.Settings(..app.default_settings(), default_event_rate: option.Some(30))
   })
 }
