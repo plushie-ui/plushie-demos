@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Run the collab app over stdio transport.
+#
+# Used with plushie --exec for remote rendering:
+#   plushie --exec "bundle exec ruby bin/connect"
+#
+# Or over SSH:
+#   plushie --exec "ssh -T host 'cd collab && bundle exec ruby bin/connect'"
+
+require_relative "../lib/collab"
+
+Plushie.run(Collab, transport: :stdio)

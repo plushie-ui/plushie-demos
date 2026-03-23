@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Start the collaborative server (HTTP + WebSocket on port 8080).
+#
+# Usage:
+#   bundle exec ruby bin/server
+#   bundle exec ruby bin/server 4000    # custom port
+
+require_relative "../lib/collab/server"
+
+port = (ARGV[0] || 8080).to_i
+server = Collab::Server.new(port: port)
+server.start

@@ -1,0 +1,5 @@
+/_build/
+/doc/
+/tmp/
+*.gem
+Gemfile.lock
