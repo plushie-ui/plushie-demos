@@ -302,8 +302,8 @@ class Notes
       show_back: true,
       actions: actions).build
 
-    column("editor_body", padding: 16, spacing: 12, height: "fill") do
-      text_input("editor_title", note.title, placeholder: "Title")
+    column("editor_body", padding: 16, spacing: 12, width: "fill", height: "fill") do
+      text_input("editor_title", note.title, placeholder: "Title", width: "fill")
       text_input("editor_content", note.content,
         placeholder: "Start writing...", width: "fill", height: "fill")
     end
