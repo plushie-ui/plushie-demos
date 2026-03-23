@@ -13,7 +13,6 @@ export const gaugeConfig: ExtensionWidgetConfig = {
     width: "length",
     height: "length",
   },
-  events: ["value_changed"],
   commands: ["set_value", "animate_to"],
   rustCrate: "native/gauge",
   rustConstructor: "gauge::GaugeExtension::new()",

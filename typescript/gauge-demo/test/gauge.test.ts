@@ -29,8 +29,8 @@ describe("gaugeConfig", () => {
     })
   })
 
-  test("declares extension events", () => {
-    expect(gaugeConfig.events).toEqual(["value_changed"])
+  test("has no declared events (optimistic update pattern)", () => {
+    expect(gaugeConfig.events).toBeUndefined()
   })
 
   test("declares extension commands", () => {
@@ -68,16 +68,6 @@ describe("Gauge widget builder", () => {
   test("auto-generates an ID when given empty string", () => {
     const node = Gauge("", { value: 0 })
     expect(node.id).toMatch(/^auto:/)
-  })
-
-  test("strips handler props from wire props", () => {
-    const node = Gauge("g1", {
-      value: 50,
-      onValueChanged: () => ({}),
-    })
-    // Handler props are registered internally, not sent on the wire
-    expect(node.props["onValueChanged"]).toBeUndefined()
-    expect(node.props["value"]).toBe(50)
   })
 
   test("is a leaf widget (no children)", () => {
