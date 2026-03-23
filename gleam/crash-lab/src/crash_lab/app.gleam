@@ -1,18 +1,20 @@
 //// Crash lab app -- error resilience demonstration.
 ////
-//// Shows how plushie isolates failures at different levels:
+//// Shows how plushie isolates failures at three different levels:
 ////
-//// - **Extension panic**: Rust extension panics in `handle_command`.
-////   Caught by `catch_unwind`, widget replaced with error placeholder.
-////   App continues running. Recovery: remove the widget from the tree
-////   and re-add it (toggle button).
+//// - **Extension panic**: Rust `handle_command` panics. Caught by
+////   `catch_unwind`, widget replaced with error placeholder. Recovery:
+////   remove the widget from the tree and re-add it.
 ////
-//// - **Gleam panic**: `update` hits `panic`. Runtime process crashes.
-////   Supervisor restarts from `init`. Model is lost -- counter
-////   resets to 0. This is the cost of a host-side crash.
+//// - **Update panic**: Gleam `update` hits `panic`. The runtime catches
+////   it via `try_call`, logs the error, preserves the model, and
+////   discards the event. The app continues as if nothing happened.
 ////
-//// The counter proves the model is alive. After an extension panic,
-//// the counter still works. After a Gleam panic, it resets.
+//// - **View panic**: Gleam `view` hits `panic`. The runtime catches it,
+////   keeps the previous rendered tree, and continues. A "Recover" button
+////   in the previous tree clears the flag so the next render succeeds.
+////
+//// The counter proves the model survives all three crash types.
 
 import crash_lab/crashable
 import gleam/int
@@ -34,18 +36,20 @@ pub type Model {
     count: Int,
     /// Whether the crash widget is in the tree.
     widget_alive: Bool,
+    /// When True, the next `view` call will panic.
+    view_broken: Bool,
   )
 }
 
-/// Initial state: counter at zero, widget present.
+/// Initial state: counter at zero, widget present, view healthy.
 pub fn init() -> #(Model, Command(Event)) {
-  #(Model(count: 0, widget_alive: True), command.none())
+  #(Model(count: 0, widget_alive: True, view_broken: False), command.none())
 }
 
 /// Handle UI events.
 ///
-/// The "panic-gleam" handler deliberately crashes the runtime to
-/// demonstrate model loss on host-side failures.
+/// Three deliberately destructive handlers demonstrate different
+/// failure modes. The runtime catches all of them.
 pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
   case event {
     WidgetClick(id: "inc", ..) -> #(
@@ -68,15 +72,42 @@ pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
       command.none(),
     )
 
-    WidgetClick(id: "panic-gleam", ..) ->
-      panic as "intentional Gleam crash in update"
+    // Deliberately panic in update. The runtime catches this via
+    // try_call, preserves the model, and discards the event.
+    WidgetClick(id: "panic-update", ..) ->
+      panic as "intentional panic in update"
+
+    // Set the flag that causes view to panic on next render. The
+    // update succeeds (flag is set), but the subsequent view call
+    // will fail. The runtime preserves the previous tree.
+    WidgetClick(id: "break-view", ..) -> #(
+      Model(..model, view_broken: True),
+      command.none(),
+    )
+
+    // Clear the broken-view flag. This handler runs even while the
+    // view is broken because the previous rendered tree (which
+    // contains the Recover button) is still displayed.
+    WidgetClick(id: "recover-view", ..) -> #(
+      Model(..model, view_broken: False),
+      command.none(),
+    )
 
     _ -> #(model, command.none())
   }
 }
 
 /// Build the UI tree.
+///
+/// If `view_broken` is True, this function panics. The runtime
+/// catches the panic and keeps displaying the previous tree, which
+/// still contains the "Recover" button.
 pub fn view(model: Model) -> Node {
+  case model.view_broken {
+    True -> panic as "intentional panic in view"
+    False -> Nil
+  }
+
   let assert Ok(muted) = color.from_hex("#888888")
   let assert Ok(section_bg) = color.from_hex("#f8f8f8")
 
@@ -97,7 +128,7 @@ pub fn view(model: Model) -> Node {
     ]
   }
 
-  ui.window("main", [ui.title("Crash Lab"), ui.window_size(500.0, 480.0)], [
+  ui.window("main", [ui.title("Crash Lab"), ui.window_size(500.0, 520.0)], [
     ui.column(
       "root",
       [
@@ -140,21 +171,22 @@ pub fn view(model: Model) -> Node {
         widget_nodes,
         // Action buttons
         [
-          ui.row("actions", [ui.spacing(8)], [
+          ui.row("rust-actions", [ui.spacing(8)], [
             ui.button_("panic-extension", "Panic Extension"),
             ui.button_("toggle-widget", toggle_label),
           ]),
-          ui.button_("panic-gleam", "Panic Gleam Update"),
+          ui.row("gleam-actions", [ui.spacing(8)], [
+            ui.button_("panic-update", "Panic Update"),
+            ui.button_("break-view", "Break View"),
+            ui.button_("recover-view", "Recover"),
+          ]),
         ],
         // Explanation
         [
           ui.text(
             "hint",
-            "Panic Extension poisons the widget. Remove and Restore to recover. Panic Gleam crashes the runtime and resets the counter.",
-            [
-              ui.font_size(11.0),
-              ui.text_color(muted),
-            ],
+            "All three crash types are caught. The counter survives every one.",
+            [ui.font_size(11.0), ui.text_color(muted)],
           ),
         ],
       ]),

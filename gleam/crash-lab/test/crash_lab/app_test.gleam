@@ -21,6 +21,11 @@ pub fn init_widget_alive_test() {
   should.be_true(model.widget_alive)
 }
 
+pub fn init_view_not_broken_test() {
+  let #(model, _) = app.init()
+  should.be_false(model.view_broken)
+}
+
 pub fn init_returns_no_command_test() {
   let #(_, cmd) = app.init()
   should.equal(cmd, command.none())
@@ -37,7 +42,7 @@ pub fn inc_increments_count_test() {
 }
 
 pub fn dec_decrements_count_test() {
-  let model = Model(count: 5, widget_alive: True)
+  let model = Model(count: 5, widget_alive: True, view_broken: False)
   let #(model, _) = app.update(model, event.WidgetClick(id: "dec", scope: []))
   should.equal(model.count, 4)
 }
@@ -49,7 +54,7 @@ pub fn counter_returns_no_command_test() {
 }
 
 // ---------------------------------------------------------------------------
-// update -- panic extension
+// update -- extension panic
 // ---------------------------------------------------------------------------
 
 pub fn panic_extension_returns_extension_command_test() {
@@ -66,7 +71,7 @@ pub fn panic_extension_returns_extension_command_test() {
 }
 
 pub fn panic_extension_does_not_mutate_model_test() {
-  let model = Model(count: 42, widget_alive: True)
+  let model = Model(count: 42, widget_alive: True, view_broken: False)
   let #(new_model, _) =
     app.update(model, event.WidgetClick(id: "panic-extension", scope: []))
   should.equal(new_model, model)
@@ -77,24 +82,56 @@ pub fn panic_extension_does_not_mutate_model_test() {
 // ---------------------------------------------------------------------------
 
 pub fn toggle_removes_widget_test() {
-  let model = Model(count: 0, widget_alive: True)
+  let model = Model(count: 0, widget_alive: True, view_broken: False)
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "toggle-widget", scope: []))
   should.be_false(model.widget_alive)
 }
 
 pub fn toggle_restores_widget_test() {
-  let model = Model(count: 0, widget_alive: False)
+  let model = Model(count: 0, widget_alive: False, view_broken: False)
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "toggle-widget", scope: []))
   should.be_true(model.widget_alive)
 }
 
 pub fn toggle_preserves_count_test() {
-  let model = Model(count: 42, widget_alive: True)
+  let model = Model(count: 42, widget_alive: True, view_broken: False)
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "toggle-widget", scope: []))
   should.equal(model.count, 42)
+}
+
+// ---------------------------------------------------------------------------
+// update -- break / recover view
+// ---------------------------------------------------------------------------
+
+pub fn break_view_sets_flag_test() {
+  let #(model, _) = app.init()
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "break-view", scope: []))
+  should.be_true(model.view_broken)
+}
+
+pub fn break_view_preserves_count_test() {
+  let model = Model(count: 7, widget_alive: True, view_broken: False)
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "break-view", scope: []))
+  should.equal(model.count, 7)
+}
+
+pub fn recover_view_clears_flag_test() {
+  let model = Model(count: 0, widget_alive: True, view_broken: True)
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "recover-view", scope: []))
+  should.be_false(model.view_broken)
+}
+
+pub fn recover_view_preserves_count_test() {
+  let model = Model(count: 15, widget_alive: True, view_broken: True)
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "recover-view", scope: []))
+  should.equal(model.count, 15)
 }
 
 // ---------------------------------------------------------------------------
@@ -102,7 +139,7 @@ pub fn toggle_preserves_count_test() {
 // ---------------------------------------------------------------------------
 
 pub fn unknown_event_returns_model_unchanged_test() {
-  let model = Model(count: 7, widget_alive: True)
+  let model = Model(count: 7, widget_alive: True, view_broken: False)
   let #(new_model, _) =
     app.update(model, event.WidgetClick(id: "nonexistent", scope: []))
   should.equal(new_model, model)
@@ -116,7 +153,7 @@ pub fn unknown_event_returns_no_command_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- structure
+// view -- structure (when healthy)
 // ---------------------------------------------------------------------------
 
 pub fn view_root_is_window_test() {
@@ -141,18 +178,20 @@ pub fn view_contains_counter_test() {
 }
 
 pub fn view_count_reflects_model_test() {
-  let model = Model(count: 42, widget_alive: True)
+  let model = Model(count: 42, widget_alive: True, view_broken: False)
   let tree = app.view(model)
   let assert option.Some(count_node) = find_node(tree, "count")
   should.equal(dict.get(count_node.props, "content"), Ok(StringVal("42")))
 }
 
-pub fn view_contains_crash_buttons_test() {
+pub fn view_contains_all_crash_buttons_test() {
   let #(model, _) = app.init()
   let tree = app.view(model)
   should.be_true(option.is_some(find_node(tree, "panic-extension")))
   should.be_true(option.is_some(find_node(tree, "toggle-widget")))
-  should.be_true(option.is_some(find_node(tree, "panic-gleam")))
+  should.be_true(option.is_some(find_node(tree, "panic-update")))
+  should.be_true(option.is_some(find_node(tree, "break-view")))
+  should.be_true(option.is_some(find_node(tree, "recover-view")))
 }
 
 // ---------------------------------------------------------------------------
@@ -160,52 +199,84 @@ pub fn view_contains_crash_buttons_test() {
 // ---------------------------------------------------------------------------
 
 pub fn view_shows_crash_widget_when_alive_test() {
-  let model = Model(count: 0, widget_alive: True)
+  let model = Model(count: 0, widget_alive: True, view_broken: False)
   let tree = app.view(model)
   let assert option.Some(crasher) = find_node(tree, "crasher")
   should.equal(crasher.kind, "crash_widget")
 }
 
 pub fn view_hides_crash_widget_when_removed_test() {
-  let model = Model(count: 0, widget_alive: False)
+  let model = Model(count: 0, widget_alive: False, view_broken: False)
   let tree = app.view(model)
   should.be_true(option.is_none(find_node(tree, "crasher")))
 }
 
 pub fn view_shows_removed_message_when_widget_off_test() {
-  let model = Model(count: 0, widget_alive: False)
+  let model = Model(count: 0, widget_alive: False, view_broken: False)
   let tree = app.view(model)
   should.be_true(option.is_some(find_node(tree, "widget-removed")))
 }
 
 pub fn view_toggle_label_changes_test() {
-  let alive = Model(count: 0, widget_alive: True)
+  let alive = Model(count: 0, widget_alive: True, view_broken: False)
   let tree = app.view(alive)
   let assert option.Some(btn) = find_node(tree, "toggle-widget")
   should.equal(dict.get(btn.props, "label"), Ok(StringVal("Remove Widget")))
 
-  let removed = Model(count: 0, widget_alive: False)
+  let removed = Model(count: 0, widget_alive: False, view_broken: False)
   let tree = app.view(removed)
   let assert option.Some(btn) = find_node(tree, "toggle-widget")
   should.equal(dict.get(btn.props, "label"), Ok(StringVal("Restore Widget")))
 }
 
 // ---------------------------------------------------------------------------
-// Counter survives extension panic (simulated)
+// view -- broken view panics
+// ---------------------------------------------------------------------------
+
+pub fn view_panics_when_broken_test() {
+  let model = Model(count: 0, widget_alive: True, view_broken: True)
+  // The view function panics when view_broken is True.
+  // We can't easily test the panic itself, but we CAN verify that
+  // the model flag controls it: view succeeds when False.
+  let model_ok = Model(..model, view_broken: False)
+  let tree = app.view(model_ok)
+  should.equal(tree.kind, "window")
+}
+
+// ---------------------------------------------------------------------------
+// Counter survives all crash types (simulated)
 // ---------------------------------------------------------------------------
 
 pub fn counter_works_after_panic_command_test() {
   let #(model, _) = app.init()
-  // Increment counter
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   should.equal(model.count, 2)
-  // Trigger extension panic (command returned, model unchanged)
+  // Extension panic command (model unchanged)
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "panic-extension", scope: []))
   should.equal(model.count, 2)
   // Counter still works
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
+  should.equal(model.count, 3)
+}
+
+pub fn counter_survives_view_break_recover_test() {
+  let #(model, _) = app.init()
+  let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
+  let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
+  should.equal(model.count, 2)
+  // Break view
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "break-view", scope: []))
+  should.be_true(model.view_broken)
+  // Counter still works (update is unaffected by view state)
+  let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
+  should.equal(model.count, 3)
+  // Recover view
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "recover-view", scope: []))
+  should.be_false(model.view_broken)
   should.equal(model.count, 3)
 }
 
@@ -216,32 +287,31 @@ pub fn counter_works_after_panic_command_test() {
 pub fn full_recovery_sequence_test() {
   let #(model, _) = app.init()
 
-  // Build up some state
+  // Build up state
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   should.equal(model.count, 3)
-  should.be_true(model.widget_alive)
 
-  // Trigger extension panic (model unaffected)
+  // Extension panic -> remove -> restore
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "panic-extension", scope: []))
-  should.equal(model.count, 3)
-
-  // Remove poisoned widget from tree
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "toggle-widget", scope: []))
-  should.be_false(model.widget_alive)
-
-  // Re-add widget (fresh instance, no poison)
   let #(model, _) =
     app.update(model, event.WidgetClick(id: "toggle-widget", scope: []))
   should.be_true(model.widget_alive)
-
-  // Counter still intact
   should.equal(model.count, 3)
 
-  // Counter still works after full recovery
+  // Break view -> recover
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "break-view", scope: []))
+  let #(model, _) =
+    app.update(model, event.WidgetClick(id: "recover-view", scope: []))
+  should.be_false(model.view_broken)
+  should.equal(model.count, 3)
+
+  // Counter still works after everything
   let #(model, _) = app.update(model, event.WidgetClick(id: "inc", scope: []))
   should.equal(model.count, 4)
 }

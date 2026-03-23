@@ -1,8 +1,8 @@
 # Crash Lab
 
-Error resilience demonstration showing how plushie isolates failures
-at different levels: Rust extension panic isolation vs Gleam runtime
-crash recovery.
+Error resilience demonstration showing how plushie catches failures at
+every level: Rust extension panics, Gleam update panics, and Gleam view
+panics. The counter survives all three.
 
 ## Prerequisites
 
@@ -34,40 +34,48 @@ gleam test
 ## What it demonstrates
 
 A counter (proof of life) and a native Rust extension widget, with
-buttons that deliberately trigger failures at two different levels.
+buttons that deliberately trigger failures at three different levels.
+The counter survives every one.
 
-### Extension panic (Rust side)
+### 1. Extension panic (Rust side)
 
 Click **Panic Extension**. The Rust extension's `handle_command`
 calls `panic!()`. The renderer catches it via `catch_unwind` and
 marks the extension as poisoned. The widget is replaced with a red
-error placeholder.
+error placeholder, but the app continues running.
 
-**The counter still works.** The Gleam model is unaffected -- the
-panic was isolated inside the Rust process.
+**Recovery:** Click **Remove Widget** to take the poisoned widget
+out of the tree, then **Restore Widget** to re-add it as a fresh
+instance.
 
-**Recovery:** Click **Remove Widget** to take the poisoned widget out
-of the tree. Click **Restore Widget** to re-add it as a fresh
-instance with no poisoned state. The widget renders normally again.
+### 2. Update panic (Gleam side)
 
-### Gleam panic (host side)
+Click **Panic Update**. The `update` function hits `panic`. The
+runtime catches it via `try_call` (Erlang's exception handling),
+logs the error, preserves the model, and discards the event.
 
-Click **Panic Gleam Update**. The `update` function hits
-`panic as "intentional Gleam crash"`. The runtime process crashes.
-The OTP supervisor restarts it, calling `init()` again.
+**The counter keeps its value.** The next click works normally.
 
-**The counter resets to 0.** The model lived in the runtime process
-and died with it. This is the cost of a host-side crash.
+### 3. View panic (Gleam side)
+
+Click **Break View**. The `update` succeeds (sets a flag), but the
+next `view` call panics. The runtime catches it and keeps displaying
+the previous rendered tree -- which still contains the **Recover**
+button. Click it to clear the flag; the next view render succeeds.
+
+**The counter keeps its value.** Even though the view crashed, the
+model was never lost.
 
 ### The lesson
 
-| Failure level | Isolation | Model survives? |
-|--------------|-----------|-----------------|
-| Rust extension panic | `catch_unwind`, widget replaced | Yes |
-| Gleam runtime panic | Supervisor restart | No (reset to init) |
+| Failure | Caught by | Model survives? | View survives? |
+|---------|-----------|-----------------|----------------|
+| Extension panic | Rust `catch_unwind` | Yes | Widget replaced |
+| Update panic | Erlang `try_call` | Yes | Unchanged |
+| View panic | Erlang `try_call` | Yes | Previous tree kept |
 
-Your model is safe from Rust extension failures. It is NOT safe
-from Gleam panics -- keep your update function total.
+Plushie never loses your model state. Panics at any level are
+isolated and recovered from automatically.
 
 ## Project structure
 
