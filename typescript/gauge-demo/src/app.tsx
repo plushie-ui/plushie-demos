@@ -1,5 +1,5 @@
 // src/app.tsx -- Temperature monitor using a native Rust gauge extension
-import { app, isWidget } from "plushie"
+import { app } from "plushie"
 import { Window, Column, Row, Text, Button, Slider } from "plushie/ui"
 import { Gauge, GaugeCmds } from "./gauge.js"
 
@@ -8,6 +8,9 @@ export interface Model {
   targetTemp: number
   history: number[]
 }
+
+/** Maximum history entries to retain. */
+const MAX_HISTORY = 50
 
 function temperatureStatus(temp: number): string {
   if (temp >= 80) return "Critical"
@@ -23,22 +26,36 @@ function statusColor(temp: number): string {
   return "#3498db"
 }
 
+function appendHistory(history: number[], value: number): number[] {
+  return [...history, value].slice(-MAX_HISTORY)
+}
+
+// Button handlers update the model optimistically AND send extension
+// commands to sync the Rust-side state. The model updates immediately
+// for responsive UI; the extension command keeps the Rust extension's
+// internal state in sync.
 const setTarget = (s: Model, e: { value: unknown }): [Model, unknown] => [
   { ...s, targetTemp: e.value as number },
   GaugeCmds.animate_to("temp", { value: e.value }),
 ]
 
-// Button handlers update the model optimistically AND send extension
-// commands to sync the Rust-side state. The model updates immediately
-// for responsive UI; the extension command ensures the Rust extension's
-// internal state matches.
 const resetTemp = (s: Model): [Model, unknown] => [
-  { ...s, temperature: 20, targetTemp: 20, history: [...s.history, 20] },
+  {
+    ...s,
+    temperature: 20,
+    targetTemp: 20,
+    history: appendHistory(s.history, 20),
+  },
   GaugeCmds.set_value("temp", { value: 20 }),
 ]
 
 const setHigh = (s: Model): [Model, unknown] => [
-  { ...s, temperature: 90, targetTemp: 90, history: [...s.history, 90] },
+  {
+    ...s,
+    temperature: 90,
+    targetTemp: 90,
+    history: appendHistory(s.history, 90),
+  },
   GaugeCmds.set_value("temp", { value: 90 }),
 ]
 
@@ -49,25 +66,6 @@ export default app<Model>({
     extensionConfig: {
       gauge: { arcWidth: 8, tickCount: 10 },
     },
-  },
-
-  update(state, event) {
-    if (
-      isWidget(event) &&
-      event.type === "value_changed" &&
-      event.id === "temp"
-    ) {
-      const data = event.data as Record<string, unknown>
-      const newTemp = data["value"] as number
-      // Skip if already at this value (optimistic update already applied)
-      if (newTemp === state.temperature) return state
-      return {
-        ...state,
-        temperature: newTemp,
-        history: [...state.history, newTemp],
-      }
-    }
-    return state
   },
 
   view: (state) => (
@@ -85,7 +83,6 @@ export default app<Model>({
           label: `${Math.round(state.temperature)}\u00B0C`,
           width: 200,
           height: 200,
-          eventRate: 30,
         })}
 
         <Text
