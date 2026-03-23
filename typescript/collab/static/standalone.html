@@ -8,29 +8,40 @@
     #overlay {
       position: fixed; inset: 0; display: flex; align-items: center;
       justify-content: center; background: #1a1a2e; z-index: 100;
-      font-size: 1.2em;
+      font-size: 1.2em; flex-direction: column; gap: 12px;
     }
     #overlay.hidden { display: none; }
     .error { color: #e74c3c; }
+    .note { color: #888; font-size: 0.85em; max-width: 400px; text-align: center; }
   </style>
 </head>
 <body>
-  <div id="overlay">Loading...</div>
+  <div id="overlay">
+    <div>Loading...</div>
+    <div class="note">
+      Client-side WASM mode: the app runs entirely in the browser.
+      Each tab is independent -- no shared state.
+    </div>
+  </div>
   <script type="module">
     import init, { PlushieApp } from './plushie_wasm.js'
 
     const overlay = document.getElementById('overlay')
+    const statusEl = overlay.querySelector('div')
     function status(msg, isError) {
-      overlay.textContent = msg
-      overlay.className = isError ? 'error' : ''
+      statusEl.textContent = msg
+      if (isError) overlay.className = 'error'
     }
 
     try {
       status('Loading WASM...')
       await init()
 
-      // The app runs entirely client-side. No server connection.
-      // Each browser tab is independent.
+      // Create the WASM renderer. In standalone mode, the renderer
+      // runs the default empty app. For full app logic (init/update/view),
+      // the SDK's Runtime would need to drive the renderer via
+      // WasmTransport -- this requires the browser bundle
+      // (pnpm build:browser) and Runtime browser support.
       const app = new PlushieApp({
         antialiasing: true,
         default_event_rate: 30,

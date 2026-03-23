@@ -7,16 +7,14 @@
  * stores its own preference and merges it before rendering.
  */
 
-import { init, update, view } from "./collab.js"
+import { init, update } from "./collab.js"
 import type { Model } from "./collab.js"
 
 /** Event from the wire protocol (simplified for the server). */
 export interface WireEvent {
-  family: string
-  id: string
-  type?: string
-  value?: unknown
-  data?: Record<string, unknown>
+  readonly family: string
+  readonly id: string
+  readonly value?: unknown
 }
 
 /** Callback to send a model snapshot to a client. */
@@ -102,9 +100,4 @@ export class Shared {
       this.sendTo(id)
     }
   }
-}
-
-/** Render a model to a normalized wire tree (for snapshots). */
-export function renderTree(model: Model) {
-  return view(model)
 }

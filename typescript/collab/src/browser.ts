@@ -1,14 +1,14 @@
 /**
  * Browser entry point for client-side WASM mode.
  *
- * Bundled by esbuild and loaded by standalone.html. Creates a
- * WasmTransport and runs the collab app entirely in the browser --
- * no server-side app logic.
+ * This module is bundled by esbuild for browser use. The standalone
+ * HTML page loads the WASM renderer and this bundle to run the collab
+ * app entirely in the browser.
+ *
+ * NOTE: Client-side WASM requires the SDK's Runtime to be
+ * browser-compatible. The standalone.html shows the pattern; full
+ * Runtime-in-browser support is tracked in the SDK.
  */
 
-import { init, view } from "./collab.js"
-import type { Model } from "./collab.js"
-
-// Re-export for the HTML page to call after loading WASM
-export { init, view }
-export type { Model }
+export { init, update, view } from "./collab.js"
+export type { Model } from "./collab.js"

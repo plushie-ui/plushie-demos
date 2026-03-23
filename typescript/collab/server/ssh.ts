@@ -30,7 +30,8 @@ import {
   decodePackets,
   normalize,
 } from "plushie/client"
-import { Shared, renderTree } from "../src/shared.js"
+import { Shared } from "../src/shared.js"
+import { view } from "../src/collab.js"
 import type { Model } from "../src/collab.js"
 import { serveStatic } from "./static-files.js"
 
@@ -90,7 +91,7 @@ wss.on("connection", (ws: WebSocket) => {
 
 function sendWsSnapshot(ws: WebSocket, session: string, model: Model): void {
   if (ws.readyState !== ws.OPEN) return
-  const tree = renderTree(model)
+  const tree = view(model)
   const normalized = normalize(tree)
   const snapshot = encodeSnapshot(session, normalized)
   ws.send(JSON.stringify(snapshot))
@@ -196,7 +197,7 @@ function sendSshSnapshot(
   model: Model,
 ): void {
   if (channel.destroyed) return
-  const tree = renderTree(model)
+  const tree = view(model)
   const normalized = normalize(tree)
   const snapshot = encodeSnapshot(session, normalized)
   const bytes = msgpackEncode(snapshot)
