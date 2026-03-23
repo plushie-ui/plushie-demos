@@ -52,11 +52,13 @@ impl WidgetExtension for GaugeExtension {
         _theme: &Theme,
     ) {
         let value = prop_f32(node.props(), "value").unwrap_or(0.0);
-        caches.get_or_insert::<GaugeState>(
+        let state = caches.get_or_insert::<GaugeState>(
             self.config_key(),
             &node.id,
             || GaugeState::new(value),
         );
+        // Sync from TypeScript props each frame
+        state.rust_value = value;
     }
 
     fn render<'a>(
