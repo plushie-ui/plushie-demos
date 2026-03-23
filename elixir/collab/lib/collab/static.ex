@@ -39,7 +39,7 @@ defmodule Collab.Static do
         content_type = Map.get(@mime_types, Path.extname(file), "application/octet-stream")
 
         conn
-        |> Plug.Conn.put_resp_content_type(content_type)
+        |> Plug.Conn.put_resp_content_type(content_type, nil)
         |> Plug.Conn.send_file(200, file)
       else
         Plug.Conn.send_resp(conn, 404, "Not found")
