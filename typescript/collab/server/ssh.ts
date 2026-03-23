@@ -31,7 +31,6 @@ import {
   normalize,
 } from "plushie/client"
 import { Shared, renderTree } from "../src/shared.js"
-import type { WireEvent } from "../src/shared.js"
 import type { Model } from "../src/collab.js"
 import { serveStatic } from "./static-files.js"
 
@@ -146,7 +145,7 @@ function handleSshChannel(channel: ServerChannel): void {
   // Send settings to start the handshake
   const settings = encodeSettings("pending", { default_event_rate: 30 })
   const settingsBytes = msgpackEncode(settings)
-  channel.write(encodePacket(settingsBytes))
+  channel.write(Buffer.from(encodePacket(new Uint8Array(settingsBytes))))
 
   channel.on("data", (data: Buffer) => {
     // Accumulate data and decode msgpack frames
@@ -201,7 +200,7 @@ function sendSshSnapshot(
   const normalized = normalize(tree)
   const snapshot = encodeSnapshot(session, normalized)
   const bytes = msgpackEncode(snapshot)
-  channel.write(Buffer.from(encodePacket(bytes)))
+  channel.write(Buffer.from(encodePacket(new Uint8Array(bytes))))
 }
 
 // -- Start both servers -------------------------------------------------------

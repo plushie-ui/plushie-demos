@@ -12,13 +12,7 @@
 import { createServer } from "node:http"
 import { WebSocketServer } from "ws"
 import type { WebSocket } from "ws"
-import { encode as msgpackEncode } from "@msgpack/msgpack"
-import {
-  encodeSnapshot,
-  encodeSettings,
-  normalize,
-  stringifyKeys,
-} from "plushie/client"
+import { encodeSnapshot, encodeSettings, normalize } from "plushie/client"
 import { Shared, renderTree } from "../src/shared.js"
 import type { Model } from "../src/collab.js"
 import { serveStatic } from "./static-files.js"
@@ -66,9 +60,7 @@ wss.on("connection", (ws: WebSocket) => {
         shared.handleEvent(clientId, {
           family: msg["family"] as string,
           id: msg["id"] as string,
-          type: msg["type"] as string,
           value: msg["value"],
-          data: msg["data"] as Record<string, unknown> | undefined,
         })
       }
     } catch {

@@ -36,6 +36,10 @@ export function init(): Model {
 
 // -- Handlers (inline, for standalone mode) -----------------------------------
 
+// Handlers are typed with explicit Model to get type safety in the
+// function body. The JSX runtime accepts Handler<unknown> which is
+// contravariant on the state parameter -- the cast is safe because
+// handlers only read the state, never widen it.
 const increment = (s: Model): Model => ({ ...s, count: s.count + 1 })
 const decrement = (s: Model): Model => ({ ...s, count: s.count - 1 })
 const toggleTheme = (s: Model): Model => ({ ...s, darkMode: !s.darkMode })
@@ -62,7 +66,9 @@ export function view(model: Model) {
           </Text>
 
           {model.status !== "" && (
-            <Text id="status" size={12} color="#888888" content={model.status} />
+            <Text id="status" size={12} color="#888888">
+              {model.status}
+            </Text>
           )}
 
           <TextInput
@@ -76,7 +82,9 @@ export function view(model: Model) {
             <Button id="dec" onClick={decrement}>
               -
             </Button>
-            <Text id="count" size={18} content={String(model.count)} />
+            <Text id="count" size={18}>
+              {String(model.count)}
+            </Text>
             <Button id="inc" onClick={increment}>
               +
             </Button>
