@@ -52,16 +52,19 @@ type, its props (value, min, max, color, label, width, height), and
 two commands (set_value, animate_to).
 
 **Rust side** (`native/gauge/src/lib.rs`): implements `WidgetExtension`
-with `prepare()`, `render()`, and `handle_command()`. Uses
-`ExtensionCaches` to track per-node state between command receipt and
-the next render pass.
+with `init()`, `prepare()`, `render()`, `handle_command()`, and
+`cleanup()`. Uses `ExtensionCaches` with `GenerationCounter` to track
+per-node state. The `set_value` command emits a `value_changed` event
+back to Ruby confirming the change.
 
-**Optimistic updates**: when the user clicks Reset or High, the Ruby
-update handler returns both a new model AND an extension command. The
-model updates immediately for responsive UI. The command flows through
-the wire protocol to the Rust extension, keeping its internal state
-in sync. No event is echoed back from Rust to avoid race conditions
-with rapid clicks.
+**Event round-trip**: when the user clicks Reset or High, the Ruby
+update handler sends a `set_value` command to the Rust extension and
+updates `target_temp` immediately. The extension processes the command,
+updates its internal state, and emits a `value_changed` event back.
+Ruby's update handler receives this event and updates `temperature`
+and `history`. This means `temperature` only changes when the Rust
+extension confirms -- the slider's `animate_to` command updates the
+target without confirmation.
 
 ## Project structure
 
@@ -71,8 +74,8 @@ lib/
   temperature_monitor.rb   # Elm architecture app (init/update/view)
 native/
   gauge/
-    Cargo.toml             # Rust crate depending on plushie-core
-    src/lib.rs             # WidgetExtension: prepare, render, handle_command
+    Cargo.toml             # Rust crate depending on plushie-ext
+    src/lib.rs             # WidgetExtension: init, prepare, render, handle_command, cleanup
 test/
   gauge_extension_test.rb  # Extension metadata and build output tests
   temperature_monitor_test.rb  # App behaviour, commands, and view tests

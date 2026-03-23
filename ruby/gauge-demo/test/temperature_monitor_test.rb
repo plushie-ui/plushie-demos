@@ -11,9 +11,61 @@ class TemperatureMonitorTest < Minitest::Test
 
   def test_init_defaults
     model = @app.init({})
-    assert_equal 20, model.temperature
-    assert_equal 20, model.target_temp
-    assert_equal [20], model.history
+    assert_equal 20.0, model.temperature
+    assert_equal 20.0, model.target_temp
+    assert_equal [20.0], model.history
+  end
+
+  # -- update: extension value_changed event --
+
+  def test_value_changed_updates_temperature
+    model = @app.init({})
+    event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 90.0}
+    )
+
+    updated = @app.update(model, event)
+
+    assert_equal 90.0, updated.temperature
+  end
+
+  def test_value_changed_appends_to_history
+    model = @app.init({})
+    event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 42.0}
+    )
+
+    updated = @app.update(model, event)
+
+    assert_equal [20.0, 42.0], updated.history
+  end
+
+  def test_value_changed_does_not_change_target
+    model = @app.init({}).with(target_temp: 75.0)
+    event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 75.0}
+    )
+
+    updated = @app.update(model, event)
+
+    assert_equal 75.0, updated.target_temp
+    assert_equal 75.0, updated.temperature
+  end
+
+  def test_value_changed_caps_history
+    model = @app.init({}).with(history: Array.new(50, 20.0))
+    event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 99.0}
+    )
+
+    updated = @app.update(model, event)
+
+    assert_equal 50, updated.history.length
+    assert_equal 99.0, updated.history.last
   end
 
   # -- update: slider --
@@ -25,11 +77,10 @@ class TemperatureMonitorTest < Minitest::Test
       data: {"value" => 75}
     )
 
-    result = @app.update(model, event)
-    updated, _command = result
+    updated, _command = @app.update(model, event)
 
     assert_equal 75, updated.target_temp
-    assert_equal 20, updated.temperature  # temperature unchanged
+    assert_equal 20.0, updated.temperature # temperature unchanged until confirmed
   end
 
   def test_slider_sends_animate_to_command
@@ -47,29 +98,42 @@ class TemperatureMonitorTest < Minitest::Test
     assert_equal({value: 75}, command.payload[:data])
   end
 
-  # -- update: reset button --
-
-  def test_reset_sets_temperature_to_20
-    model = @app.init({}).with(temperature: 90, target_temp: 90)
+  def test_slider_does_not_update_temperature
+    model = @app.init({})
     event = Plushie::Event::Widget.new(
-      type: :click, id: "reset", scope: [], data: nil
+      type: :slide, id: "target", scope: [],
+      data: {"value" => 75}
     )
 
     updated, _command = @app.update(model, event)
 
-    assert_equal 20, updated.temperature
-    assert_equal 20, updated.target_temp
+    assert_equal 20.0, updated.temperature
+    assert_equal [20.0], updated.history
   end
 
-  def test_reset_appends_to_history
-    model = @app.init({}).with(history: [20, 90])
+  # -- update: reset button --
+
+  def test_reset_updates_target_only
+    model = @app.init({}).with(temperature: 90.0, target_temp: 90.0)
     event = Plushie::Event::Widget.new(
       type: :click, id: "reset", scope: [], data: nil
     )
 
     updated, _command = @app.update(model, event)
 
-    assert_equal [20, 90, 20], updated.history
+    assert_equal 20.0, updated.target_temp
+    assert_equal 90.0, updated.temperature # unchanged until value_changed
+  end
+
+  def test_reset_does_not_append_to_history
+    model = @app.init({}).with(history: [20.0, 90.0])
+    event = Plushie::Event::Widget.new(
+      type: :click, id: "reset", scope: [], data: nil
+    )
+
+    updated, _command = @app.update(model, event)
+
+    assert_equal [20.0, 90.0], updated.history # unchanged until value_changed
   end
 
   def test_reset_sends_set_value_command
@@ -83,12 +147,12 @@ class TemperatureMonitorTest < Minitest::Test
     assert_equal :extension_command, command.type
     assert_equal "temp", command.payload[:node_id]
     assert_equal "set_value", command.payload[:op]
-    assert_equal({value: 20}, command.payload[:data])
+    assert_equal({value: 20.0}, command.payload[:data])
   end
 
   # -- update: high button --
 
-  def test_high_sets_temperature_to_90
+  def test_high_updates_target_only
     model = @app.init({})
     event = Plushie::Event::Widget.new(
       type: :click, id: "high", scope: [], data: nil
@@ -96,11 +160,11 @@ class TemperatureMonitorTest < Minitest::Test
 
     updated, _command = @app.update(model, event)
 
-    assert_equal 90, updated.temperature
-    assert_equal 90, updated.target_temp
+    assert_equal 90.0, updated.target_temp
+    assert_equal 20.0, updated.temperature # unchanged until value_changed
   end
 
-  def test_high_appends_to_history
+  def test_high_does_not_append_to_history
     model = @app.init({})
     event = Plushie::Event::Widget.new(
       type: :click, id: "high", scope: [], data: nil
@@ -108,7 +172,7 @@ class TemperatureMonitorTest < Minitest::Test
 
     updated, _command = @app.update(model, event)
 
-    assert_equal [20, 90], updated.history
+    assert_equal [20.0], updated.history # unchanged until value_changed
   end
 
   def test_high_sends_set_value_command
@@ -121,7 +185,7 @@ class TemperatureMonitorTest < Minitest::Test
 
     assert_equal :extension_command, command.type
     assert_equal "set_value", command.payload[:op]
-    assert_equal({value: 90}, command.payload[:data])
+    assert_equal({value: 90.0}, command.payload[:data])
   end
 
   # -- update: unknown event --
@@ -135,23 +199,51 @@ class TemperatureMonitorTest < Minitest::Test
     assert_equal model, updated
   end
 
-  # -- update: history cap --
+  # -- update: full round-trip --
 
-  def test_history_caps_at_max
-    model = @app.init({}).with(history: Array.new(50, 20))
-    event = Plushie::Event::Widget.new(
+  def test_high_then_value_changed_updates_temperature
+    model = @app.init({})
+
+    # Button click: sets target, sends command
+    high_event = Plushie::Event::Widget.new(
       type: :click, id: "high", scope: [], data: nil
     )
+    m1, _cmd = @app.update(model, high_event)
+    assert_equal 90.0, m1.target_temp
+    assert_equal 20.0, m1.temperature # not yet confirmed
 
-    updated, _command = @app.update(model, event)
+    # Extension event: Rust confirms the value
+    confirm_event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 90.0}
+    )
+    m2 = @app.update(m1, confirm_event)
+    assert_equal 90.0, m2.temperature
+    assert_equal [20.0, 90.0], m2.history
+  end
 
-    assert_equal 50, updated.history.length
-    assert_equal 90, updated.history.last
+  def test_reset_then_value_changed_updates_temperature
+    model = @app.init({}).with(temperature: 90.0, target_temp: 90.0, history: [20.0, 90.0])
+
+    reset_event = Plushie::Event::Widget.new(
+      type: :click, id: "reset", scope: [], data: nil
+    )
+    m1, _cmd = @app.update(model, reset_event)
+    assert_equal 20.0, m1.target_temp
+    assert_equal 90.0, m1.temperature # not yet confirmed
+
+    confirm_event = Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => 20.0}
+    )
+    m2 = @app.update(m1, confirm_event)
+    assert_equal 20.0, m2.temperature
+    assert_equal [20.0, 90.0, 20.0], m2.history
   end
 
   # -- update: rapid interactions --
 
-  def test_rapid_high_reset_maintains_consistency
+  def test_rapid_clicks_only_update_target
     model = @app.init({})
     high_event = Plushie::Event::Widget.new(
       type: :click, id: "high", scope: [], data: nil
@@ -161,14 +253,35 @@ class TemperatureMonitorTest < Minitest::Test
     )
 
     m1, _ = @app.update(model, high_event)
-    assert_equal 90, m1.temperature
-
     m2, _ = @app.update(m1, reset_event)
-    assert_equal 20, m2.temperature
-
     m3, _ = @app.update(m2, high_event)
-    assert_equal 90, m3.temperature
-    assert_equal [20, 90, 20, 90], m3.history
+
+    # Temperature unchanged -- no value_changed events processed
+    assert_equal 20.0, m3.temperature
+    assert_equal 90.0, m3.target_temp
+    assert_equal [20.0], m3.history
+  end
+
+  def test_rapid_clicks_with_confirmations
+    model = @app.init({})
+
+    # High click + confirm
+    m1, _ = @app.update(model, click("high"))
+    m2 = @app.update(m1, value_changed(90.0))
+    assert_equal 90.0, m2.temperature
+    assert_equal [20.0, 90.0], m2.history
+
+    # Reset click + confirm
+    m3, _ = @app.update(m2, click("reset"))
+    m4 = @app.update(m3, value_changed(20.0))
+    assert_equal 20.0, m4.temperature
+    assert_equal [20.0, 90.0, 20.0], m4.history
+
+    # High click + confirm again
+    m5, _ = @app.update(m4, click("high"))
+    m6 = @app.update(m5, value_changed(90.0))
+    assert_equal 90.0, m6.temperature
+    assert_equal [20.0, 90.0, 20.0, 90.0], m6.history
   end
 
   # -- view --
@@ -186,7 +299,7 @@ class TemperatureMonitorTest < Minitest::Test
 
     gauge = find_node(tree, "temp")
     assert_equal "gauge", gauge.type
-    assert_equal 20, gauge.props[:value]
+    assert_equal 20.0, gauge.props[:value]
     assert_equal 0, gauge.props[:min]
     assert_equal 100, gauge.props[:max]
   end
@@ -197,14 +310,14 @@ class TemperatureMonitorTest < Minitest::Test
     cool_gauge = find_node(cool_tree, "temp")
     assert_equal "#3498db", cool_gauge.props[:color]
 
-    hot_model = @app.init({}).with(temperature: 90)
+    hot_model = @app.init({}).with(temperature: 90.0)
     hot_tree = @app.view(hot_model)
     hot_gauge = find_node(hot_tree, "temp")
     assert_equal "#e74c3c", hot_gauge.props[:color]
   end
 
   def test_view_gauge_label_shows_degrees
-    model = @app.init({}).with(temperature: 42)
+    model = @app.init({}).with(temperature: 42.0)
     tree = @app.view(model)
     gauge = find_node(tree, "temp")
     assert_equal "42\u00B0C", gauge.props[:label]
@@ -227,7 +340,7 @@ class TemperatureMonitorTest < Minitest::Test
   end
 
   def test_view_history_text
-    model = @app.init({}).with(history: [20, 90, 20])
+    model = @app.init({}).with(history: [20.0, 90.0, 20.0])
     tree = @app.view(model)
     history = find_node(tree, "history")
     assert_includes history.props[:content], "20\u00B0"
@@ -235,13 +348,24 @@ class TemperatureMonitorTest < Minitest::Test
   end
 
   def test_view_slider_value_matches_target
-    model = @app.init({}).with(target_temp: 75)
+    model = @app.init({}).with(target_temp: 75.0)
     tree = @app.view(model)
     slider_node = find_node(tree, "target")
-    assert_equal 75, slider_node.props[:value]
+    assert_equal 75.0, slider_node.props[:value]
   end
 
   private
+
+  def click(id)
+    Plushie::Event::Widget.new(type: :click, id: id, scope: [], data: nil)
+  end
+
+  def value_changed(value)
+    Plushie::Event::Widget.new(
+      type: :value_changed, id: "temp", scope: [],
+      data: {"value" => value}
+    )
+  end
 
   def find_node(node, id)
     return node if node.id == id

@@ -12,10 +12,13 @@ end
 
 # Temperature monitor using a native Rust gauge extension.
 #
-# Demonstrates extension commands and optimistic updates: button
-# handlers update the model immediately for responsive UI, then
-# send extension commands to keep the Rust extension's internal
-# state in sync.
+# Demonstrates extension commands and extension events: button
+# handlers send set_value commands to the Rust extension, which
+# confirms the change by emitting a value_changed event back.
+# The app updates temperature and history only when the extension
+# confirms.
+#
+# The slider sends animate_to (target only, no confirmation).
 class TemperatureMonitor
   include Plushie::App
 
@@ -28,11 +31,20 @@ class TemperatureMonitor
   MAX_HISTORY = 50
 
   def init(_opts)
-    Model.new(temperature: 20, target_temp: 20, history: [20])
+    Model.new(temperature: 20.0, target_temp: 20.0, history: [20.0])
   end
 
   def update(model, event)
     case event
+    # Extension event: Rust confirms value change
+    in Event::Widget[type: :value_changed, id: "temp", data:]
+      new_temp = data["value"].to_f
+      model.with(
+        temperature: new_temp,
+        history: append_history(model.history, new_temp)
+      )
+
+    # Slider: update target only, send animate_to (no confirmation)
     in Event::Widget[type: :slide, id: "target"]
       target = event.data["value"]
       [
@@ -40,24 +52,18 @@ class TemperatureMonitor
         Command.extension_command("temp", "animate_to", {value: target})
       ]
 
+    # Reset: update target, send set_value (Rust confirms via value_changed)
     in Event::Widget[type: :click, id: "reset"]
       [
-        model.with(
-          temperature: 20,
-          target_temp: 20,
-          history: append_history(model.history, 20)
-        ),
-        Command.extension_command("temp", "set_value", {value: 20})
+        model.with(target_temp: 20.0),
+        Command.extension_command("temp", "set_value", {value: 20.0})
       ]
 
+    # High: update target, send set_value (Rust confirms via value_changed)
     in Event::Widget[type: :click, id: "high"]
       [
-        model.with(
-          temperature: 90,
-          target_temp: 90,
-          history: append_history(model.history, 90)
-        ),
-        Command.extension_command("temp", "set_value", {value: 90})
+        model.with(target_temp: 90.0),
+        Command.extension_command("temp", "set_value", {value: 90.0})
       ]
 
     else
