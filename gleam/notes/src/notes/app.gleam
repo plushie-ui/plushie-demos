@@ -136,10 +136,18 @@ pub fn view(model: Model) -> Node {
   }
 
   ui.window("main", [ui.title("Notes"), ui.window_size(600.0, 500.0)], [
-    ui.column("root", [ui.padding(padding.all(16.0)), ui.width(length.Fill)], [
-      content,
-      shortcut_bar(model.current_view),
-    ]),
+    ui.column(
+      "root",
+      [
+        ui.padding(padding.all(16.0)),
+        ui.width(length.Fill),
+        ui.height(length.Fill),
+      ],
+      [
+        content,
+        shortcut_bar(model.current_view),
+      ],
+    ),
   ])
 }
 
@@ -216,22 +224,26 @@ fn editor_view(model: Model, note_id: String) -> Node {
       let has_undo = !list.is_empty(model.undo_stack)
       let has_redo = !list.is_empty(model.redo_stack)
 
-      ui.column("editor-view", [ui.spacing(12), ui.width(length.Fill)], [
-        ui.row("editor-header", [ui.spacing(8)], [
-          ui.button_("back", "Back"),
-          ui.button("undo", "Undo", [ui.disabled(!has_undo)]),
-          ui.button("redo", "Redo", [ui.disabled(!has_redo)]),
-        ]),
-        ui.text_input("title", note.title, [
-          ui.placeholder("Note title"),
-          ui.width(length.Fill),
-          ui.font_size(20.0),
-        ]),
-        text_editor.new("body", note.body)
-          |> text_editor.placeholder("Start writing...")
-          |> text_editor.height(length.Fill)
-          |> text_editor.build(),
-      ])
+      ui.column(
+        "editor-view",
+        [ui.spacing(12), ui.width(length.Fill), ui.height(length.Fill)],
+        [
+          ui.row("editor-header", [ui.spacing(8)], [
+            ui.button_("back", "Back"),
+            ui.button("undo", "Undo", [ui.disabled(!has_undo)]),
+            ui.button("redo", "Redo", [ui.disabled(!has_redo)]),
+          ]),
+          ui.text_input("title", note.title, [
+            ui.placeholder("Note title"),
+            ui.width(length.Fill),
+            ui.font_size(20.0),
+          ]),
+          text_editor.new("body", note.body)
+            |> text_editor.placeholder("Start writing...")
+            |> text_editor.height(length.Fill)
+            |> text_editor.build(),
+        ],
+      )
     }
     Error(_) ->
       // Note was deleted -- show fallback (shouldn't happen in normal flow)
