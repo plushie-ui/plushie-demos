@@ -76,7 +76,7 @@ export function view(model: Model) {
   return (
     <Window id="main" title="Collab">
       <Themer theme={model.darkMode ? "dark" : "light"}>
-        <Column padding={16} spacing={12}>
+        <Column padding={16} spacing={12} width="fill">
           <Text id="title" size={20}>
             Collaborative Scratchpad
           </Text>
@@ -91,6 +91,7 @@ export function view(model: Model) {
             id="name"
             value={model.name}
             placeholder="Your name"
+            width="fill"
             onInput={setName}
           />
 
@@ -109,7 +110,7 @@ export function view(model: Model) {
           <Checkbox
             id="theme"
             label="Dark mode"
-            checked={model.darkMode}
+            value={model.darkMode}
             onToggle={toggleTheme}
           />
 
@@ -118,6 +119,7 @@ export function view(model: Model) {
             content={model.notes}
             placeholder="Shared notes..."
             height={200}
+            width="fill"
             onInput={setNotes}
           />
         </Column>

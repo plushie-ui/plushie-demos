@@ -115,13 +115,14 @@ export function view(model: Model) {
 
   return (
     <Window id="main" title="Data Explorer">
-      <Column padding={16} spacing={12}>
+      <Column padding={16} spacing={12} width="fill">
         {/* Search bar */}
-        <Row spacing={8}>
+        <Row spacing={8} width="fill">
           <TextInput
             id="search"
             value={model.search}
             placeholder="Search countries..."
+            width="fill"
             onInput={setSearch}
           />
           {model.search.length > 0 && (
@@ -146,6 +147,7 @@ export function view(model: Model) {
         {/* Data table */}
         <Table
           id="data"
+          width="fill"
           columns={[
             { key: "name", label: "Name" },
             { key: "capital", label: "Capital" },

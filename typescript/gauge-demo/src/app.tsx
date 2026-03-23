@@ -97,16 +97,13 @@ export function view(model: Model) {
           eventRate: 30,
         })}
 
-        <Text
-          id="status"
-          color={statusColor(temp)}
-          content={`Status: ${temperatureStatus(temp)}`}
-        />
+        <Text id="status" color={statusColor(temp)}>
+          {`Status: ${temperatureStatus(temp)}`}
+        </Text>
 
-        <Text
-          id="reading"
-          content={`Current: ${Math.round(temp)}\u00B0C | Target: ${Math.round(model.targetTemp)}\u00B0C`}
-        />
+        <Text id="reading">
+          {`Current: ${Math.round(temp)}\u00B0C | Target: ${Math.round(model.targetTemp)}\u00B0C`}
+        </Text>
 
         <Slider
           id="target"
@@ -117,10 +114,10 @@ export function view(model: Model) {
 
         <Row spacing={8}>
           <Button id="reset" onClick={resetTemp}>
-            Reset (20\u00B0C)
+            {`Reset (20\u00B0C)`}
           </Button>
           <Button id="high" onClick={setHigh}>
-            High (90\u00B0C)
+            {`High (90\u00B0C)`}
           </Button>
         </Row>
 
@@ -128,8 +125,9 @@ export function view(model: Model) {
           id="history"
           size={12}
           color="#999999"
-          content={`History: ${model.history.map((t) => `${Math.round(t)}\u00B0`).join(", ")}`}
-        />
+        >
+          {`History: ${model.history.map((t) => `${Math.round(t)}\u00B0`).join(", ")}`}
+        </Text>
       </Column>
     </Window>
   )

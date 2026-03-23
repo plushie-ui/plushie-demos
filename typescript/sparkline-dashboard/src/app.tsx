@@ -96,12 +96,9 @@ export default app<Model>({
           <Button id="clear" onClick={clearSamples}>
             Clear
           </Button>
-          <Text
-            id="status"
-            size={14}
-            color="#888888"
-            content={`${state.cpuSamples.length} samples`}
-          />
+          <Text id="status" size={14} color="#888888">
+            {`${state.cpuSamples.length} samples`}
+          </Text>
         </Row>
 
         {/* Sparkline charts */}
@@ -132,12 +129,9 @@ function sparklineCard(
             {label}
           </Text>
           {lastValue !== null && (
-            <Text
-              id={`${id}_value`}
-              size={14}
-              color={color}
-              content={String(lastValue)}
-            />
+            <Text id={`${id}_value`} size={14} color={color}>
+              {String(lastValue)}
+            </Text>
           )}
         </Row>
 
