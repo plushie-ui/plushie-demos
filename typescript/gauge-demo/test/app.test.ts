@@ -25,7 +25,6 @@ import {
   setHigh,
 } from "../src/app.js"
 import type { Model } from "../src/app.js"
-import { GaugeCmds } from "../src/gauge.js"
 
 // -- Helpers ----------------------------------------------------------------
 
