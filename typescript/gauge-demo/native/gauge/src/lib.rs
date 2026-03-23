@@ -4,7 +4,7 @@
 //! Demonstrates the WidgetExtension trait with prepare, render,
 //! handle_command, and new_instance.
 
-use plushie_core::prelude::*;
+use plushie_ext::prelude::*;
 
 /// Gauge extension -- renders a numeric gauge with label and color.
 pub struct GaugeExtension;
@@ -80,15 +80,15 @@ impl WidgetExtension for GaugeExtension {
         let display = format!("{:.0}%", pct * 100.0);
 
         container(
-            plushie_core::iced::widget::column![
+            plushie_ext::iced::widget::column![
                 text(label).size(16),
                 text(display).size(32).color(color),
             ]
-            .align_x(plushie_core::iced::alignment::Horizontal::Center),
+            .align_x(plushie_ext::iced::alignment::Horizontal::Center),
         )
         .width(w)
         .height(h)
-        .center(plushie_core::iced::Length::Fill)
+        .center(plushie_ext::iced::Length::Fill)
         .into()
     }
 
