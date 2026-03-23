@@ -6,9 +6,16 @@
   "scripts": {
     "build:ext": "npx plushie build",
     "dev": "npx plushie dev src/app.tsx",
-    "run": "npx plushie run src/app.tsx"
+    "run": "npx plushie run src/app.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "plushie": "file:../../../plushie-typescript"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
   }
 }

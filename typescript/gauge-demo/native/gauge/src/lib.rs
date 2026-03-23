@@ -35,6 +35,10 @@ impl WidgetExtension for GaugeExtension {
         "gauge"
     }
 
+    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+        Box::new(GaugeExtension::new())
+    }
+
     fn init(&mut self, _ctx: &InitCtx<'_>) {
         // Read extension_config if needed (arcWidth, tickCount, etc.)
     }
