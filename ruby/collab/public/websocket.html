@@ -38,7 +38,7 @@
       status.textContent = 'Loading WASM...';
       let wasmInit, PlushieApp;
       try {
-        const wasm = await import('./plushie_wasm.js');
+        const wasm = await import('./plushie_renderer_wasm.js');
         wasmInit = wasm.default;
         PlushieApp = wasm.PlushieApp;
         await wasmInit();
