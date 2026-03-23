@@ -34,6 +34,15 @@ The dark-mode toggle is per-client; everything else is collaborative.
 
 See [collab/README.md](collab/README.md) for setup instructions.
 
+### [notes](notes/)
+
+Notes app with pure Ruby composite widgets and state helpers. No Rust
+required. Demonstrates Route (navigation), Selection (multi-select),
+Undo (editor history), DataQuery (search and sort), and keyboard
+shortcuts with a context-aware hint bar.
+
+See [notes/README.md](notes/README.md) for setup instructions.
+
 ### [gauge-demo](gauge-demo/)
 
 Temperature monitor with a native Rust gauge extension. Demonstrates
