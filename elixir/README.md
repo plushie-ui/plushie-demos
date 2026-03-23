@@ -52,3 +52,12 @@ subscriptions, and multiple extension widget instances.
 
 See [sparkline-dashboard/README.md](sparkline-dashboard/README.md) for
 setup instructions.
+
+### [notes](notes/)
+
+Notes app with pure Elixir composite widgets and state helpers -- no
+Rust required. Demonstrates Route (navigation), Selection (multi-select),
+Undo (editor history), Data (search and sort), and keyboard shortcuts
+with a context-aware hint bar.
+
+See [notes/README.md](notes/README.md) for setup instructions.

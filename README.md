@@ -10,6 +10,7 @@ organized by language.
 | [collab](elixir/collab/) | Collaborative scratchpad -- 5 ways to run the same app |
 | [gauge-demo](elixir/gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](elixir/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
+| [notes](elixir/notes/) | Pure Elixir widgets + state helpers -- no Rust required |
 | [examples](https://github.com/plushie-ui/plushie-elixir/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
 
 See the [Elixir demos README](elixir/README.md) for setup and details.
@@ -21,6 +22,7 @@ See the [Elixir demos README](elixir/README.md) for setup and details.
 | [collab](gleam/collab/) | Collaborative scratchpad -- 6 ways to run the same app |
 | [gauge-demo](gleam/gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](gleam/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
+| [notes](gleam/notes/) | Pure Gleam widgets + custom message types -- no Rust required |
 
 See the [Gleam demos README](gleam/README.md) for setup and details.
 
