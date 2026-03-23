@@ -255,7 +255,7 @@ class Notes
 
     Toolbar.new("toolbar", title: "Plushie Notes", actions: actions).build
 
-    row("filters", spacing: 8, padding: [8, 16]) do
+    row("filters", spacing: 8, padding: [8, 16], width: "fill") do
       text_input("search", model.search, placeholder: "Search notes...",
         width: "fill")
       pick_list("sort", SORT_OPTIONS, sort_label(model.sort_by))
