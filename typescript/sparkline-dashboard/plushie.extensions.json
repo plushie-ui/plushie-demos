@@ -1,0 +1,17 @@
+{
+  "extensions": [
+    {
+      "type": "sparkline",
+      "rustCrate": "native/sparkline",
+      "rustConstructor": "sparkline::SparklineExtension::new()",
+      "props": {
+        "data": { "list": "number" },
+        "color": "color",
+        "stroke_width": "number",
+        "fill": "boolean",
+        "height": "number"
+      }
+    }
+  ],
+  "binaryName": "sparkline-dashboard-plushie"
+}

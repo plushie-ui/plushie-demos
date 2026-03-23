@@ -1,0 +1,21 @@
+{
+  "name": "sparkline-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:ext": "npx plushie build",
+    "dev": "npx plushie dev src/app.tsx",
+    "run": "npx plushie run src/app.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "plushie": "file:../../../plushie-typescript"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.0"
+  }
+}
