@@ -38,8 +38,8 @@ The same demos exist in other languages:
 
 | Demo | Python | TypeScript | Ruby | Elixir | Gleam |
 |---|---|---|---|---|---|
-| Gauge | [gauge-demo](gauge-demo/) | [gauge-demo](../typescript/gauge-demo/) | -- | -- | -- |
-| Sparkline | [sparkline-dashboard](sparkline-dashboard/) | [sparkline-dashboard](../typescript/sparkline-dashboard/) | [sparkline-dashboard](../ruby/sparkline-dashboard/) | -- | -- |
+| Gauge | [gauge-demo](gauge-demo/) | [gauge-demo](../typescript/gauge-demo/) | [gauge-demo](../ruby/gauge-demo/) | [gauge-demo](../elixir/gauge-demo/) | [gauge-demo](../gleam/gauge-demo/) |
+| Sparkline | [sparkline-dashboard](sparkline-dashboard/) | [sparkline-dashboard](../typescript/sparkline-dashboard/) | [sparkline-dashboard](../ruby/sparkline-dashboard/) | [sparkline-dashboard](../elixir/sparkline-dashboard/) | [sparkline-dashboard](../gleam/sparkline-dashboard/) |
 | Collab | [collab](collab/) | -- | -- | [collab](../elixir/collab/) | [collab](../gleam/collab/) |
 
 The Rust extension code is identical across languages -- only the
