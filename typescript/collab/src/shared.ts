@@ -7,7 +7,7 @@
  * stores its own preference and merges it before rendering.
  */
 
-import { init, view } from "./collab.js"
+import { init, update, view } from "./collab.js"
 import type { Model } from "./collab.js"
 
 /** Event from the wire protocol (simplified for the server). */
@@ -64,8 +64,8 @@ export class Shared {
       return
     }
 
-    // Apply event to the shared model
-    const updated = this.applyEvent(this.model, event)
+    // Apply event to the shared model via the app's update function
+    const updated = update(this.model, event.family, event.id, event.value)
     if (updated === this.model) return
     this.model = updated
     this.broadcastAll()
@@ -82,25 +82,6 @@ export class Shared {
   }
 
   // -- Private ----------------------------------------------------------------
-
-  private applyEvent(model: Model, event: WireEvent): Model {
-    switch (event.family) {
-      case "click":
-        if (event.id === "inc") return { ...model, count: model.count + 1 }
-        if (event.id === "dec") return { ...model, count: model.count - 1 }
-        return model
-
-      case "input":
-        if (event.id === "name")
-          return { ...model, name: (event.value as string) ?? "" }
-        if (event.id === "notes")
-          return { ...model, notes: (event.value as string) ?? "" }
-        return model
-
-      default:
-        return model
-    }
-  }
 
   private updateStatus(): void {
     const n = this.clients.size

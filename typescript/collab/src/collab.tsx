@@ -34,25 +34,41 @@ export function init(): Model {
   return { name: "", notes: "", count: 0, darkMode: false, status: "" }
 }
 
-// -- Handlers (inline, for standalone mode) -----------------------------------
+// -- Update -------------------------------------------------------------------
 
-// Handlers are typed with explicit Model to get type safety in the
-// function body. The JSX runtime accepts Handler<unknown> which is
-// contravariant on the state parameter -- the cast is safe because
-// handlers only read the state, never widen it.
-const increment = (s: Model): Model => ({ ...s, count: s.count + 1 })
-const decrement = (s: Model): Model => ({ ...s, count: s.count - 1 })
-const toggleTheme = (s: Model): Model => ({ ...s, darkMode: !s.darkMode })
+/** Apply a widget event to the model. Used by both standalone and shared modes. */
+export function update(model: Model, family: string, id: string, value?: unknown): Model {
+  switch (family) {
+    case "click":
+      if (id === "inc") return { ...model, count: model.count + 1 }
+      if (id === "dec") return { ...model, count: model.count - 1 }
+      return model
 
-const setName = (s: Model, e: { value: unknown }): Model => ({
-  ...s,
-  name: e.value as string,
-})
+    case "input":
+      if (id === "name") return { ...model, name: (value as string) ?? "" }
+      if (id === "notes") return { ...model, notes: (value as string) ?? "" }
+      return model
 
-const setNotes = (s: Model, e: { value: unknown }): Model => ({
-  ...s,
-  notes: e.value as string,
-})
+    case "toggle":
+      if (id === "theme") return { ...model, darkMode: !model.darkMode }
+      return model
+
+    default:
+      return model
+  }
+}
+
+// -- Inline handlers (for JSX in standalone mode) -----------------------------
+
+const increment = (s: Model): Model => update(s, "click", "inc")
+const decrement = (s: Model): Model => update(s, "click", "dec")
+const toggleTheme = (s: Model): Model => update(s, "toggle", "theme")
+
+const setName = (s: Model, e: { value: unknown }): Model =>
+  update(s, "input", "name", e.value)
+
+const setNotes = (s: Model, e: { value: unknown }): Model =>
+  update(s, "input", "notes", e.value)
 
 // -- View ---------------------------------------------------------------------
 

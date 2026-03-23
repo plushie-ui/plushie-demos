@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, test } from "vitest"
-import { init, view } from "../src/collab.js"
+import { init, update, view } from "../src/collab.js"
 import type { Model } from "../src/collab.js"
 
 describe("init", () => {
@@ -17,6 +17,48 @@ describe("init", () => {
     expect(m.count).toBe(0)
     expect(m.darkMode).toBe(false)
     expect(m.status).toBe("")
+  })
+})
+
+describe("update", () => {
+  test("click inc increments count", () => {
+    const m = update(init(), "click", "inc")
+    expect(m.count).toBe(1)
+  })
+
+  test("click dec decrements count", () => {
+    const m = update(init(), "click", "dec")
+    expect(m.count).toBe(-1)
+  })
+
+  test("input name updates name", () => {
+    const m = update(init(), "input", "name", "Alice")
+    expect(m.name).toBe("Alice")
+  })
+
+  test("input notes updates notes", () => {
+    const m = update(init(), "input", "notes", "Hello world")
+    expect(m.notes).toBe("Hello world")
+  })
+
+  test("toggle theme flips darkMode", () => {
+    const m1 = update(init(), "toggle", "theme")
+    expect(m1.darkMode).toBe(true)
+
+    const m2 = update(m1, "toggle", "theme")
+    expect(m2.darkMode).toBe(false)
+  })
+
+  test("unknown event returns model unchanged", () => {
+    const m = init()
+    const updated = update(m, "click", "nonexistent")
+    expect(updated).toBe(m)
+  })
+
+  test("unknown family returns model unchanged", () => {
+    const m = init()
+    const updated = update(m, "scroll", "something")
+    expect(updated).toBe(m)
   })
 })
 
@@ -63,7 +105,12 @@ function findNode(
   node: { id: string; children?: readonly unknown[] },
   id: string,
 ): { id: string; type: string; props: Record<string, unknown> } | null {
-  const n = node as { id: string; type: string; props: Record<string, unknown>; children?: readonly unknown[] }
+  const n = node as {
+    id: string
+    type: string
+    props: Record<string, unknown>
+    children?: readonly unknown[]
+  }
   if (n.id === id) return n
   for (const child of n.children ?? []) {
     const found = findNode(child as typeof node, id)
