@@ -111,7 +111,7 @@ Do not expose these ports to the internet.
 
 **"plushie binary not found"** -- Run `python -m plushie download` first.
 
-**Browser shows "plushie-wasm not found"** -- Run
+**Browser shows "plushie-renderer-wasm not found"** -- Run
 `python -m plushie download --wasm --wasm-dir static`.
 
 **SSH connection refused** -- Start the server first

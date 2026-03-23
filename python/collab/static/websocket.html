@@ -51,15 +51,15 @@
       status.textContent = 'Loading WASM...';
       let wasmInit, PlushieApp;
       try {
-        const wasm = await import('./plushie_wasm.js');
+        const wasm = await import('./plushie_renderer_wasm.js');
         wasmInit = wasm.default;
         PlushieApp = wasm.PlushieApp;
         await wasmInit();
       } catch (e) {
         loading.innerHTML =
-          '<div>plushie-wasm not found.</div>' +
+          '<div>plushie-renderer-wasm not found.</div>' +
           '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
-          'Copy plushie_wasm.js and plushie_wasm_bg.wasm to the static/ directory.' +
+          'Copy plushie_renderer_wasm.js and plushie_renderer_wasm_bg.wasm to the static/ directory.' +
           '</div>';
         return;
       }
