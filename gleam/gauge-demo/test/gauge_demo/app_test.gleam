@@ -4,7 +4,7 @@ import gauge_demo/app
 import gleam/option
 import gleeunit/should
 import plushie/app as plushie_app
-import plushie/node.{FloatVal, StringVal}
+import plushie/node.{StringVal}
 import plushie/testing
 import plushie/testing/element
 

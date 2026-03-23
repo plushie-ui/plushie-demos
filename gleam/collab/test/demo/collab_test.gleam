@@ -6,7 +6,6 @@
 import demo/collab
 import gleam/option
 import gleeunit/should
-import plushie/node.{BoolVal, StringVal}
 import plushie/testing
 import plushie/testing/element
 

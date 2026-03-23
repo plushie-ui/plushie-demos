@@ -3,7 +3,6 @@
 import crash_lab/app
 import gleam/option
 import gleeunit/should
-import plushie/node.{StringVal}
 import plushie/testing
 import plushie/testing/element
 
