@@ -16,6 +16,8 @@ from pathlib import Path
 from typing import Any
 
 import websockets
+from websockets.datastructures import Headers
+from websockets.http11 import Request, Response
 
 from collab_demo.collab import Collab
 from collab_demo.shared import SharedState
@@ -38,23 +40,25 @@ def _find_static_dir() -> str:
     return str(here)
 
 
-async def _http_handler(
-    ws: Any,
-    shared: SharedState,
-    static_dir: str,
-) -> None:
-    """Handle HTTP and WebSocket requests.
+def _serve_static(request: Request, static_dir: str) -> Response | None:
+    """Serve static files for non-WebSocket HTTP requests.
 
-    WebSocket upgrade requests to /ws are handled as collaborative
-    sessions. Everything else serves static files.
+    Returns a Response for static file requests, or None to let
+    websockets proceed with the WebSocket handshake for /ws.
+
+    Args:
+        request: The incoming HTTP request.
+        static_dir: Path to the static file directory.
+
+    Returns:
+        An HTTP response for static files, or None for WebSocket paths.
     """
-    path = ws.request.path if hasattr(ws, "request") and ws.request else "/"
+    path = request.path
 
+    # Let /ws proceed to the WebSocket handler
     if path == "/ws":
-        await handle_ws(ws, shared)
-        return
+        return None
 
-    # Serve static files
     if path == "/":
         path = "/index.html"
 
@@ -63,8 +67,7 @@ async def _http_handler(
 
     # Security: ensure we stay within static_dir
     if not file_path.startswith(os.path.realpath(static_dir)):
-        await ws.close()
-        return
+        return Response(403, "Forbidden", Headers())
 
     if os.path.isfile(file_path):
         content_type, _ = mimetypes.guess_type(file_path)
@@ -74,9 +77,10 @@ async def _http_handler(
         with open(file_path, "rb") as f:
             body = f.read()
 
-        await ws.send(body)
-    else:
-        await ws.close()
+        headers = Headers([("Content-Type", content_type)])
+        return Response(200, "OK", headers, body)
+
+    return Response(404, "Not Found", Headers())
 
 
 async def start_ws_server(
@@ -98,10 +102,25 @@ async def start_ws_server(
     if static_dir is None:
         static_dir = _find_static_dir()
 
-    async def handler(ws: Any) -> None:
-        await _http_handler(ws, shared, static_dir)  # type: ignore[arg-type]
+    resolved_static_dir = static_dir
 
-    return await websockets.serve(handler, "127.0.0.1", port)  # type: ignore[attr-defined]
+    async def handler(ws: Any) -> None:
+        """Handle WebSocket connections to /ws."""
+        await handle_ws(ws, shared)
+
+    def process_request(
+        connection: Any,  # noqa: ARG001
+        request: Request,
+    ) -> Response | None:
+        """Intercept HTTP requests to serve static files."""
+        return _serve_static(request, resolved_static_dir)
+
+    return await websockets.serve(  # type: ignore[attr-defined]
+        handler,
+        "127.0.0.1",
+        port,
+        process_request=process_request,
+    )
 
 
 async def main() -> None:

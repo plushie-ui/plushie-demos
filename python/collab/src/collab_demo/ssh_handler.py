@@ -78,6 +78,10 @@ class PlushieSubsystemSession(asyncssh.SSHServerSession[bytes]):  # type: ignore
         self._chan = chan
         self._loop = asyncio.get_running_loop()
 
+    def subsystem_requested(self, subsystem: str) -> bool:
+        """Accept the plushie subsystem, reject everything else."""
+        return subsystem == "plushie"
+
     def session_started(self) -> None:
         """Called when the subsystem session starts. Send settings."""
         settings_data = _encode_settings_bytes()
@@ -153,8 +157,9 @@ class CollabSSHServer(asyncssh.SSHServer):  # type: ignore[misc]
         """Allow all connections without authentication."""
         return False
 
-    def session_requested(self) -> bool:
-        return True
+    def session_requested(self) -> PlushieSubsystemSession:
+        """Return a subsystem session handler for each incoming connection."""
+        return PlushieSubsystemSession(self._shared)
 
 
 async def start_ssh_server(shared: SharedState, *, port: int = 2222) -> Any:
@@ -186,13 +191,9 @@ async def start_ssh_server(shared: SharedState, *, port: int = 2222) -> Any:
     def _server_factory() -> CollabSSHServer:
         return CollabSSHServer(shared)
 
-    def _subsystem_factory(_conn: Any) -> PlushieSubsystemSession:
-        return PlushieSubsystemSession(shared)
-
     return await asyncssh.create_server(
         _server_factory,
         "127.0.0.1",
         port,
         server_host_keys=[rsa_key],
-        process_factory=None,  # type: ignore[arg-type]
     )
