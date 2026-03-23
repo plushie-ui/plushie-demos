@@ -1,0 +1,46 @@
+[project]
+name = "sparkline-dashboard"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["plushie>=0.1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "pyright"]
+
+[tool.plushie]
+source_path = "../../../plushie"
+
+[[tool.plushie.extensions]]
+kind = "sparkline"
+rust_crate = "native/sparkline"
+rust_constructor = "sparkline::SparklineExtension::new()"
+
+[[tool.plushie.extensions.props]]
+name = "data"
+prop_type = "any"
+
+[[tool.plushie.extensions.props]]
+name = "color"
+prop_type = "color"
+
+[[tool.plushie.extensions.props]]
+name = "stroke_width"
+prop_type = "number"
+
+[[tool.plushie.extensions.props]]
+name = "fill"
+prop_type = "bool"
+
+[[tool.plushie.extensions.props]]
+name = "height"
+prop_type = "number"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.pyright]
+pythonVersion = "3.12"
