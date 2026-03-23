@@ -41,6 +41,13 @@ class NoteCardTest < Minitest::Test
     assert_instance_of Plushie::Node, node
   end
 
+  def test_outer_node_is_mouse_area
+    card = Notes::NoteCard.new("n1", title: "Title")
+    node = card.build
+    assert_equal "mouse_area", node.type
+    assert_equal "n1_card", node.id
+  end
+
   def test_node_contains_checkbox
     card = Notes::NoteCard.new("n1", title: "Title", selected: true)
     node = card.build

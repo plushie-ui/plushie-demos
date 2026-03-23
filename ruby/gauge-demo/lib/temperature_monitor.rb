@@ -45,8 +45,8 @@ class TemperatureMonitor
       )
 
     # Slider: update target only, send animate_to (no confirmation)
-    in Event::Widget[type: :slide, id: "target"]
-      target = event.data["value"]
+    in Event::Widget[type: :slide, id: "target", value:]
+      target = value
       [
         model.with(target_temp: target),
         Command.extension_command("temp", "animate_to", {value: target})

@@ -1,3 +1,4 @@
+use plushie_ext::iced::widget::Column;
 use plushie_ext::prelude::*;
 use serde_json::json;
 
@@ -80,15 +81,14 @@ impl WidgetExtension for GaugeExtension {
         let display = format!("{:.0}%", pct * 100.0);
 
         container(
-            iced::widget::column![
-                text(label).size(16),
-                text(display).size(32).color(color),
-            ]
-            .align_x(iced::alignment::Horizontal::Center),
+            Column::new()
+                .push(text(label).size(16))
+                .push(text(display).size(32).color(color))
+                .align_x(alignment::Horizontal::Center),
         )
         .width(w)
         .height(h)
-        .center(iced::Length::Fill)
+        .center(Length::Fill)
         .into()
     }
 

@@ -46,11 +46,12 @@ edition = "2024"
 plushie-ext = { path = "$RENDERER/plushie-ext" }
 plushie-renderer = { path = "$RENDERER/plushie-renderer" }
 crash_widget = { path = "$CRASH_CRATE" }
-iced = { version = "0.7", package = "plushie-iced", features = ["tokio", "advanced", "sysinfo", "a11y"] }
+iced = { version = "0.8", package = "plushie-iced", features = ["tokio", "advanced", "sysinfo", "a11y"] }
 env_logger = "0.11"
 log = "0.4"
 
 [patch.crates-io]
+plushie-ext = { path = "$RENDERER/plushie-ext" }
 plushie-iced = { path = "$ICED" }
 plushie-iced-widget = { path = "$ICED/widget" }
 plushie-iced-core = { path = "$ICED/core" }

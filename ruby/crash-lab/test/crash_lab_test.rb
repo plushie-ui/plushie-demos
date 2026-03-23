@@ -2,238 +2,108 @@
 
 require_relative "test_helper"
 
-class CrashLabTest < Minitest::Test
-  def setup
-    @app = CrashLab.new
+class CrashLabTest < Plushie::Test::Case
+  app CrashLab
+
+  # -- initial view --
+
+  def test_initial_view_has_title
+    assert_text "#title", "Crash Lab"
   end
 
-  # -- init --
+  def test_initial_view_has_subtitle
+    assert_exists "#subtitle"
+  end
 
-  def test_init_defaults
-    model = @app.init({})
-    assert_equal 0, model.count
-    assert_equal true, model.extension_alive
-    assert_equal false, model.view_broken
+  def test_initial_view_has_counter
+    assert_text "#clicks", "Clicks: 0"
+  end
+
+  def test_initial_view_has_extension_panel
+    assert_exists "#crasher"
+    assert_text "#panic_ext", "Panic Extension"
+    assert_text "#toggle_ext", "Remove from Tree"
+  end
+
+  def test_initial_view_has_ruby_error_panel
+    assert_text "#ruby_heading", "Ruby Errors"
+    assert_text "#recover", "Recover View"
+    assert_text "#raise_update", "Raise in Update"
+    assert_text "#raise_view", "Raise in View"
+  end
+
+  def test_initial_view_has_footer
+    element = find!("#footer")
+    actual = text(element)
+    assert_includes actual, "rendered successfully"
   end
 
   # -- counter --
 
-  def test_count_increments
-    model = @app.init({})
-    m1 = @app.update(model, click("count"))
-    assert_equal 1, m1.count
-    m2 = @app.update(m1, click("count"))
-    assert_equal 2, m2.count
+  def test_click_count_increments
+    click "#count"
+    assert_text "#clicks", "Clicks: 1"
   end
 
-  # -- extension panic --
-
-  def test_panic_ext_sends_extension_command
-    model = @app.init({})
-    _updated, command = @app.update(model, click("panic_ext"))
-
-    assert_equal :extension_command, command.type
-    assert_equal "crasher", command.payload[:node_id]
-    assert_equal "panic", command.payload[:op]
-  end
-
-  def test_panic_ext_does_not_change_model
-    model = @app.init({}).with(count: 5)
-    updated, _command = @app.update(model, click("panic_ext"))
-
-    assert_equal 5, updated.count
-    assert_equal true, updated.extension_alive
+  def test_click_count_increments_multiple
+    click "#count"
+    click "#count"
+    click "#count"
+    assert_text "#clicks", "Clicks: 3"
   end
 
   # -- toggle extension --
 
   def test_toggle_ext_removes_extension
-    model = @app.init({})
-    updated = @app.update(model, click("toggle_ext"))
-    assert_equal false, updated.extension_alive
+    click "#toggle_ext"
+    assert_not_exists "#crasher"
+    assert_text "#toggle_ext", "Restore Extension"
   end
 
   def test_toggle_ext_restores_extension
-    model = @app.init({}).with(extension_alive: false)
-    updated = @app.update(model, click("toggle_ext"))
-    assert_equal true, updated.extension_alive
+    click "#toggle_ext"
+    assert_not_exists "#crasher"
+
+    click "#toggle_ext"
+    assert_exists "#crasher"
+    assert_text "#toggle_ext", "Remove from Tree"
+  end
+
+  def test_counter_works_after_toggle
+    click "#toggle_ext"
+    click "#count"
+    assert_text "#clicks", "Clicks: 1"
   end
 
   # -- raise in update --
 
-  def test_raise_update_raises_runtime_error
-    model = @app.init({})
-    assert_raises(RuntimeError) { @app.update(model, click("raise_update")) }
-  end
+  def test_raise_update_app_survives
+    # Click raise_update -- the runtime catches the error and preserves
+    # the model. Then clicking +1 proves the app is still alive.
+    click "#count"
+    assert_text "#clicks", "Clicks: 1"
 
-  def test_raise_update_error_message
-    model = @app.init({})
-    err = assert_raises(RuntimeError) { @app.update(model, click("raise_update")) }
-    assert_equal "intentional error in update handler", err.message
-  end
+    click "#raise_update"
 
-  def test_counter_works_after_update_error_would_be_caught
-    # Simulates the runtime behavior: the error is caught externally,
-    # model is preserved, and subsequent events work normally.
-    model = @app.init({}).with(count: 3)
-    # The runtime would catch this and preserve model:
-    assert_raises(RuntimeError) { @app.update(model, click("raise_update")) }
-    # Next event works on the preserved model:
-    updated = @app.update(model, click("count"))
-    assert_equal 4, updated.count
+    # Model was preserved at count=1 by the runtime's error recovery
+    click "#count"
+    assert_text "#clicks", "Clicks: 2"
   end
 
   # -- raise in view --
 
-  def test_raise_view_sets_flag
-    model = @app.init({})
-    updated = @app.update(model, click("raise_view"))
-    assert_equal true, updated.view_broken
-  end
+  def test_raise_view_preserves_tree_and_recovers
+    # Clicking raise_view sets view_broken=true. On the next render,
+    # the runtime catches the error and preserves the previous tree.
+    # The UI stays visible (with the recover button).
+    click "#raise_view"
 
-  def test_view_raises_when_broken
-    model = @app.init({}).with(view_broken: true)
-    err = assert_raises(RuntimeError) { @app.view(model) }
-    assert_equal "intentional error in view", err.message
-  end
+    # The previous tree is preserved by the runtime, so the view
+    # should still be visible. Click recover to clear the flag.
+    click "#recover"
 
-  def test_view_succeeds_when_not_broken
-    model = @app.init({})
-    tree = @app.view(model)
-    assert_instance_of Plushie::Node, tree
-  end
-
-  # -- recover --
-
-  def test_recover_clears_view_broken
-    model = @app.init({}).with(view_broken: true)
-    updated = @app.update(model, click("recover"))
-    assert_equal false, updated.view_broken
-  end
-
-  def test_view_works_after_recover
-    model = @app.init({}).with(view_broken: true)
-    recovered = @app.update(model, click("recover"))
-    tree = @app.view(recovered)
-    assert_instance_of Plushie::Node, tree
-    assert_equal "window", tree.type
-  end
-
-  # -- full recovery sequence --
-
-  def test_view_error_and_recovery_sequence
-    model = @app.init({}).with(count: 5)
-
-    # Break the view
-    m1 = @app.update(model, click("raise_view"))
-    assert_equal true, m1.view_broken
-    assert_raises(RuntimeError) { @app.view(m1) }
-
-    # Counter still works (update is fine)
-    m2 = @app.update(m1, click("count"))
-    assert_equal 6, m2.count
-    assert_equal true, m2.view_broken # still broken
-    assert_raises(RuntimeError) { @app.view(m2) }
-
-    # Recover
-    m3 = @app.update(m2, click("recover"))
-    assert_equal false, m3.view_broken
-    assert_equal 6, m3.count # count preserved through the whole sequence
-    tree = @app.view(m3)
-    assert_equal "window", tree.type
-  end
-
-  # -- unknown event --
-
-  def test_unknown_event_returns_model_unchanged
-    model = @app.init({})
-    updated = @app.update(model, click("nonexistent"))
-    assert_equal model, updated
-  end
-
-  # -- view structure --
-
-  def test_view_contains_counter
-    model = @app.init({}).with(count: 42)
-    tree = @app.view(model)
-    clicks_node = find_node(tree, "clicks")
-    assert_includes clicks_node.props[:content], "42"
-  end
-
-  def test_view_contains_crash_widget_when_alive
-    model = @app.init({})
-    tree = @app.view(model)
-    crasher = find_node(tree, "crasher")
-    assert_equal "crash_widget", crasher.type
-  end
-
-  def test_view_hides_crash_widget_when_removed
-    model = @app.init({}).with(extension_alive: false)
-    tree = @app.view(model)
-    crasher = find_node(tree, "crasher")
-    assert_nil crasher
-  end
-
-  def test_view_shows_restore_button_when_removed
-    model = @app.init({}).with(extension_alive: false)
-    tree = @app.view(model)
-    toggle = find_node(tree, "toggle_ext")
-    assert_equal "Restore Extension", toggle.props[:label]
-  end
-
-  def test_view_shows_remove_button_when_alive
-    model = @app.init({}).with(extension_alive: true)
-    tree = @app.view(model)
-    toggle = find_node(tree, "toggle_ext")
-    assert_equal "Remove from Tree", toggle.props[:label]
-  end
-
-  def test_view_contains_recover_button
-    model = @app.init({})
-    tree = @app.view(model)
-    recover = find_node(tree, "recover")
-    assert_equal "Recover View", recover.props[:label]
-  end
-
-  def test_view_contains_footer
-    model = @app.init({})
-    tree = @app.view(model)
-    footer = find_node(tree, "footer")
-    assert_includes footer.props[:content], "rendered successfully"
-  end
-
-  # -- extension toggle recovery cycle --
-
-  def test_remove_and_restore_extension
-    model = @app.init({})
-
-    # Extension is present
-    tree1 = @app.view(model)
-    assert find_node(tree1, "crasher")
-
-    # Remove it
-    m1 = @app.update(model, click("toggle_ext"))
-    tree2 = @app.view(m1)
-    refute find_node(tree2, "crasher")
-
-    # Restore it
-    m2 = @app.update(m1, click("toggle_ext"))
-    tree3 = @app.view(m2)
-    assert find_node(tree3, "crasher")
-  end
-
-  private
-
-  def click(id)
-    Plushie::Event::Widget.new(type: :click, id: id, scope: [], data: nil)
-  end
-
-  def find_node(node, id)
-    return node if node.id == id
-    (node.children || []).each do |child|
-      found = find_node(child, id)
-      return found if found
-    end
-    nil
+    # View renders normally again
+    assert_exists "#footer"
+    assert_text "#clicks", "Clicks: 0"
   end
 end

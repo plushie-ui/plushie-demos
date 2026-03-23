@@ -42,8 +42,9 @@ class Notes
     # -- Navigation --
     in Event::Widget[type: :click, id: "back"]
       navigate_back(model)
-    in Event::Widget[type: :click, id: /\Anote_/]
-      open_note(model, event.id.delete_prefix("note_"))
+    in Event::Widget[type: :click, id: /\Anote_.*_card\z/]
+      note_id = event.id.delete_prefix("note_").delete_suffix("_card")
+      open_note(model, note_id)
 
     # -- Note CRUD --
     in Event::Widget[type: :click, id: "new_note"]
@@ -53,19 +54,19 @@ class Notes
 
     # -- Editor --
     in Event::Widget[type: :input, id: "editor_title"]
-      update_title(model, event.data["value"])
+      update_title(model, event.value)
     in Event::Widget[type: :input, id: "editor_content"]
-      update_content(model, event.data["value"])
+      update_content(model, event.value)
 
     # -- Search & Sort --
     in Event::Widget[type: :input, id: "search"]
-      model.with(search: event.data["value"])
+      model.with(search: event.value)
     in Event::Widget[type: :select, id: "sort"]
-      model.with(sort_by: sort_key(event.data["value"]))
+      model.with(sort_by: sort_key(event.value))
 
     # -- Selection --
-    in Event::Widget[type: :toggle, id: /\Aselect_/]
-      note_id = event.id.delete_prefix("select_")
+    in Event::Widget[type: :toggle, id: /\Aselect_note_/]
+      note_id = event.id.delete_prefix("select_note_")
       model.with(selection: Plushie::Selection.toggle(model.selection, note_id))
 
     # -- Keyboard shortcuts --
@@ -75,7 +76,7 @@ class Notes
       perform_undo(model)
     in Event::Key[key: "y", modifiers: {ctrl: true}]
       perform_redo(model)
-    in Event::Key[key: "Escape"]
+    in Event::Key[key: :escape]
       handle_escape(model)
 
     else

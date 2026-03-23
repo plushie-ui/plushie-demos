@@ -14,6 +14,7 @@ only -- no Rust extension needed, runs with the stock plushie binary.
 
 ```bash
 gleam deps download
+gleam run -m plushie/download
 ```
 
 ## Run

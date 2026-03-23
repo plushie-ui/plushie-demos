@@ -26,15 +26,10 @@ impl WidgetExtension for CrasherExtension {
         if prop_bool(props, "panic_on_render").unwrap_or(false) {
             panic!("deliberate render panic for crash testing");
         }
-        let msg = prop_str(props, "message").unwrap_or("Crasher widget (alive)");
+        let msg = prop_str(props, "message")
+            .unwrap_or_else(|| "Crasher widget (alive)".to_string());
         container(text(msg).size(14))
             .padding(8)
-            .style(|_theme| container::Style {
-                background: Some(iced::Background::Color(Color::from_rgb(
-                    0.9, 1.0, 0.9,
-                ))),
-                ..Default::default()
-            })
             .into()
     }
 

@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-plushie-ext = { path = "../../../../../plushie/plushie-core" }
+plushie-ext = { path = "../../../../../plushie-renderer/plushie-ext" }
 iced = { version = "0.7", package = "plushie-iced", features = ["advanced"] }
 serde_json = "1"

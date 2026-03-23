@@ -29,12 +29,12 @@ class Collab
       model.with(count: model.count + 1)
     in Event::Widget[type: :click, id: "dec"]
       model.with(count: model.count - 1)
-    in Event::Widget[type: :input, id: "name"]
-      model.with(name: event.data["value"])
-    in Event::Widget[type: :input, id: "notes"]
-      model.with(notes: event.data["value"])
-    in Event::Widget[type: :toggle, id: "theme"]
-      model.with(dark_mode: event.data["value"])
+    in Event::Widget[type: :input, id: "name", value:]
+      model.with(name: value)
+    in Event::Widget[type: :input, id: "notes", value:]
+      model.with(notes: value)
+    in Event::Widget[type: :toggle, id: "theme", value:]
+      model.with(dark_mode: value)
     else
       model
     end

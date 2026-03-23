@@ -38,7 +38,7 @@ class SharedTest < Minitest::Test
   def test_event_updates_model
     @shared.connect("c1") { |_| }
     event = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     @shared.event("c1", event)
     # Connect a new client to get the current model
@@ -53,7 +53,7 @@ class SharedTest < Minitest::Test
     @shared.connect("c2") { |m| received_c2 << m.count }
 
     event = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     @shared.event("c1", event)
 
@@ -64,7 +64,7 @@ class SharedTest < Minitest::Test
   def test_event_preserves_status
     @shared.connect("c1") { |_| }
     event = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     @shared.event("c1", event)
 
@@ -89,7 +89,7 @@ class SharedTest < Minitest::Test
   def test_multiple_increments_are_atomic
     @shared.connect("c1") { |_| }
     inc = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     5.times { @shared.event("c1", inc) }
     model = @shared.connect("c2") { |_| }
@@ -101,7 +101,7 @@ class SharedTest < Minitest::Test
     @shared.connect("c2") { |_| }
 
     inc = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
 
     threads = 10.times.map do |i|
@@ -120,8 +120,7 @@ class SharedTest < Minitest::Test
     @shared.connect("c2") { |_| }
 
     name_event = Plushie::Event::Widget.new(
-      type: :input, id: "name", scope: [],
-      data: {"value" => "Alice"}
+      type: :input, id: "name", value: "Alice", scope: []
     )
     @shared.event("c1", name_event)
 
@@ -133,7 +132,7 @@ class SharedTest < Minitest::Test
   def test_disconnect_then_reconnect
     @shared.connect("c1") { |_| }
     inc = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     @shared.event("c1", inc)
     @shared.disconnect("c1")
@@ -150,7 +149,7 @@ class SharedTest < Minitest::Test
     @shared.connect("good") { |m| good_received << m.count }
 
     event = Plushie::Event::Widget.new(
-      type: :click, id: "inc", scope: [], data: nil
+      type: :click, id: "inc", scope: []
     )
     @shared.event("good", event)
     assert_includes good_received, 1
