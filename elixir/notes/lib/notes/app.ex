@@ -351,12 +351,12 @@ defmodule Notes.App do
     # Each expression becomes a sibling in the layout.
     [
       Toolbar.new("toolbar", title: "Plushie Notes", actions: actions),
-      row padding: {8, 16}, spacing: 8 do
+      row padding: {8, 16}, spacing: 8, width: :fill do
         text_input("search", model.search, placeholder: "Search notes...", width: :fill)
         pick_list("sort", @sort_options, sort_label(model.sort_by))
       end,
-      scrollable "note_list", height: :fill do
-        column padding: {4, 16}, spacing: 6 do
+      scrollable "note_list", height: :fill, width: :fill do
+        column padding: {4, 16}, spacing: 6, width: :fill do
           if notes == [] do
             text("empty", "No notes found.", size: 14, color: "#888888")
           end
@@ -392,8 +392,8 @@ defmodule Notes.App do
 
       [
         Toolbar.new("toolbar", title: note.title, show_back: true, actions: actions),
-        column padding: 16, spacing: 12, height: :fill do
-          text_input("editor_title", note.title, placeholder: "Title")
+        column padding: 16, spacing: 12, height: :fill, width: :fill do
+          text_input("editor_title", note.title, placeholder: "Title", width: :fill)
 
           text_editor("editor_content", note.content,
             placeholder: "Start writing...",
