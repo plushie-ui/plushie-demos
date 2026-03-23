@@ -8,7 +8,7 @@ Example applications for
 | Demo | Description |
 |------|-------------|
 | [gauge-demo](gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
-| [sparkline-dashboard](sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor ([Ruby port](../ruby/sparkline-dashboard/)) |
+| [sparkline-dashboard](sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
 | [examples](https://github.com/plushie-ui/plushie-typescript/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
 
 ## Setup

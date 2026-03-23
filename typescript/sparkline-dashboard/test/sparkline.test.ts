@@ -1,8 +1,8 @@
 /**
  * Unit tests for the sparkline extension definition.
  *
- * Mirrors the Ruby SparklineExtensionTest -- verifies the TypeScript
- * side produces correct widget nodes and config metadata.
+ * Verifies the TypeScript side produces correct widget nodes and
+ * config metadata.
  *
  * No binary needed.
  */

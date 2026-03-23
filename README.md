@@ -25,7 +25,7 @@ See the [Gleam demos README](gleam/README.md) for setup and details.
 | Demo | Description |
 |------|-------------|
 | [gauge-demo](typescript/gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
-| [sparkline-dashboard](typescript/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor ([Ruby port](ruby/sparkline-dashboard/)) |
+| [sparkline-dashboard](typescript/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
 | [examples](https://github.com/plushie-ui/plushie-typescript/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
 
 See the [TypeScript demos README](typescript/README.md) for setup and details.

@@ -4,11 +4,6 @@ Live system monitor dashboard built with
 [plushie](https://github.com/plushie-ui/plushie-typescript) and a
 custom Rust sparkline extension.
 
-TypeScript port of the
-[Ruby sparkline-dashboard](../../ruby/sparkline-dashboard/) demo.
-Same Rust extension, same app logic, different host language.
-Compare the two to see how the same extension looks in each SDK.
-
 Demonstrates:
 
 - Defining a native Rust widget extension in TypeScript

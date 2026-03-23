@@ -1,8 +1,5 @@
 /**
  * Live dashboard with sparkline charts for simulated system metrics.
- *
- * TypeScript port of the Ruby sparkline-dashboard demo. Same app,
- * same Rust extension, different host language.
  */
 
 import { app, Subscription, isTimer } from "plushie"
