@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plushie Demo</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 { color: #a8d8ea; margin-bottom: 0.5em; }
+    .modes {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      max-width: 600px;
+      width: 90%;
+    }
+    a {
+      display: block;
+      padding: 1em 1.5em;
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 8px;
+      color: #a8d8ea;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    a:hover { background: #0f3460; }
+    .desc { color: #888; font-size: 0.9em; margin-top: 0.3em; }
+    #status { color: #666; font-size: 0.85em; margin-top: 2em; }
+  </style>
+</head>
+<body>
+  <h1>Plushie Demo</h1>
+  <div class="modes">
+    <a href="/websocket.html">
+      WebSocket (Shared State)
+      <div class="desc">
+        App state lives on the server. All connected browsers
+        and SSH clients share the same counter and notes.
+      </div>
+    </a>
+  </div>
+  <div id="status">
+    Server: Python + websockets + asyncssh
+  </div>
+</body>
+</html>
