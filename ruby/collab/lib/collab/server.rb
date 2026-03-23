@@ -135,7 +135,7 @@ class Collab
       path = "/index.html" if path == "/"
       safe_path = File.expand_path(File.join(@public_dir, path))
 
-      # Check public/ first, then _build/plushie/wasm/ for WASM files
+      # Check public/ first, then _build/plushie-renderer/wasm/ for WASM files
       unless safe_path.start_with?(File.expand_path(@public_dir))
         send_response(socket, 403, "text/plain", "Forbidden")
         return
