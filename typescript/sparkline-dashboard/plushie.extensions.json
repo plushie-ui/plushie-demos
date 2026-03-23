@@ -1,4 +1,5 @@
 {
+  "source_path": "../../../../plushie-renderer",
   "extensions": [
     {
       "type": "sparkline",

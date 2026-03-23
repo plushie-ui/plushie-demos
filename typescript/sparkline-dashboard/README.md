@@ -17,15 +17,16 @@ Demonstrates:
 
 ```sh
 pnpm install
+npx plushie download
 ```
 
 ## Build the extension binary
 
-Requires the [plushie source](https://github.com/plushie-ui/plushie)
-checked out locally:
+Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
+checked out locally (the `source_path` in `plushie.extensions.json`
+points to its expected location):
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
 npx plushie build
 ```
 
