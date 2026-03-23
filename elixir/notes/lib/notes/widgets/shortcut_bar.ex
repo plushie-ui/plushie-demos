@@ -23,7 +23,7 @@ defmodule Notes.Widgets.ShortcutBar do
   def render(id, props) do
     import Plushie.UI
 
-    row padding: {6, 16}, spacing: 16 do
+    row padding: {8, 0}, spacing: 16 do
       for {{key, action}, i} <- Enum.with_index(props.hints) do
         row id: "#{id}_h#{i}", spacing: 4 do
           text("#{id}_key_#{i}", key, size: 11, color: "#999999")

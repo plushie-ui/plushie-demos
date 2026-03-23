@@ -22,7 +22,7 @@ defmodule Notes.Widgets.Toolbar do
   def render(id, props) do
     import Plushie.UI
 
-    row padding: {8, 16}, spacing: 12, width: :fill do
+    row padding: {12, 0}, spacing: 12, width: :fill do
       if props.show_back do
         button("back", "\u2190")
       end
