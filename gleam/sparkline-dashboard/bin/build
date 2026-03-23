@@ -37,14 +37,11 @@ edition = "2024"
 plushie-ext = "0.5.0"
 plushie-renderer = "0.5.0"
 sparkline = { path = "$SPARKLINE_CRATE" }
-env_logger = "0.11"
-log = "0.4"
 EOF
 
 # Generate main.rs
 cat > "$BUILD_DIR/src/main.rs" <<'EOF'
 fn main() -> plushie_ext::iced::Result {
-    env_logger::init();
     let builder = plushie_ext::app::PlushieAppBuilder::new()
         .extension(sparkline::SparklineExtension::new());
     plushie_renderer::run(builder)
