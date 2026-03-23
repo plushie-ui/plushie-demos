@@ -24,6 +24,14 @@ share a single counter and notes in real time. Demonstrates
 `IoStreamAdapter`, `StdioConnection`, WebSocket transport, SSH
 subsystem, and the WASM browser renderer.
 
+### [data-explorer](data-explorer/)
+
+Standalone native desktop DataFrame viewer. Open CSV, JSON, Parquet,
+or Excel files via the native file dialog, display in a sortable
+table with search, pagination, and column statistics. Demonstrates
+pandas integration, platform effects, async file loading, and
+PyInstaller standalone bundling. Python-ecosystem exclusive.
+
 ## Cross-language comparison
 
 The same demos exist in other languages:
