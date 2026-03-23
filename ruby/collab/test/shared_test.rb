@@ -86,7 +86,7 @@ class SharedTest < Minitest::Test
     event = Plushie::Event::Widget.new(
       type: :click, id: "inc", scope: [], data: nil
     )
-    @shared.event("c1", event)
+    @shared.event("good", event)
     assert_includes good_received, 1
   end
 end
