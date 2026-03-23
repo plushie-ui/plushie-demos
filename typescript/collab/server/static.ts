@@ -6,7 +6,7 @@
  *
  * Prerequisites:
  *   pnpm build:browser     (bundles app for the browser)
- *   Copy plushie_wasm.js and plushie_wasm_bg.wasm into static/
+ *   Copy plushie_renderer_wasm.js and plushie_renderer_wasm_bg.wasm into static/
  *
  * Usage:
  *   npx tsx server/static.ts
