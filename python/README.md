@@ -32,6 +32,15 @@ table with search, pagination, and column statistics. Demonstrates
 pandas integration, platform effects, async file loading, and
 PyInstaller standalone bundling. Python-ecosystem exclusive.
 
+### [crash-test](crash-test/)
+
+Crash resilience demo exercising both failure paths: Python-side
+exceptions (`RuntimeError` in `update()`, `view()`) and Rust-side
+panics (in `render()`, `handle_command()`). A working counter proves
+the app keeps functioning through all crashes. Demonstrates the
+runtime's error handling, `catch_unwind` panic isolation, and the
+`PLUSHIE_NO_CATCH_UNWIND` debug env var.
+
 ## Cross-language comparison
 
 The same demos exist in other languages:
