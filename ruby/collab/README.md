@@ -16,9 +16,9 @@ WebSocket -- all using a single app definition in `lib/collab.rb`.
     bundle install
     rake plushie:download
 
-For browser support:
+For browser support (downloads WASM renderer to public/):
 
-    rake plushie:download[wasm]
+    PLUSHIE_WASM_DIR=public rake plushie:download[wasm]
 
 ## All modes
 

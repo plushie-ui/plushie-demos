@@ -29,7 +29,7 @@ class Collab
       @host = host
       @port = port
       @public_dir = public_dir || File.join(__dir__, "..", "..", "public")
-      @wasm_dir = File.join(__dir__, "..", "..", "_build", "plushie", "wasm")
+      @wasm_dir = File.join(__dir__, "..", "..", "_build", "plushie-renderer", "wasm")
       @shared = Shared.new
       @app = Collab.new
     end
