@@ -108,16 +108,21 @@ bin/
 
 ## Browser modes (1 and 2)
 
-The browser modes require plushie-wasm files in `static/`. Copy them
-from a plushie WASM build:
+The browser modes require WASM files in `static/`. Download them
+with the SDK or copy from a source build:
 
 ```bash
-cp ../plushie/plushie-wasm/pkg/plushie_wasm.js static/
-cp ../plushie/plushie-wasm/pkg/plushie_wasm_bg.wasm static/
+# Option 1: download precompiled WASM
+cd ../../../plushie-gleam
+gleam run -m plushie/download -- --wasm --wasm-dir ../plushie-demos/gleam/collab/static
+
+# Option 2: copy from a source build
+cp ~/projects/plushie-renderer/plushie-renderer-wasm/pkg/plushie_renderer_wasm.js static/
+cp ~/projects/plushie-renderer/plushie-renderer-wasm/pkg/plushie_renderer_wasm_bg.wasm static/
 ```
 
 ## Dependencies
 
-- [plushie](../plushie) -- the Rust renderer (native binary + WASM)
-- [plushie-gleam](../plushie-gleam) -- the Gleam SDK
+- [plushie-renderer](https://github.com/plushie-ui/plushie-renderer) -- the Rust renderer (native binary + WASM)
+- [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) -- the Gleam SDK
 - [mist](https://hexdocs.pm/mist/) -- HTTP/WebSocket server
