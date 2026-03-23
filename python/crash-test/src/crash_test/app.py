@@ -82,8 +82,7 @@ class CrashTestApp(App[Model]):
                 ui.text("alive", "App is alive", size=14, color="#4caf50"),
                 ui.rule(),
                 # -- Recovery proof: working counter --
-                ui.container(
-                    "counter-section",
+                ui.column(
                     ui.text("counter-label", "Recovery Proof Counter", size=16),
                     ui.row(
                         ui.button("dec", "-"),
@@ -92,12 +91,13 @@ class CrashTestApp(App[Model]):
                         spacing=10,
                         align_y="center",
                     ),
+                    id="counter-section",
+                    spacing=8,
                     padding=10,
                 ),
                 ui.rule(),
                 # -- Python crash buttons --
-                ui.container(
-                    "python-crashes",
+                ui.column(
                     ui.text("py-label", "Python-side crashes", size=16),
                     ui.row(
                         ui.button("crash-update", "Crash update"),
@@ -105,12 +105,13 @@ class CrashTestApp(App[Model]):
                         ui.button("return-none", "Return None"),
                         spacing=10,
                     ),
+                    id="python-crashes",
+                    spacing=8,
                     padding=10,
                 ),
                 ui.rule(),
                 # -- Rust crash buttons (need extension binary) --
-                ui.container(
-                    "rust-crashes",
+                ui.column(
                     ui.text(
                         "rs-label", "Rust-side crashes (extension binary)", size=16
                     ),
@@ -119,27 +120,20 @@ class CrashTestApp(App[Model]):
                         ui.button("panic-command", "Panic command"),
                         spacing=10,
                     ),
+                    id="rust-crashes",
+                    spacing=8,
                     padding=10,
                 ),
                 ui.rule(),
-                # -- Crasher widget (Rust extension) --
+                # -- Crasher widget (Rust extension, absent with stock binary) --
                 crasher(
                     "crash-widget",
                     message="Crasher widget is alive",
-                    panic_on_render=(
-                        # The "panic-render" button was just clicked
-                        # when the model doesn't have view_crash_armed.
-                        # We use a separate flag in a real app, but for
-                        # this demo we keep it simple: the button doesn't
-                        # actually set panic_on_render since we can't
-                        # recover the model afterward (the renderer would
-                        # crash). This is intentional -- the button is
-                        # there for manual testing with a real binary.
-                        False
-                    ),
+                    panic_on_render=False,
                 ),
                 spacing=15,
                 padding=20,
+                width="fill",
             ),
             title="Crash Test",
             size=(500, 600),
