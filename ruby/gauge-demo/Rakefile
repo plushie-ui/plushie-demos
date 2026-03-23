@@ -1,0 +1,21 @@
+# frozen_string_literal: true
+
+require "minitest/test_task"
+
+Minitest::TestTask.create
+
+require "standard/rake"
+
+require "plushie"
+require_relative "lib/gauge_extension"
+
+Plushie.configure do |config|
+  config.extensions = [GaugeExtension]
+  config.extension_config = {
+    "gauge" => {"arc_width" => 8, "tick_count" => 10}
+  }
+end
+
+require "plushie/rake"
+
+task default: %i[test standard]
