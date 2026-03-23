@@ -1,0 +1,14 @@
+{
+  "name": "gauge-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:ext": "npx plushie build",
+    "dev": "npx plushie dev src/app.tsx",
+    "run": "npx plushie run src/app.tsx"
+  },
+  "dependencies": {
+    "plushie": "file:../../../plushie-typescript"
+  }
+}

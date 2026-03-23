@@ -1,0 +1,21 @@
+{
+  "extensions": [
+    {
+      "type": "gauge",
+      "rustCrate": "native/gauge",
+      "rustConstructor": "gauge::GaugeExtension::new()",
+      "props": {
+        "value": "number",
+        "min": "number",
+        "max": "number",
+        "color": "color",
+        "label": "string",
+        "width": "length",
+        "height": "length"
+      },
+      "events": ["value_changed"],
+      "commands": ["set_value", "animate_to"]
+    }
+  ],
+  "binaryName": "gauge-demo-plushie"
+}

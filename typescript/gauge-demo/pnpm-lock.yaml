@@ -1,0 +1,32 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      plushie:
+        specifier: file:../../../plushie-typescript
+        version: file:../../../plushie-typescript
+
+packages:
+
+  '@msgpack/msgpack@3.1.3':
+    resolution: {integrity: sha512-47XIizs9XZXvuJgoaJUIE2lFoID8ugvc0jzSHP+Ptfk8nTbnR8g788wv48N03Kx0UkAv559HWRQ3yzOgzlRNUA==}
+    engines: {node: '>= 18'}
+
+  plushie@file:../../../plushie-typescript:
+    resolution: {directory: ../../../plushie-typescript, type: directory}
+    engines: {node: '>=20'}
+    hasBin: true
+
+snapshots:
+
+  '@msgpack/msgpack@3.1.3': {}
+
+  plushie@file:../../../plushie-typescript:
+    dependencies:
+      '@msgpack/msgpack': 3.1.3
