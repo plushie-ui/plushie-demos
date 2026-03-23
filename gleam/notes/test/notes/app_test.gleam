@@ -338,13 +338,13 @@ pub fn shortcut_bar_present_in_editor_view_test() {
 pub fn list_shortcuts_show_ctrl_n_test() {
   let #(m, _) = model.init()
   let tree = app.view(m)
-  should.be_true(option.is_some(find_node(tree, "Ctrl+N-hint")))
+  should.be_true(option.is_some(find_node(tree, "ctrl-n-hint")))
 }
 
 pub fn editor_shortcuts_show_ctrl_z_test() {
   let m = model_with_note_open()
   let tree = app.view(m)
-  should.be_true(option.is_some(find_node(tree, "Ctrl+Z-hint")))
+  should.be_true(option.is_some(find_node(tree, "ctrl-z-hint")))
 }
 
 // ---------------------------------------------------------------------------

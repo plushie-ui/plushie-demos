@@ -244,13 +244,13 @@ fn editor_view(model: Model, note_id: String) -> Node {
 fn shortcut_bar(current_view: View) -> Node {
   let hints = case current_view {
     ListView -> [
-      shortcut_hint("Ctrl+N", "New note"),
-      shortcut_hint("/", "Search"),
+      shortcut_hint("ctrl-n", "Ctrl+N", "New note"),
+      shortcut_hint("slash", "/", "Search"),
     ]
     EditorView(_) -> [
-      shortcut_hint("Esc", "Back"),
-      shortcut_hint("Ctrl+Z", "Undo"),
-      shortcut_hint("Ctrl+Shift+Z", "Redo"),
+      shortcut_hint("esc", "Esc", "Back"),
+      shortcut_hint("ctrl-z", "Ctrl+Z", "Undo"),
+      shortcut_hint("ctrl-shift-z", "Ctrl+Shift+Z", "Redo"),
     ]
   }
 
@@ -261,22 +261,22 @@ fn shortcut_bar(current_view: View) -> Node {
   )
 }
 
-fn shortcut_hint(key_label: String, action: String) -> Node {
+fn shortcut_hint(id: String, key_label: String, action: String) -> Node {
   let assert Ok(badge_bg) = color.from_hex("#f0f0f0")
   let assert Ok(hint_color) = color.from_hex("#666666")
 
-  ui.row(key_label <> "-hint", [ui.spacing(4), ui.align_y(alignment.Center)], [
+  ui.row(id <> "-hint", [ui.spacing(4), ui.align_y(alignment.Center)], [
     ui.container(
-      key_label <> "-badge",
+      id <> "-badge",
       [
         ui.padding(padding.xy(2.0, 6.0)),
         ui.background(badge_bg),
       ],
       [
-        ui.text(key_label <> "-key", key_label, [ui.font_size(11.0)]),
+        ui.text(id <> "-key", key_label, [ui.font_size(11.0)]),
       ],
     ),
-    ui.text(key_label <> "-action", action, [
+    ui.text(id <> "-action", action, [
       ui.font_size(11.0),
       ui.text_color(hint_color),
     ]),
