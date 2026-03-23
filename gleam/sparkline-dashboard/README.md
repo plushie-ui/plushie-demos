@@ -9,26 +9,18 @@ timer subscriptions, and simulated live data.
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (1.92+, for building the custom binary)
-- [plushie-renderer](https://github.com/plushie-ui/plushie-renderer) source checkout
-- [plushie-iced](https://github.com/plushie-ui/plushie-iced) source checkout (sibling of renderer)
 
 ## Setup
 
-Install Gleam dependencies:
-
 ```bash
 gleam deps download
-```
-
-Build the custom plushie binary with the sparkline extension compiled in:
-
-```bash
 bin/build
 ```
 
-This creates `build/plushie/bin/sparkline-dashboard-plushie`. The build
-script looks for the plushie-renderer source at `~/projects/plushie-renderer`
-by default. Override with `PLUSHIE_SOURCE_PATH`:
+This builds a custom plushie binary with the sparkline extension
+compiled in and installs it to
+`build/plushie/bin/sparkline-dashboard-plushie`. The extension crate
+and renderer are fetched from crates.io automatically.
 
 ```bash
 PLUSHIE_SOURCE_PATH=/path/to/plushie-renderer bin/build

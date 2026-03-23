@@ -9,30 +9,17 @@ the optimistic update pattern, and the custom binary build workflow.
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (1.92+, for building the custom binary)
-- [plushie-renderer](https://github.com/plushie-ui/plushie-renderer) source checkout
-- [plushie-iced](https://github.com/plushie-ui/plushie-iced) source checkout (sibling of renderer)
 
 ## Setup
 
-Install Gleam dependencies:
-
 ```bash
 gleam deps download
-```
-
-Build the custom plushie binary with the gauge extension compiled in:
-
-```bash
 bin/build
 ```
 
-This creates `build/plushie/bin/gauge-demo-plushie`. The build script
-looks for the plushie-renderer source at `~/projects/plushie-renderer`
-by default. Override with `PLUSHIE_SOURCE_PATH`:
-
-```bash
-PLUSHIE_SOURCE_PATH=/path/to/plushie-renderer bin/build
-```
+This builds a custom plushie binary with the gauge extension compiled
+in and installs it to `build/plushie/bin/gauge-demo-plushie`. The
+extension crate and renderer are fetched from crates.io automatically.
 
 ## Run
 

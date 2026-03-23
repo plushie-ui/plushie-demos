@@ -9,8 +9,6 @@ panics. The counter survives all three.
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (1.92+, for building the custom binary)
-- [plushie-renderer](https://github.com/plushie-ui/plushie-renderer) source checkout
-- [plushie-iced](https://github.com/plushie-ui/plushie-iced) source checkout (sibling of renderer)
 
 ## Setup
 
@@ -18,6 +16,8 @@ panics. The counter survives all three.
 gleam deps download
 bin/build
 ```
+
+The build script fetches the renderer and extension SDK from crates.io.
 
 ## Run
 

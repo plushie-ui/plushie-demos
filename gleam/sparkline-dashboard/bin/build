@@ -43,7 +43,7 @@ EOF
 
 # Generate main.rs
 cat > "$BUILD_DIR/src/main.rs" <<'EOF'
-fn main() -> iced::Result {
+fn main() -> plushie_ext::iced::Result {
     env_logger::init();
     let builder = plushie_ext::app::PlushieAppBuilder::new()
         .extension(sparkline::SparklineExtension::new());
