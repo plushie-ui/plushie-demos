@@ -2,10 +2,10 @@
  * Data Explorer -- browse, search, sort, and paginate structured data.
  *
  * Demonstrates: Data.query pipeline, Table widget with sorting,
- * keyboard shortcuts, file open effect, and SEA standalone packaging.
+ * PickList for page size, and SEA standalone packaging.
  */
 
-import { app, Command, Data, Subscription, isTimer, isClick } from "plushie"
+import { app, Data } from "plushie"
 import {
   Window,
   Column,
@@ -15,7 +15,6 @@ import {
   TextInput,
   PickList,
   Table,
-  Container,
 } from "plushie/ui"
 import { COUNTRIES } from "./countries.js"
 import type { Country } from "./countries.js"
@@ -29,7 +28,6 @@ export interface Model {
   sortDir: "asc" | "desc"
   page: number
   pageSize: number
-  selectedName: string | null
 }
 
 export function init(): Model {
@@ -40,7 +38,6 @@ export function init(): Model {
     sortDir: "asc",
     page: 1,
     pageSize: 10,
-    selectedName: null,
   }
 }
 
@@ -50,7 +47,8 @@ function formatNumber(n: number): string {
   return n.toLocaleString("en-US")
 }
 
-function queryRecords(model: Model) {
+/** Run the full query pipeline against the current model. */
+export function queryRecords(model: Model) {
   return Data.query(model.records, {
     search:
       model.search.length > 0
@@ -67,21 +65,18 @@ function queryRecords(model: Model) {
 const setSearch = (s: Model, e: { value: unknown }): Model => ({
   ...s,
   search: e.value as string,
-  page: 1, // reset to first page on search
-  selectedName: null,
+  page: 1,
 })
 
 const clearSearch = (s: Model): Model => ({
   ...s,
   search: "",
   page: 1,
-  selectedName: null,
 })
 
 const handleSort = (s: Model, e: { column: unknown }): Model => {
   const col = e.column as string
   if (col === s.sortField) {
-    // Toggle direction
     return { ...s, sortDir: s.sortDir === "asc" ? "desc" : "asc", page: 1 }
   }
   return { ...s, sortField: col, sortDir: "asc", page: 1 }
@@ -117,10 +112,6 @@ export function view(model: Model) {
     population: formatNumber(c.population),
     area: formatNumber(c.area),
   }))
-
-  const selected = model.selectedName
-    ? model.records.find((c) => c.name === model.selectedName) ?? null
-    : null
 
   return (
     <Window id="main" title="Data Explorer">
@@ -172,18 +163,10 @@ export function view(model: Model) {
 
         {/* Pagination */}
         <Row spacing={8}>
-          <Button
-            id="prev"
-            onClick={prevPage}
-            disabled={model.page <= 1}
-          >
+          <Button id="prev" onClick={prevPage}>
             Previous
           </Button>
-          <Button
-            id="next"
-            onClick={nextPage}
-            disabled={model.page >= totalPages}
-          >
+          <Button id="next" onClick={nextPage}>
             Next
           </Button>
           <PickList
@@ -193,29 +176,6 @@ export function view(model: Model) {
             onSelect={setPageSize}
           />
         </Row>
-
-        {/* Detail panel */}
-        {selected !== null && (
-          <Container id="detail" padding={12}>
-            <Column spacing={4}>
-              <Text id="detail_name" size={16}>
-                {selected.name}
-              </Text>
-              <Text id="detail_info" size={13} color="#666666">
-                {`Capital: ${selected.capital}`}
-              </Text>
-              <Text id="detail_continent" size={13} color="#666666">
-                {`Continent: ${selected.continent}`}
-              </Text>
-              <Text id="detail_pop" size={13} color="#666666">
-                {`Population: ${formatNumber(selected.population)}`}
-              </Text>
-              <Text id="detail_area" size={13} color="#666666">
-                {`Area: ${formatNumber(selected.area)} km\u00B2`}
-              </Text>
-            </Column>
-          </Container>
-        )}
       </Column>
     </Window>
   )

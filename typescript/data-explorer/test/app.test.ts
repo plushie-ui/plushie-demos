@@ -118,7 +118,6 @@ describe("init", () => {
     expect(m.sortDir).toBe("asc")
     expect(m.page).toBe(1)
     expect(m.pageSize).toBe(10)
-    expect(m.selectedName).toBeNull()
   })
 })
 
