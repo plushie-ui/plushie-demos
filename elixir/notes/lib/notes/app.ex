@@ -364,7 +364,7 @@ defmodule Notes.App do
           for note_map <- notes do
             NoteCard.new("note_#{note_map.id}",
               title: note_map.title,
-              preview: String.slice(note_map[:content] || "", 0, 80),
+              preview: String.slice(note_map.content, 0, 80),
               timestamp: format_time(note_map.updated_at),
               selected: Plushie.Selection.selected?(model.selection, note_map.id)
             )
@@ -381,27 +381,14 @@ defmodule Notes.App do
     note_id = current_note_id(model)
     note = Enum.find(model.notes, &(&1.id == note_id))
 
-    unless note do
-      # Missing note -- return a list of fallback widgets
-      [
-        Toolbar.new("toolbar", title: "Not Found", show_back: true),
-        text("missing", "This note no longer exists.", size: 14, color: "#888888"),
-        ShortcutBar.new("shortcuts", hints: [{"Esc", "back"}])
-      ]
-    else
-      # Undo/redo actions appear when the stack has entries
+    if note do
+      # Undo/redo actions appear only when the stack has entries
       actions =
-        []
-        |> then(fn a ->
-          if model.undo && Plushie.Undo.can_undo?(model.undo),
-            do: [{"undo", "Undo"} | a],
-            else: a
-        end)
-        |> then(fn a ->
-          if model.undo && Plushie.Undo.can_redo?(model.undo),
-            do: a ++ [{"redo", "Redo"}],
-            else: a
-        end)
+        [
+          if(model.undo && Plushie.Undo.can_undo?(model.undo), do: {"undo", "Undo"}),
+          if(model.undo && Plushie.Undo.can_redo?(model.undo), do: {"redo", "Redo"})
+        ]
+        |> Enum.reject(&is_nil/1)
 
       [
         Toolbar.new("toolbar", title: note.title, show_back: true, actions: actions),
@@ -415,6 +402,13 @@ defmodule Notes.App do
           )
         end,
         ShortcutBar.new("shortcuts", hints: editor_hints(model))
+      ]
+    else
+      # Missing note -- fallback widgets
+      [
+        Toolbar.new("toolbar", title: "Not Found", show_back: true),
+        text("missing", "This note no longer exists.", size: 14, color: "#888888"),
+        ShortcutBar.new("shortcuts", hints: [{"Esc", "back"}])
       ]
     end
   end
