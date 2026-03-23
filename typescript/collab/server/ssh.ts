@@ -143,6 +143,10 @@ function handleSshChannel(channel: ServerChannel): void {
   let handshakeDone = false
   let buffer = new Uint8Array(0)
 
+  channel.on("error", () => {
+    // Ignore write errors on destroyed channels
+  })
+
   // Send settings to start the handshake
   const settings = encodeSettings("pending", { default_event_rate: 30 })
   const settingsBytes = msgpackEncode(settings)
