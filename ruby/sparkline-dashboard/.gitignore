@@ -4,3 +4,5 @@
 /tmp/
 *.gem
 Gemfile.lock
+**/target/
+Cargo.lock

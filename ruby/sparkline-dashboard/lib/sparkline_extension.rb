@@ -19,6 +19,5 @@ class SparklineExtension
   prop :color, :color, default: "#4CAF50"
   prop :stroke_width, :number, default: 2.0
   prop :fill, :boolean, default: false
-  prop :label, :string, default: nil
   prop :height, :number, default: 60.0
 end

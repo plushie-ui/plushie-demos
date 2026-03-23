@@ -26,7 +26,6 @@ class SparklineExtensionTest < Minitest::Test
     assert_includes names, :color
     assert_includes names, :stroke_width
     assert_includes names, :fill
-    assert_includes names, :label
     assert_includes names, :height
   end
 
@@ -54,7 +53,6 @@ class SparklineExtensionTest < Minitest::Test
     assert_equal "#4CAF50", spark.color
     assert_equal 2.0, spark.stroke_width
     assert_equal false, spark.fill
-    assert_nil spark.label
     assert_equal 60.0, spark.height
   end
 
@@ -64,13 +62,11 @@ class SparklineExtensionTest < Minitest::Test
       color: "#FF0000",
       stroke_width: 3.0,
       fill: true,
-      label: "CPU",
       height: 80.0)
     assert_equal [1, 2, 3], spark.data
     assert_equal "#FF0000", spark.color
     assert_equal 3.0, spark.stroke_width
     assert_equal true, spark.fill
-    assert_equal "CPU", spark.label
     assert_equal 80.0, spark.height
   end
 
@@ -126,7 +122,8 @@ class SparklineExtensionTest < Minitest::Test
     spark = SparklineExtension.new("s1")
     node = spark.build
 
-    refute node.props.key?(:label)
+    refute node.props.key?(:a11y)
+    refute node.props.key?(:event_rate)
   end
 
   def test_a11y_prop
