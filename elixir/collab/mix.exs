@@ -7,8 +7,10 @@ defmodule Collab.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: ["lib"],
+      elixirc_options: [warnings_as_errors: true],
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -20,7 +22,8 @@ defmodule Collab.MixProject do
 
   defp deps do
     [
-      {:plushie, path: "../../../toddy-elixir"},
+      {:plushie, path: "../../../plushie-elixir"},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:bandit, "~> 1.0"},
       {:websock_adapter, "~> 0.5"},
       {:plug, "~> 1.15"},

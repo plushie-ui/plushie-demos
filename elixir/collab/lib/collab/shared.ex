@@ -5,27 +5,35 @@ defmodule Collab.Shared do
   Holds the authoritative model and a set of connected clients.
   When any client sends an event, the server runs update(), re-renders
   the view, and broadcasts the new model to ALL connected clients.
+
+  The `status` field is managed by this server (not the app). It
+  tracks the current connection count and is re-set after every
+  event and connect/disconnect.
   """
 
   use GenServer
 
   # -- Public API -------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
 
-  @doc "Register a client. The caller receives {:model_changed, model} messages."
+  @doc "Register a client. The caller receives `{:model_changed, model}` messages."
+  @spec connect(GenServer.server(), String.t()) :: :ok
   def connect(server, client_id) do
     GenServer.call(server, {:connect, client_id, self()})
   end
 
   @doc "Unregister a client."
+  @spec disconnect(GenServer.server(), String.t()) :: :ok
   def disconnect(server, client_id) do
     GenServer.cast(server, {:disconnect, client_id})
   end
 
   @doc "Forward a widget event from a client."
+  @spec event(GenServer.server(), String.t(), Plushie.Event.t()) :: :ok
   def event(server, client_id, event) do
     GenServer.cast(server, {:event, client_id, event})
   end
@@ -57,6 +65,7 @@ defmodule Collab.Shared do
     {:noreply, %{state | model: model, clients: clients}}
   end
 
+  @impl true
   def handle_cast({:event, _id, event}, state) do
     new_model = Collab.update(state.model, event)
     # Preserve status (managed by the server, not the app)
@@ -83,12 +92,14 @@ defmodule Collab.Shared do
 
   # -- Internals --------------------------------------------------------------
 
+  @spec broadcast(%{String.t() => pid()}, Collab.Model.t()) :: :ok
   defp broadcast(clients, model) do
     Enum.each(clients, fn {_id, pid} ->
       send(pid, {:model_changed, model})
     end)
   end
 
+  @spec status_text(%{String.t() => pid()}) :: String.t()
   defp status_text(clients) do
     count = map_size(clients)
     "#{count} connected"

@@ -17,10 +17,33 @@ defmodule Collab do
 
   alias Plushie.Event.Widget
 
-  def init(_opts) do
-    %{name: "", notes: "", count: 0, dark_mode: false, status: ""}
+  defmodule Model do
+    @moduledoc """
+    Collab app state.
+
+    - `name`, `notes`, `count` -- shared across all connected clients
+    - `dark_mode` -- per-client (not forwarded to the shared server)
+    - `status` -- set externally by the server adapter (connection count)
+    """
+
+    @type t :: %__MODULE__{
+            name: String.t(),
+            notes: String.t(),
+            count: integer(),
+            dark_mode: boolean(),
+            status: String.t()
+          }
+
+    @enforce_keys [:name, :notes, :count, :dark_mode, :status]
+    defstruct [:name, :notes, :count, :dark_mode, :status]
   end
 
+  @impl true
+  def init(_opts) do
+    %Model{name: "", notes: "", count: 0, dark_mode: false, status: ""}
+  end
+
+  @impl true
   def update(model, %Widget{type: :click, id: "inc"}),
     do: %{model | count: model.count + 1}
 
@@ -38,6 +61,7 @@ defmodule Collab do
 
   def update(model, _event), do: model
 
+  @impl true
   def view(model) do
     import Plushie.UI
 
@@ -69,5 +93,6 @@ defmodule Collab do
     end
   end
 
+  @impl true
   def settings, do: [default_event_rate: 30]
 end
