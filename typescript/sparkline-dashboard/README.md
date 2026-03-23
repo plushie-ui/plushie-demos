@@ -25,7 +25,7 @@ Requires the [plushie source](https://github.com/plushie-ui/plushie)
 checked out locally:
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
 npx plushie build
 ```
 

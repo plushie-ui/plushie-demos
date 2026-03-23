@@ -22,8 +22,8 @@ The browser modes require plushie-wasm files in `static/`. Copy them
 from a plushie WASM build:
 
 ```bash
-cp ~/projects/plushie/plushie-wasm/pkg/plushie_wasm.js static/
-cp ~/projects/plushie/plushie-wasm/pkg/plushie_wasm_bg.wasm static/
+cp ~/projects/plushie-renderer/plushie-wasm/pkg/plushie_wasm.js static/
+cp ~/projects/plushie-renderer/plushie-wasm/pkg/plushie_wasm_bg.wasm static/
 ```
 
 ## Quick start
