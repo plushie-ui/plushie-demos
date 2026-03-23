@@ -1,0 +1,8 @@
+/_build/
+/doc/
+/.yardoc/
+/tmp/
+*.gem
+Gemfile.lock
+**/target/
+Cargo.lock
