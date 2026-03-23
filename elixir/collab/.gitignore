@@ -5,4 +5,4 @@
 .mix/
 
 # Downloaded WASM renderer (users fetch via mix plushie.download --wasm)
-/priv/static/plushie_wasm*
+/priv/static/plushie_renderer_wasm*
