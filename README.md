@@ -24,6 +24,7 @@ See the [Gleam demos README](gleam/README.md) for setup and details.
 
 | Demo | Description |
 |------|-------------|
+| [data-explorer](typescript/data-explorer/) | Data query pipeline + SEA standalone packaging -- single executable desktop app |
 | [collab](typescript/collab/) | Collaborative scratchpad -- native, SSH, WebSocket, and client-side WASM |
 | [gauge-demo](typescript/gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](typescript/sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |

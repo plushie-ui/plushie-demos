@@ -1,0 +1,24 @@
+{
+  "name": "data-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx plushie dev src/app.tsx",
+    "run": "npx plushie run src/app.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bundle": "node scripts/bundle.mjs",
+    "package": "bash scripts/package.sh"
+  },
+  "dependencies": {
+    "plushie": "file:../../../plushie-typescript"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "postject": "^1.0.0-alpha.6",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.0"
+  }
+}

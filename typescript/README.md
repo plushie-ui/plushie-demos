@@ -7,6 +7,7 @@ Example applications for
 
 | Demo | Description |
 |------|-------------|
+| [data-explorer](data-explorer/) | Data query pipeline + SEA standalone packaging -- browse, search, sort countries |
 | [collab](collab/) | Collaborative scratchpad -- 6 ways to run the same app (native, WebSocket, SSH, WASM) |
 | [gauge-demo](gauge-demo/) | Native Rust extension with commands -- interactive gauge widget |
 | [sparkline-dashboard](sparkline-dashboard/) | Render-only Rust extension with canvas -- live system monitor |
