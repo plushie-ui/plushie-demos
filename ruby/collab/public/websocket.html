@@ -46,7 +46,7 @@
         loading.innerHTML =
           '<div>plushie-wasm not found.</div>' +
           '<div style="font-size: 0.85em; color: #888; max-width: 500px; text-align: center;">' +
-          'Run: rake plushie:download[wasm]' +
+          'Run: PLUSHIE_WASM_DIR=public rake plushie:download[wasm]' +
           '</div>';
         return;
       }
