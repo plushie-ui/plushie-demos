@@ -148,6 +148,10 @@ fn handle_ws_message(
           // on connect via the shared actor's ClientConnect response
           mist.continue(state)
         }
+        Ok(_) -> {
+          // EffectStubAck, etc. -- ignore
+          mist.continue(state)
+        }
         Error(_) -> {
           mist.continue(state)
         }

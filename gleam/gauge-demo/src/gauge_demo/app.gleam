@@ -18,6 +18,10 @@ import plushie/prop/color.{type Color}
 import plushie/prop/length.{Fixed}
 import plushie/prop/padding
 import plushie/ui
+import plushie/widget/column
+import plushie/widget/row
+import plushie/widget/text
+import plushie/widget/window
 
 const max_history = 50
 
@@ -86,16 +90,16 @@ pub fn view(model: Model) -> Node {
   let status = temperature_status(temp)
   let color = status_color(temp)
 
-  ui.window("main", [ui.title("Temperature Gauge")], [
+  ui.window("main", [window.Title("Temperature Gauge")], [
     ui.column(
       "content",
       [
-        ui.padding(padding.all(24.0)),
-        ui.spacing(16),
-        ui.align_x(alignment.Center),
+        column.Padding(padding.all(24.0)),
+        column.Spacing(16),
+        column.AlignX(alignment.Center),
       ],
       [
-        ui.text("title", "Temperature Monitor", [ui.font_size(24.0)]),
+        ui.text("title", "Temperature Monitor", [text.Size(24.0)]),
         gauge.gauge("temp", temp, [
           gauge.min(0.0),
           gauge.max(100.0),
@@ -104,7 +108,7 @@ pub fn view(model: Model) -> Node {
           gauge.width(Fixed(200.0)),
           gauge.height(Fixed(200.0)),
         ]),
-        ui.text("status", "Status: " <> status, [ui.text_color(color)]),
+        ui.text("status", "Status: " <> status, [text.Color(color)]),
         ui.text(
           "reading",
           "Current: "
@@ -114,12 +118,12 @@ pub fn view(model: Model) -> Node {
           [],
         ),
         ui.slider("target", #(0.0, 100.0), model.target_temp, []),
-        ui.row("actions", [ui.spacing(8)], [
+        ui.row("actions", [row.Spacing(8)], [
           ui.button_("reset", "Reset (20\u{00B0}C)"),
           ui.button_("high", "High (90\u{00B0}C)"),
         ]),
         ui.text("history", "History: " <> format_history(model.history), [
-          ui.font_size(12.0),
+          text.Size(12.0),
         ]),
       ],
     ),

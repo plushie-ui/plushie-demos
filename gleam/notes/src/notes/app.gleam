@@ -29,7 +29,14 @@ import plushie/prop/length
 import plushie/prop/padding
 import plushie/subscription.{type Subscription}
 import plushie/ui
+import plushie/widget/button
+import plushie/widget/column
+import plushie/widget/container
+import plushie/widget/row
+import plushie/widget/text as text_opts
 import plushie/widget/text_editor
+import plushie/widget/text_input
+import plushie/widget/window
 
 // -- Elm loop ----------------------------------------------------------------
 
@@ -135,13 +142,13 @@ pub fn view(model: Model) -> Node {
     EditorView(id) -> editor_view(model, id)
   }
 
-  ui.window("main", [ui.title("Notes"), ui.window_size(600.0, 500.0)], [
+  ui.window("main", [window.Title("Notes"), window.Size(600.0, 500.0)], [
     ui.column(
       "root",
       [
-        ui.padding(padding.all(16.0)),
-        ui.width(length.Fill),
-        ui.height(length.Fill),
+        column.Padding(padding.all(16.0)),
+        column.Width(length.Fill),
+        column.Height(length.Fill),
       ],
       [
         content,
@@ -167,16 +174,16 @@ fn list_view(model: Model) -> Node {
 
   ui.column(
     "list-view",
-    [ui.spacing(12), ui.width(length.Fill)],
+    [column.Spacing(12), column.Width(length.Fill)],
     list.flatten([
       [
-        ui.row("list-header", [ui.spacing(8)], [
-          ui.text("list-title", "Notes", [ui.font_size(24.0)]),
+        ui.row("list-header", [row.Spacing(8)], [
+          ui.text("list-title", "Notes", [text_opts.Size(24.0)]),
           ui.button_("create", "+ New"),
         ]),
         ui.text_input("search", model.search, [
-          ui.placeholder("Search notes..."),
-          ui.width(length.Fill),
+          text_input.Placeholder("Search notes..."),
+          text_input.Width(length.Fill),
         ]),
       ],
       note_rows,
@@ -196,14 +203,18 @@ fn note_row(note: Note) -> Node {
 
   let assert Ok(muted) = color.from_hex("#888888")
 
-  ui.row("row-" <> note.id, [ui.spacing(8), ui.width(length.Fill)], [
-    ui.column("info-" <> note.id, [ui.spacing(2), ui.width(length.Fill)], [
-      ui.button("note-" <> note.id, note.title, [ui.width(length.Fill)]),
-      ui.text("preview-" <> note.id, preview, [
-        ui.font_size(12.0),
-        ui.text_color(muted),
-      ]),
-    ]),
+  ui.row("row-" <> note.id, [row.Spacing(8), row.Width(length.Fill)], [
+    ui.column(
+      "info-" <> note.id,
+      [column.Spacing(2), column.Width(length.Fill)],
+      [
+        ui.button("note-" <> note.id, note.title, [button.Width(length.Fill)]),
+        ui.text("preview-" <> note.id, preview, [
+          text_opts.Size(12.0),
+          text_opts.Color(muted),
+        ]),
+      ],
+    ),
     ui.button_("delete-" <> note.id, "x"),
   ])
 }
@@ -211,8 +222,8 @@ fn note_row(note: Note) -> Node {
 fn empty_state(message: String) -> Node {
   let assert Ok(muted) = color.from_hex("#999999")
   ui.text("empty", message, [
-    ui.font_size(14.0),
-    ui.text_color(muted),
+    text_opts.Size(14.0),
+    text_opts.Color(muted),
   ])
 }
 
@@ -226,17 +237,21 @@ fn editor_view(model: Model, note_id: String) -> Node {
 
       ui.column(
         "editor-view",
-        [ui.spacing(12), ui.width(length.Fill), ui.height(length.Fill)],
         [
-          ui.row("editor-header", [ui.spacing(8)], [
+          column.Spacing(12),
+          column.Width(length.Fill),
+          column.Height(length.Fill),
+        ],
+        [
+          ui.row("editor-header", [row.Spacing(8)], [
             ui.button_("back", "Back"),
-            ui.button("undo", "Undo", [ui.disabled(!has_undo)]),
-            ui.button("redo", "Redo", [ui.disabled(!has_redo)]),
+            ui.button("undo", "Undo", [button.Disabled(!has_undo)]),
+            ui.button("redo", "Redo", [button.Disabled(!has_redo)]),
           ]),
           ui.text_input("title", note.title, [
-            ui.placeholder("Note title"),
-            ui.width(length.Fill),
-            ui.font_size(20.0),
+            text_input.Placeholder("Note title"),
+            text_input.Width(length.Fill),
+            text_input.Size(20.0),
           ]),
           text_editor.new("body", note.body)
             |> text_editor.placeholder("Start writing...")
@@ -268,7 +283,7 @@ fn shortcut_bar(current_view: View) -> Node {
 
   ui.row(
     "shortcut-bar",
-    [ui.spacing(16), ui.padding(padding.xy(8.0, 0.0)), ui.width(length.Fill)],
+    [row.Spacing(16), row.Padding(padding.xy(8.0, 0.0)), row.Width(length.Fill)],
     hints,
   )
 }
@@ -277,20 +292,20 @@ fn shortcut_hint(id: String, key_label: String, action: String) -> Node {
   let assert Ok(badge_bg) = color.from_hex("#f0f0f0")
   let assert Ok(hint_color) = color.from_hex("#666666")
 
-  ui.row(id <> "-hint", [ui.spacing(4), ui.align_y(alignment.Center)], [
+  ui.row(id <> "-hint", [row.Spacing(4), row.AlignY(alignment.Center)], [
     ui.container(
       id <> "-badge",
       [
-        ui.padding(padding.xy(2.0, 6.0)),
-        ui.background(badge_bg),
+        container.Padding(padding.xy(2.0, 6.0)),
+        container.BgColor(badge_bg),
       ],
       [
-        ui.text(id <> "-key", key_label, [ui.font_size(11.0)]),
+        ui.text(id <> "-key", key_label, [text_opts.Size(11.0)]),
       ],
     ),
     ui.text(id <> "-action", action, [
-      ui.font_size(11.0),
-      ui.text_color(hint_color),
+      text_opts.Size(11.0),
+      text_opts.Color(hint_color),
     ]),
   ])
 }

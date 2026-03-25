@@ -18,7 +18,13 @@ import plushie/event.{type Event, WidgetClick, WidgetInput, WidgetToggle}
 import plushie/node.{type Node}
 import plushie/prop/length
 import plushie/prop/padding
+import plushie/prop/theme
 import plushie/ui
+import plushie/widget/column
+import plushie/widget/row
+import plushie/widget/text
+import plushie/widget/text_input
+import plushie/widget/window
 
 pub type Model {
   Model(
@@ -75,35 +81,35 @@ pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
 /// against the previous render and only changes are sent to the
 /// renderer as patches.
 pub fn view(model: Model) -> Node {
-  let theme = case model.dark_mode {
-    True -> "dark"
-    False -> "light"
+  let t = case model.dark_mode {
+    True -> theme.Dark
+    False -> theme.Light
   }
 
-  ui.window("main", [ui.title("Plushie Demo"), ui.window_size(500.0, 450.0)], [
-    ui.themer("theme-root", theme, [], [
+  ui.window("main", [window.Title("Plushie Demo"), window.Size(500.0, 450.0)], [
+    ui.themer("theme-root", t, [], [
       ui.column(
         "root",
         [
-          ui.padding(padding.all(20.0)),
-          ui.spacing(16),
-          ui.width(length.Fill),
+          column.Padding(padding.all(20.0)),
+          column.Spacing(16),
+          column.Width(length.Fill),
         ],
         [
-          ui.text("header", "Plushie Demo", [ui.font_size(24.0)]),
+          ui.text("header", "Plushie Demo", [text.Size(24.0)]),
           ui.text_("status", model.status),
           ui.text_input("name", model.name, [
-            ui.placeholder("Your name"),
+            text_input.Placeholder("Your name"),
           ]),
-          ui.row("counter-row", [ui.spacing(8)], [
+          ui.row("counter-row", [row.Spacing(8)], [
             ui.button_("dec", "-"),
             ui.text_("count", "Count: " <> int.to_string(model.count)),
             ui.button_("inc", "+"),
           ]),
           ui.checkbox("theme", "Dark mode", model.dark_mode, []),
           ui.text_input("notes", model.notes, [
-            ui.placeholder("Shared notes..."),
-            ui.width(length.Fill),
+            text_input.Placeholder("Shared notes..."),
+            text_input.Width(length.Fill),
           ]),
         ],
       ),

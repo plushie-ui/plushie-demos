@@ -28,6 +28,11 @@ import plushie/prop/color
 import plushie/prop/length
 import plushie/prop/padding
 import plushie/ui
+import plushie/widget/column
+import plushie/widget/container
+import plushie/widget/row
+import plushie/widget/text
+import plushie/widget/window
 
 /// Application state.
 pub type Model {
@@ -122,42 +127,42 @@ pub fn view(model: Model) -> Node {
     ]
     False -> [
       ui.text("widget-removed", "(widget removed from tree)", [
-        ui.text_color(muted),
-        ui.font_size(12.0),
+        text.Color(muted),
+        text.Size(12.0),
       ]),
     ]
   }
 
-  ui.window("main", [ui.title("Crash Lab"), ui.window_size(500.0, 520.0)], [
+  ui.window("main", [window.Title("Crash Lab"), window.Size(500.0, 520.0)], [
     ui.column(
       "root",
       [
-        ui.padding(padding.all(20.0)),
-        ui.spacing(16),
-        ui.width(length.Fill),
-        ui.align_x(alignment.Center),
+        column.Padding(padding.all(20.0)),
+        column.Spacing(16),
+        column.Width(length.Fill),
+        column.AlignX(alignment.Center),
       ],
       list.flatten([
-        [ui.text("title", "Crash Lab", [ui.font_size(24.0)])],
+        [ui.text("title", "Crash Lab", [text.Size(24.0)])],
         // Counter section
         [
           ui.container(
             "counter-section",
             [
-              ui.padding(padding.all(12.0)),
-              ui.background(section_bg),
-              ui.width(length.Fill),
+              container.Padding(padding.all(12.0)),
+              container.BgColor(section_bg),
+              container.Width(length.Fill),
             ],
             [
               ui.column(
                 "counter-col",
-                [ui.spacing(8), ui.align_x(alignment.Center)],
+                [column.Spacing(8), column.AlignX(alignment.Center)],
                 [
                   ui.text("counter-label", "Counter (proof of life)", [
-                    ui.font_size(12.0),
-                    ui.text_color(muted),
+                    text.Size(12.0),
+                    text.Color(muted),
                   ]),
-                  ui.row("counter-row", [ui.spacing(8)], [
+                  ui.row("counter-row", [row.Spacing(8)], [
                     ui.button_("dec", "-"),
                     ui.text_("count", int.to_string(model.count)),
                     ui.button_("inc", "+"),
@@ -171,11 +176,11 @@ pub fn view(model: Model) -> Node {
         widget_nodes,
         // Action buttons
         [
-          ui.row("rust-actions", [ui.spacing(8)], [
+          ui.row("rust-actions", [row.Spacing(8)], [
             ui.button_("panic-extension", "Panic Extension"),
             ui.button_("toggle-widget", toggle_label),
           ]),
-          ui.row("gleam-actions", [ui.spacing(8)], [
+          ui.row("gleam-actions", [row.Spacing(8)], [
             ui.button_("panic-update", "Panic Update"),
             ui.button_("break-view", "Break View"),
             ui.button_("recover-view", "Recover"),
@@ -186,7 +191,7 @@ pub fn view(model: Model) -> Node {
           ui.text(
             "hint",
             "All three crash types are caught. The counter survives every one.",
-            [ui.font_size(11.0), ui.text_color(muted)],
+            [text.Size(11.0), text.Color(muted)],
           ),
         ],
       ]),
