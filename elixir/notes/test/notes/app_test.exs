@@ -37,6 +37,14 @@ defmodule Notes.AppTest do
     assert_exists("#shortcuts_h0/shortcuts_key_0")
   end
 
+  test "initial tree matches snapshot" do
+    assert :ok =
+             Plushie.Test.assert_tree_snapshot(
+               tree(),
+               Path.join(["test", "snapshots", "notes_app_initial.json"])
+             )
+  end
+
   # -- Navigation -------------------------------------------------------------
 
   test "clicking a note opens the editor" do

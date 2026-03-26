@@ -81,6 +81,14 @@ defmodule CollabTest do
     assert_exists("#theme-root/bg/notes")
   end
 
+  test "initial tree matches snapshot" do
+    assert :ok =
+             Plushie.Test.assert_tree_snapshot(
+               tree(),
+               Path.join(["test", "snapshots", "collab_initial.json"])
+             )
+  end
+
   test "count text reflects model" do
     click("#inc")
     click("#inc")

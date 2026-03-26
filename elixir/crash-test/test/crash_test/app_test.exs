@@ -65,6 +65,14 @@ defmodule CrashTest.AppTest do
     assert element.type == "crash_widget"
   end
 
+  test "initial tree matches snapshot" do
+    assert :ok =
+             Plushie.Test.assert_tree_snapshot(
+               tree(),
+               Path.join(["test", "snapshots", "crash_test_initial.json"])
+             )
+  end
+
   # -- Unknown events ---------------------------------------------------------
 
   test "unknown click leaves model unchanged" do
@@ -72,5 +80,9 @@ defmodule CrashTest.AppTest do
     click("#inc")
     click("#dec")
     assert model().count == count_before
+  end
+
+  test "initial screenshot matches golden" do
+    assert_screenshot("crash_test_initial")
   end
 end

@@ -16,7 +16,7 @@ defmodule Collab.SshChannel do
 
   @behaviour :ssh_server_channel
 
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
   alias Plushie.Transport.Framing
 
   defstruct [
@@ -94,7 +94,7 @@ defmodule Collab.SshChannel do
 
   defp handle_frame(frame, state) do
     case Plushie.Protocol.Decode.decode_message(frame, :msgpack) do
-      %Widget{type: :toggle, id: "theme", value: checked} ->
+      %WidgetEvent{type: :toggle, id: "theme", value: checked} ->
         %{state | dark_mode: checked}
 
       %_{} = event ->

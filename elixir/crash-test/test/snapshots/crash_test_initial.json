@@ -1,0 +1,182 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [],
+          "id": "title",
+          "props": {
+            "content": "Crash Test",
+            "size": 24
+          },
+          "type": "text"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "count",
+              "props": {
+                "content": "Count: 0",
+                "size": 18
+              },
+              "type": "text"
+            },
+            {
+              "children": [],
+              "id": "inc",
+              "props": {
+                "label": "+"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "dec",
+              "props": {
+                "label": "-"
+              },
+              "type": "button"
+            }
+          ],
+          "id": "auto:CrashTest.App:85",
+          "props": {
+            "spacing": 12
+          },
+          "type": "row"
+        },
+        {
+          "children": [],
+          "id": "counter_hint",
+          "props": {
+            "color": "#888888",
+            "content": "This counter keeps working through every crash below.",
+            "size": 12
+          },
+          "type": "text"
+        },
+        {
+          "children": [],
+          "id": "auto:CrashTest.App:96",
+          "props": {},
+          "type": "rule"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "crash_update",
+              "props": {
+                "label": "Crash update/2"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "crash_update_desc",
+              "props": {
+                "color": "#888888",
+                "content": "Raises RuntimeError in update/2. The runtime catches it and rolls back the model to its pre-exception state.",
+                "size": 12
+              },
+              "type": "text"
+            }
+          ],
+          "id": "auto:CrashTest.App:99",
+          "props": {
+            "spacing": 4
+          },
+          "type": "column"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "crash_view",
+              "props": {
+                "label": "Crash view/1"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "crash_view_desc",
+              "props": {
+                "color": "#888888",
+                "content": "Sets a flag that raises on the next render. The runtime catches it, shows the previous tree, and rolls back the model (clearing the flag). One-shot crash.",
+                "size": 12
+              },
+              "type": "text"
+            }
+          ],
+          "id": "auto:CrashTest.App:112",
+          "props": {
+            "spacing": 4
+          },
+          "type": "column"
+        },
+        {
+          "children": [],
+          "id": "auto:CrashTest.App:125",
+          "props": {},
+          "type": "rule"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "panic_widget",
+              "props": {
+                "label": "Panic extension"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "panic_desc",
+              "props": {
+                "color": "#888888",
+                "content": "Sends a command that panics the Rust extension's handle_command. The renderer isolates it via catch_unwind and replaces the widget with a red placeholder.",
+                "size": 12
+              },
+              "type": "text"
+            }
+          ],
+          "id": "auto:CrashTest.App:128",
+          "props": {
+            "spacing": 4
+          },
+          "type": "column"
+        },
+        {
+          "children": [],
+          "id": "crash_ext",
+          "meta": {
+            "__extension_widget_events__": [],
+            "__extension_widget_type__": "crash_widget"
+          },
+          "props": {
+            "label": "Widget OK"
+          },
+          "type": "crash_widget"
+        }
+      ],
+      "id": "auto:CrashTest.App:81",
+      "props": {
+        "padding": 20,
+        "spacing": 20,
+        "width": "fill"
+      },
+      "type": "column"
+    }
+  ],
+  "id": "main",
+  "props": {
+    "size": [
+      520,
+      560
+    ],
+    "title": "Crash Test"
+  },
+  "type": "window"
+}

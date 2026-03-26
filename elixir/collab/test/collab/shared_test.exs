@@ -2,12 +2,12 @@ defmodule Collab.SharedTest do
   use ExUnit.Case, async: true
 
   alias Collab.Shared
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   # -- Helpers ----------------------------------------------------------------
 
-  defp click(id), do: %Widget{type: :click, id: id}
-  defp input(id, value), do: %Widget{type: :input, id: id, value: value}
+  defp click(id), do: %WidgetEvent{type: :click, id: id}
+  defp input(id, value), do: %WidgetEvent{type: :input, id: id, value: value}
 
   defp receive_model do
     assert_receive {:model_changed, model}, 500

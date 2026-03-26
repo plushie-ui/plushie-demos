@@ -1,0 +1,114 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [],
+          "id": "title",
+          "props": {
+            "content": "Temperature Monitor",
+            "size": 24
+          },
+          "type": "text"
+        },
+        {
+          "children": [],
+          "id": "temp",
+          "meta": {
+            "__extension_widget_events__": [
+              "value_changed"
+            ],
+            "__extension_widget_type__": "gauge"
+          },
+          "props": {
+            "color": "#3498db",
+            "event_rate": 30,
+            "height": 200,
+            "label": "20°C",
+            "max": 100,
+            "min": 0,
+            "value": 20.0,
+            "width": 200
+          },
+          "type": "gauge"
+        },
+        {
+          "children": [],
+          "id": "status",
+          "props": {
+            "color": "#3498db",
+            "content": "Status: Cool"
+          },
+          "type": "text"
+        },
+        {
+          "children": [],
+          "id": "reading",
+          "props": {
+            "content": "Current: 20°C | Target: 20°C"
+          },
+          "type": "text"
+        },
+        {
+          "children": [],
+          "id": "target",
+          "props": {
+            "range": [
+              0,
+              100
+            ],
+            "value": 20.0
+          },
+          "type": "slider"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "reset",
+              "props": {
+                "label": "Reset (20°C)"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "high",
+              "props": {
+                "label": "High (90°C)"
+              },
+              "type": "button"
+            }
+          ],
+          "id": "auto:GaugeDemo.TemperatureMonitor:105",
+          "props": {
+            "spacing": 8
+          },
+          "type": "row"
+        },
+        {
+          "children": [],
+          "id": "history",
+          "props": {
+            "color": "#999999",
+            "content": "History: 20°",
+            "size": 12
+          },
+          "type": "text"
+        }
+      ],
+      "id": "auto:GaugeDemo.TemperatureMonitor:81",
+      "props": {
+        "align_x": "center",
+        "padding": 24,
+        "spacing": 16
+      },
+      "type": "column"
+    }
+  ],
+  "id": "main",
+  "props": {
+    "title": "Temperature Gauge"
+  },
+  "type": "window"
+}

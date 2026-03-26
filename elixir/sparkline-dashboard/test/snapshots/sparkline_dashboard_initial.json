@@ -1,0 +1,198 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [],
+          "id": "title",
+          "props": {
+            "content": "System Monitor",
+            "size": 24
+          },
+          "type": "text"
+        },
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "toggle_running",
+              "props": {
+                "label": "Pause"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "clear",
+              "props": {
+                "label": "Clear"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "status",
+              "props": {
+                "color": "#888888",
+                "content": "0 samples",
+                "size": 14
+              },
+              "type": "text"
+            }
+          ],
+          "id": "auto:SparklineDashboard.Dashboard:93",
+          "props": {
+            "spacing": 12
+          },
+          "type": "row"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "cpu_card/cpu_header/cpu_label",
+                  "props": {
+                    "color": "#666666",
+                    "content": "CPU Usage",
+                    "size": 14
+                  },
+                  "type": "text"
+                }
+              ],
+              "id": "cpu_card/cpu_header",
+              "props": {
+                "spacing": 8
+              },
+              "type": "row"
+            },
+            {
+              "children": [],
+              "id": "cpu_card/cpu_spark",
+              "meta": {
+                "__extension_widget_events__": [],
+                "__extension_widget_type__": "sparkline"
+              },
+              "props": {
+                "color": "#4caf50",
+                "data": [],
+                "fill": true,
+                "height": 60.0,
+                "stroke_width": 2.0
+              },
+              "type": "sparkline"
+            }
+          ],
+          "id": "cpu_card",
+          "props": {
+            "padding": 12,
+            "spacing": 4
+          },
+          "type": "column"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "mem_card/mem_header/mem_label",
+                  "props": {
+                    "color": "#666666",
+                    "content": "Memory",
+                    "size": 14
+                  },
+                  "type": "text"
+                }
+              ],
+              "id": "mem_card/mem_header",
+              "props": {
+                "spacing": 8
+              },
+              "type": "row"
+            },
+            {
+              "children": [],
+              "id": "mem_card/mem_spark",
+              "meta": {
+                "__extension_widget_events__": [],
+                "__extension_widget_type__": "sparkline"
+              },
+              "props": {
+                "color": "#2196f3",
+                "data": [],
+                "fill": true,
+                "height": 60.0,
+                "stroke_width": 2.0
+              },
+              "type": "sparkline"
+            }
+          ],
+          "id": "mem_card",
+          "props": {
+            "padding": 12,
+            "spacing": 4
+          },
+          "type": "column"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "net_card/net_header/net_label",
+                  "props": {
+                    "color": "#666666",
+                    "content": "Network I/O",
+                    "size": 14
+                  },
+                  "type": "text"
+                }
+              ],
+              "id": "net_card/net_header",
+              "props": {
+                "spacing": 8
+              },
+              "type": "row"
+            },
+            {
+              "children": [],
+              "id": "net_card/net_spark",
+              "meta": {
+                "__extension_widget_events__": [],
+                "__extension_widget_type__": "sparkline"
+              },
+              "props": {
+                "color": "#ff9800",
+                "data": [],
+                "fill": false,
+                "height": 60.0,
+                "stroke_width": 2.0
+              },
+              "type": "sparkline"
+            }
+          ],
+          "id": "net_card",
+          "props": {
+            "padding": 12,
+            "spacing": 4
+          },
+          "type": "column"
+        }
+      ],
+      "id": "auto:SparklineDashboard.Dashboard:90",
+      "props": {
+        "padding": 20,
+        "spacing": 16
+      },
+      "type": "column"
+    }
+  ],
+  "id": "main",
+  "props": {
+    "title": "Sparkline Dashboard"
+  },
+  "type": "window"
+}

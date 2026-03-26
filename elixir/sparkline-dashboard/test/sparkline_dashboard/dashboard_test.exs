@@ -35,9 +35,9 @@ defmodule SparklineDashboard.DashboardTest do
   end
 
   test "has sparkline card labels" do
-    assert_exists("#cpu_card/cpu_label")
-    assert_exists("#mem_card/mem_label")
-    assert_exists("#net_card/net_label")
+    assert_exists("#cpu_card/cpu_header/cpu_label")
+    assert_exists("#mem_card/mem_header/mem_label")
+    assert_exists("#net_card/net_header/net_label")
   end
 
   test "sparkline widgets have extension type" do
@@ -45,6 +45,14 @@ defmodule SparklineDashboard.DashboardTest do
       element = find!("##{metric}_card/#{metric}_spark")
       assert element.type == "sparkline"
     end
+  end
+
+  test "initial tree matches snapshot" do
+    assert :ok =
+             Plushie.Test.assert_tree_snapshot(
+               tree(),
+               Path.join(["test", "snapshots", "sparkline_dashboard_initial.json"])
+             )
   end
 
   # -- Controls ---------------------------------------------------------------
@@ -86,5 +94,9 @@ defmodule SparklineDashboard.DashboardTest do
   test "subscribe returns empty when paused" do
     click("#toggle_running")
     assert SparklineDashboard.Dashboard.subscribe(model()) == []
+  end
+
+  test "initial screenshot matches golden" do
+    assert_screenshot("sparkline_dashboard_initial")
   end
 end

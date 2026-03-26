@@ -8,7 +8,7 @@ Demonstrates:
 
 - Defining a native extension with `use Plushie.Extension, :native_widget`
 - Extension commands (`set_value`, `animate_to`)
-- Extension events (`value_changed` from Rust back to Elixir)
+- Extension events (`{:gauge, :value_changed}` from Rust back to Elixir)
 - Optimistic updates with confirmed state
 - Extension config via `settings/0`
 - Building a custom binary with `mix plushie.build`
@@ -106,7 +106,7 @@ When the user clicks "High (90 C)":
 3. The custom binary receives the command
 4. Rust `GaugeExtension::handle_command` processes `set_value`
 5. Rust updates internal state and emits `value_changed` event
-6. Elixir `update/2` receives `%Widget{type: "value_changed"}` and
+6. Elixir `update/2` receives `%WidgetEvent{type: {:gauge, :value_changed}}` and
    updates `model.temperature`
 
 ### Optimistic updates
@@ -116,7 +116,7 @@ The app separates two temperature fields:
 - **`target_temp`** -- updated immediately in button/slider handlers
   for responsive UI (optimistic)
 - **`temperature`** -- updated only when the Rust extension confirms
-  via a `value_changed` event (confirmed)
+  via a `{:gauge, :value_changed}` event (confirmed)
 
 This demonstrates the recommended pattern for extension commands:
 update what you can optimistically, and let the extension confirm

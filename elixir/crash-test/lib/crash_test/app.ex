@@ -13,7 +13,7 @@ defmodule CrashTest.App do
   use Plushie.App
 
   alias CrashTest.CrashExtension
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   defmodule Model do
     @moduledoc false
@@ -37,16 +37,16 @@ defmodule CrashTest.App do
   # -- Working counter (proof of life) --
 
   @impl true
-  def update(model, %Widget{type: :click, id: "inc"}),
+  def update(model, %WidgetEvent{type: :click, id: "inc"}),
     do: %{model | count: model.count + 1}
 
-  def update(model, %Widget{type: :click, id: "dec"}),
+  def update(model, %WidgetEvent{type: :click, id: "dec"}),
     do: %{model | count: model.count - 1}
 
   # -- Deliberate crash in update/2 --
   # The runtime catches this and rolls back the model.
 
-  def update(_model, %Widget{type: :click, id: "crash_update"}) do
+  def update(_model, %WidgetEvent{type: :click, id: "crash_update"}) do
     raise "Deliberate crash in update/2 -- the runtime catches this and rolls back the model"
   end
 
@@ -55,7 +55,7 @@ defmodule CrashTest.App do
   # The runtime catches the view crash and rolls back the model,
   # clearing the flag -- so it's a one-shot crash.
 
-  def update(model, %Widget{type: :click, id: "crash_view"}) do
+  def update(model, %WidgetEvent{type: :click, id: "crash_view"}) do
     %{model | crash_view: true}
   end
 
@@ -63,7 +63,7 @@ defmodule CrashTest.App do
   # Sends a command that calls panic!() in handle_command.
   # The renderer isolates it via catch_unwind and shows a red placeholder.
 
-  def update(model, %Widget{type: :click, id: "panic_widget"}) do
+  def update(model, %WidgetEvent{type: :click, id: "panic_widget"}) do
     {model, CrashExtension.panic("crash_ext")}
   end
 

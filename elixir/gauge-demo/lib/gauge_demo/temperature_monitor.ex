@@ -6,7 +6,7 @@ defmodule GaugeDemo.TemperatureMonitor do
 
   - Native widget extension (gauge rendered in Rust/iced)
   - Extension commands (`set_value`, `animate_to`)
-  - Extension events (`value_changed` from Rust back to Elixir)
+  - Extension events (`{:gauge, :value_changed}` from Rust back to Elixir)
   - Optimistic updates with confirmed state
   - Settings with `extension_config`
 
@@ -18,7 +18,7 @@ defmodule GaugeDemo.TemperatureMonitor do
   use Plushie.App
 
   alias GaugeDemo.GaugeExtension, as: Gauge
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   defmodule Model do
     @moduledoc false
@@ -46,22 +46,25 @@ defmodule GaugeDemo.TemperatureMonitor do
   # This is the only path that updates `temperature` -- button handlers
   # only update `target_temp` optimistically.
   @impl true
-  def update(model, %Widget{type: "value_changed", id: "temp", data: %{"value" => new_temp}}) do
+  def update(
+        model,
+        %WidgetEvent{type: {:gauge, :value_changed}, id: "temp", data: %{"value" => new_temp}}
+      ) do
     %{model | temperature: new_temp, history: append_history(model.history, new_temp)}
   end
 
   # Slider: update target optimistically + animate the Rust gauge.
-  def update(model, %Widget{type: :slide, id: "target", value: value}) do
+  def update(model, %WidgetEvent{type: :slide, id: "target", value: value}) do
     {%{model | target_temp: value}, Gauge.animate_to("temp", value)}
   end
 
   # Reset button: target to 20, command to Rust (which confirms via event).
-  def update(model, %Widget{type: :click, id: "reset"}) do
+  def update(model, %WidgetEvent{type: :click, id: "reset"}) do
     {%{model | target_temp: 20.0}, Gauge.set_value("temp", 20.0)}
   end
 
   # High button: target to 90, command to Rust (which confirms via event).
-  def update(model, %Widget{type: :click, id: "high"}) do
+  def update(model, %WidgetEvent{type: :click, id: "high"}) do
     {%{model | target_temp: 90.0}, Gauge.set_value("temp", 90.0)}
   end
 

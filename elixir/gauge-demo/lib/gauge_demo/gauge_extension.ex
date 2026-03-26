@@ -36,6 +36,7 @@ defmodule GaugeDemo.GaugeExtension do
   prop(:label, :string, default: "")
   prop(:width, :length)
   prop(:height, :length)
+  events([:value_changed])
 
   command(:set_value, value: :number)
   command(:animate_to, value: :number)

@@ -15,7 +15,7 @@ defmodule Collab do
 
   use Plushie.App
 
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   defmodule Model do
     @moduledoc """
@@ -44,19 +44,19 @@ defmodule Collab do
   end
 
   @impl true
-  def update(model, %Widget{type: :click, id: "inc"}),
+  def update(model, %WidgetEvent{type: :click, id: "inc"}),
     do: %{model | count: model.count + 1}
 
-  def update(model, %Widget{type: :click, id: "dec"}),
+  def update(model, %WidgetEvent{type: :click, id: "dec"}),
     do: %{model | count: model.count - 1}
 
-  def update(model, %Widget{type: :input, id: "name", value: value}),
+  def update(model, %WidgetEvent{type: :input, id: "name", value: value}),
     do: %{model | name: value}
 
-  def update(model, %Widget{type: :input, id: "notes", value: value}),
+  def update(model, %WidgetEvent{type: :input, id: "notes", value: value}),
     do: %{model | notes: value}
 
-  def update(model, %Widget{type: :toggle, id: "theme", value: checked}),
+  def update(model, %WidgetEvent{type: :toggle, id: "theme", value: checked}),
     do: %{model | dark_mode: checked}
 
   def update(model, _event), do: model

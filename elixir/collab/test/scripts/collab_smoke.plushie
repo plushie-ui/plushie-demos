@@ -1,0 +1,8 @@
+app: Collab
+backend: headless
+-----
+assert_text "#theme-root/bg/header" "Plushie Demo"
+click "#inc"
+assert_text "#theme-root/bg/counter-row/count" "Count: 1"
+tree_hash "collab-smoke"
+screenshot "collab-smoke"

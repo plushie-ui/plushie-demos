@@ -1,0 +1,121 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "theme-root/bg/header",
+                  "props": {
+                    "content": "Plushie Demo",
+                    "size": 24
+                  },
+                  "type": "text"
+                },
+                {
+                  "children": [],
+                  "id": "theme-root/bg/status",
+                  "props": {
+                    "content": ""
+                  },
+                  "type": "text"
+                },
+                {
+                  "children": [],
+                  "id": "theme-root/bg/name",
+                  "props": {
+                    "placeholder": "Your name",
+                    "value": ""
+                  },
+                  "type": "text_input"
+                },
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "id": "theme-root/bg/counter-row/dec",
+                      "props": {
+                        "label": "-"
+                      },
+                      "type": "button"
+                    },
+                    {
+                      "children": [],
+                      "id": "theme-root/bg/counter-row/count",
+                      "props": {
+                        "content": "Count: 0"
+                      },
+                      "type": "text"
+                    },
+                    {
+                      "children": [],
+                      "id": "theme-root/bg/counter-row/inc",
+                      "props": {
+                        "label": "+"
+                      },
+                      "type": "button"
+                    }
+                  ],
+                  "id": "theme-root/bg/counter-row",
+                  "props": {
+                    "spacing": 8
+                  },
+                  "type": "row"
+                },
+                {
+                  "children": [],
+                  "id": "theme-root/bg/theme",
+                  "props": {
+                    "checked": false,
+                    "label": "Dark mode"
+                  },
+                  "type": "checkbox"
+                },
+                {
+                  "children": [],
+                  "id": "theme-root/bg/notes",
+                  "props": {
+                    "placeholder": "Shared notes...",
+                    "value": "",
+                    "width": "fill"
+                  },
+                  "type": "text_input"
+                }
+              ],
+              "id": "auto:Collab:73",
+              "props": {
+                "padding": 20,
+                "spacing": 16,
+                "width": "fill"
+              },
+              "type": "column"
+            }
+          ],
+          "id": "theme-root/bg",
+          "props": {
+            "height": "fill",
+            "width": "fill"
+          },
+          "type": "container"
+        }
+      ],
+      "id": "theme-root",
+      "props": {
+        "theme": "light"
+      },
+      "type": "themer"
+    }
+  ],
+  "id": "main",
+  "props": {
+    "size": [
+      500,
+      450
+    ],
+    "title": "Plushie Demo"
+  },
+  "type": "window"
+}

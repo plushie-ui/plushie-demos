@@ -1,0 +1,8 @@
+app: CrashTest.App
+backend: headless
+-----
+assert_text "#title" "Crash Test"
+click "#inc"
+assert_text "#count" "Count: 1"
+tree_hash "crash-test-smoke"
+screenshot "crash-test-smoke"

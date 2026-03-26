@@ -5,7 +5,8 @@ Application.put_env(:plushie, :test_binary_path, binary)
   Plushie.Test.SessionPool.start_link(
     name: Plushie.TestPool,
     renderer: binary,
-    mode: :mock,
+    mode: :headless,
+    rust_log: "off",
     max_sessions: 8
   )
 

@@ -1,0 +1,8 @@
+app: GaugeDemo.TemperatureMonitor
+backend: headless
+-----
+assert_text "#title" "Temperature Monitor"
+click "#high"
+assert_text "#reading" "Current: 90°C | Target: 90°C"
+tree_hash "gauge-demo-smoke"
+screenshot "gauge-demo-smoke"

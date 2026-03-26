@@ -124,7 +124,7 @@ impl WidgetExtension for GaugeExtension {
 
                         // Notify Elixir of the confirmed value change
                         return vec![OutgoingEvent::extension_event(
-                            "value_changed".to_string(),
+                            "gauge:value_changed".to_string(),
                             node_id.to_string(),
                             Some(json!({"value": v})),
                         )];

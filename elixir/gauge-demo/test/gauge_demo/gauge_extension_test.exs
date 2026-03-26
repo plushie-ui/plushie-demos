@@ -14,6 +14,10 @@ defmodule GaugeDemo.GaugeExtensionTest do
       assert Gauge.native_crate() == "native/gauge"
     end
 
+    test "declares value_changed as a native widget event" do
+      assert Gauge.__events__() == [:value_changed]
+    end
+
     test "rust_constructor returns the constructor expression" do
       assert Gauge.rust_constructor() == "gauge::GaugeExtension::new()"
     end

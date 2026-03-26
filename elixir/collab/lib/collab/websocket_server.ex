@@ -53,7 +53,7 @@ defmodule Collab.WsHandler do
 
   @behaviour WebSock
 
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   @impl true
   def init(%{shared: shared}) do
@@ -73,7 +73,7 @@ defmodule Collab.WsHandler do
   def handle_in({text, [opcode: :text]}, state) do
     case Plushie.Protocol.Decode.decode_message(text, :json) do
       # Dark mode toggle: handle locally (per-client, not shared)
-      %Widget{type: :toggle, id: "theme", value: checked} ->
+      %WidgetEvent{type: :toggle, id: "theme", value: checked} ->
         state = %{state | dark_mode: checked}
         client_model = %{state.last_model | dark_mode: checked}
         {:push, {:text, encode_snapshot(client_model)}, state}

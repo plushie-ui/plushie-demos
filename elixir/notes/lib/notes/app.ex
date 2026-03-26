@@ -16,7 +16,7 @@ defmodule Notes.App do
   alias Notes.Note
   alias Notes.Widgets.{NoteCard, ShortcutBar, Toolbar}
   alias Plushie.Event.Key
-  alias Plushie.Event.Widget
+  alias Plushie.Event.WidgetEvent
 
   defmodule Model do
     @moduledoc false
@@ -53,39 +53,41 @@ defmodule Notes.App do
   # -- Navigation --
 
   @impl true
-  def update(model, %Widget{type: :click, id: "back"}), do: navigate_back(model)
-  def update(model, %Widget{type: :click, id: "note_" <> note_id}), do: open_note(model, note_id)
+  def update(model, %WidgetEvent{type: :click, id: "back"}), do: navigate_back(model)
+
+  def update(model, %WidgetEvent{type: :click, id: "note_" <> note_id}),
+    do: open_note(model, note_id)
 
   # -- CRUD --
 
-  def update(model, %Widget{type: :click, id: "new_note"}), do: create_note(model)
-  def update(model, %Widget{type: :click, id: "delete_selected"}), do: delete_selected(model)
+  def update(model, %WidgetEvent{type: :click, id: "new_note"}), do: create_note(model)
+  def update(model, %WidgetEvent{type: :click, id: "delete_selected"}), do: delete_selected(model)
 
   # -- Editor --
 
-  def update(model, %Widget{type: :input, id: "editor_title", value: val}),
+  def update(model, %WidgetEvent{type: :input, id: "editor_title", value: val}),
     do: update_title(model, val)
 
-  def update(model, %Widget{type: :input, id: "editor_content", value: val}),
+  def update(model, %WidgetEvent{type: :input, id: "editor_content", value: val}),
     do: update_content(model, val)
 
   # -- Search & sort --
 
-  def update(model, %Widget{type: :input, id: "search", value: val}),
+  def update(model, %WidgetEvent{type: :input, id: "search", value: val}),
     do: %{model | search: val}
 
-  def update(model, %Widget{type: :select, id: "sort", value: val}),
+  def update(model, %WidgetEvent{type: :select, id: "sort", value: val}),
     do: %{model | sort_by: sort_key(val)}
 
   # -- Selection --
 
-  def update(model, %Widget{type: :toggle, id: "select_" <> note_id}),
+  def update(model, %WidgetEvent{type: :toggle, id: "select_" <> note_id}),
     do: %{model | selection: Plushie.Selection.toggle(model.selection, note_id)}
 
   # -- Undo/redo buttons --
 
-  def update(model, %Widget{type: :click, id: "undo"}), do: perform_undo(model)
-  def update(model, %Widget{type: :click, id: "redo"}), do: perform_redo(model)
+  def update(model, %WidgetEvent{type: :click, id: "undo"}), do: perform_undo(model)
+  def update(model, %WidgetEvent{type: :click, id: "redo"}), do: perform_redo(model)
 
   # -- Keyboard shortcuts --
 

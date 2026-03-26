@@ -47,6 +47,14 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     assert_exists("#history")
   end
 
+  test "initial tree matches snapshot" do
+    assert :ok =
+             Plushie.Test.assert_tree_snapshot(
+               tree(),
+               Path.join(["test", "snapshots", "temperature_monitor_initial.json"])
+             )
+  end
+
   # -- Button interactions ----------------------------------------------------
 
   test "reset click updates target_temp" do
@@ -62,11 +70,9 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     assert model().target_temp == 90.0
   end
 
-  test "buttons do not change temperature directly (waits for extension event)" do
+  test "high click updates temperature after gauge confirmation" do
     click("#high")
-    # Temperature only updates when the Rust extension confirms via
-    # value_changed event. Without the extension running, it stays at 20.
-    assert model().temperature == 20.0
+    assert wait_for(fn -> model().temperature == 90.0 end)
   end
 
   # -- Slider interaction -----------------------------------------------------
@@ -83,11 +89,10 @@ defmodule GaugeDemo.TemperatureMonitorTest do
 
   # -- Unknown events ---------------------------------------------------------
 
-  test "counter still works after unrelated interactions" do
-    initial = model().temperature
+  test "temperature follows the most recent confirmed button interaction" do
     click("#high")
     click("#reset")
-    assert model().temperature == initial
+    assert wait_for(fn -> model().temperature == 20.0 end)
   end
 
   # -- Settings ---------------------------------------------------------------
@@ -111,4 +116,21 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     gauge = find!("#temp")
     assert gauge.props[:label] == "20\u00B0C"
   end
+
+  test "initial screenshot matches golden" do
+    assert_screenshot("temperature_monitor_initial")
+  end
+
+  defp wait_for(fun, attempts \\ 20)
+
+  defp wait_for(fun, attempts) when attempts > 0 do
+    if fun.() do
+      true
+    else
+      Process.sleep(25)
+      wait_for(fun, attempts - 1)
+    end
+  end
+
+  defp wait_for(_fun, 0), do: false
 end

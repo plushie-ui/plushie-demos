@@ -18,7 +18,7 @@ defmodule SparklineDashboard.Dashboard do
   use Plushie.App
 
   alias SparklineDashboard.SparklineExtension, as: Sparkline
-  alias Plushie.Event.{Timer, Widget}
+  alias Plushie.Event.{Timer, WidgetEvent}
   alias Plushie.Subscription
 
   defmodule Model do
@@ -65,11 +65,11 @@ defmodule SparklineDashboard.Dashboard do
     }
   end
 
-  def update(model, %Widget{type: :click, id: "toggle_running"}) do
+  def update(model, %WidgetEvent{type: :click, id: "toggle_running"}) do
     %{model | running: not model.running}
   end
 
-  def update(model, %Widget{type: :click, id: "clear"}) do
+  def update(model, %WidgetEvent{type: :click, id: "clear"}) do
     %{model | cpu_samples: [], mem_samples: [], net_samples: [], tick_count: 0}
   end
 
@@ -144,7 +144,7 @@ defmodule SparklineDashboard.Dashboard do
     import Plushie.UI
 
     column id: "#{id}_card", padding: 12, spacing: 4 do
-      row spacing: 8 do
+      row id: "#{id}_header", spacing: 8 do
         text("#{id}_label", label, size: 14, color: "#666666")
 
         if data != [] do

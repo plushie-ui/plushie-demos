@@ -12,7 +12,7 @@ defmodule GaugeDemo do
   - `GaugeDemo.TemperatureMonitor` -- Plushie app module implementing
     init/update/view/settings. Demonstrates the optimistic update
     pattern: `target_temp` updates immediately while `temperature`
-    waits for Rust confirmation via `value_changed` events.
+    waits for Rust confirmation via `{:gauge, :value_changed}` events.
 
   ## Running
 
