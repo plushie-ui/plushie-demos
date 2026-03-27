@@ -60,21 +60,30 @@ pub fn captured_ctrl_n_is_noop_test() {
 
 pub fn click_create_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "create", scope: [])),
+    msg.on_event(event.WidgetClick(id: "create", window_id: "main", scope: [])),
     CreateNote,
   )
 }
 
 pub fn click_back_test() {
-  should.equal(msg.on_event(event.WidgetClick(id: "back", scope: [])), ShowList)
+  should.equal(
+    msg.on_event(event.WidgetClick(id: "back", window_id: "main", scope: [])),
+    ShowList,
+  )
 }
 
 pub fn click_undo_test() {
-  should.equal(msg.on_event(event.WidgetClick(id: "undo", scope: [])), Undo)
+  should.equal(
+    msg.on_event(event.WidgetClick(id: "undo", window_id: "main", scope: [])),
+    Undo,
+  )
 }
 
 pub fn click_redo_test() {
-  should.equal(msg.on_event(event.WidgetClick(id: "redo", scope: [])), Redo)
+  should.equal(
+    msg.on_event(event.WidgetClick(id: "redo", window_id: "main", scope: [])),
+    Redo,
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -82,17 +91,35 @@ pub fn click_redo_test() {
 // ---------------------------------------------------------------------------
 
 pub fn search_input_test() {
-  let e = event.WidgetInput(id: "search", scope: [], value: "hello")
+  let e =
+    event.WidgetInput(
+      id: "search",
+      window_id: "main",
+      scope: [],
+      value: "hello",
+    )
   should.equal(msg.on_event(e), SetSearch("hello"))
 }
 
 pub fn title_input_test() {
-  let e = event.WidgetInput(id: "title", scope: [], value: "My Note")
+  let e =
+    event.WidgetInput(
+      id: "title",
+      window_id: "main",
+      scope: [],
+      value: "My Note",
+    )
   should.equal(msg.on_event(e), EditTitle("My Note"))
 }
 
 pub fn body_input_test() {
-  let e = event.WidgetInput(id: "body", scope: [], value: "some text")
+  let e =
+    event.WidgetInput(
+      id: "body",
+      window_id: "main",
+      scope: [],
+      value: "some text",
+    )
   should.equal(msg.on_event(e), EditBody("some text"))
 }
 
@@ -102,28 +129,37 @@ pub fn body_input_test() {
 
 pub fn click_note_row_opens_note_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "note-42", scope: [])),
+    msg.on_event(event.WidgetClick(id: "note-42", window_id: "main", scope: [])),
     OpenNote("42"),
   )
 }
 
 pub fn click_delete_button_deletes_note_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "delete-42", scope: [])),
+    msg.on_event(
+      event.WidgetClick(id: "delete-42", window_id: "main", scope: []),
+    ),
     DeleteNote("42"),
   )
 }
 
 pub fn unknown_click_is_noop_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "something-else", scope: [])),
+    msg.on_event(
+      event.WidgetClick(id: "something-else", window_id: "main", scope: []),
+    ),
     NoOp,
   )
 }
 
 pub fn unknown_event_is_noop_test() {
   should.equal(
-    msg.on_event(event.WidgetToggle(id: "x", scope: [], value: True)),
+    msg.on_event(event.WidgetToggle(
+      id: "x",
+      window_id: "main",
+      scope: [],
+      value: True,
+    )),
     NoOp,
   )
 }
@@ -143,10 +179,10 @@ fn key_press(
     modified_key: key,
     modifiers: event.Modifiers(
       shift:,
-      ctrl:,
+      ctrl: False,
       alt: False,
       logo: False,
-      command: False,
+      command: ctrl,
     ),
     physical_key: option.None,
     location: event.Standard,

@@ -70,11 +70,11 @@ class Notes
       model.with(selection: Plushie::Selection.toggle(model.selection, note_id))
 
     # -- Keyboard shortcuts --
-    in Event::Key[key: "n", modifiers: {ctrl: true}]
+    in Event::Key[key: "n", modifiers: {command: true}]
       create_note(model)
-    in Event::Key[key: "z", modifiers: {ctrl: true}]
+    in Event::Key[key: "z", modifiers: {command: true}]
       perform_undo(model)
-    in Event::Key[key: "y", modifiers: {ctrl: true}]
+    in Event::Key[key: "y", modifiers: {command: true}]
       perform_redo(model)
     in Event::Key[key: :escape]
       handle_escape(model)

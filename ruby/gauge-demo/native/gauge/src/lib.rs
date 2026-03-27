@@ -123,11 +123,14 @@ impl WidgetExtension for GaugeExtension {
                         state.generation.bump();
 
                         // Notify Ruby of the confirmed value change
-                        return vec![OutgoingEvent::extension_event(
-                            "value_changed".to_string(),
-                            node_id.to_string(),
-                            Some(json!({"value": v})),
-                        )];
+                        return vec![
+                            OutgoingEvent::extension_event(
+                                "value_changed".to_string(),
+                                node_id.to_string(),
+                                Some(json!({"value": v})),
+                            )
+                            .with_window_id("main"),
+                        ];
                     }
                 }
                 vec![]

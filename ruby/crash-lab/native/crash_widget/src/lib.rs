@@ -22,7 +22,7 @@ impl WidgetExtension for CrashExtension {
     }
 
     fn config_key(&self) -> &str {
-        "crash"
+        "crash_widget"
     }
 
     fn new_instance(&self) -> Box<dyn WidgetExtension> {

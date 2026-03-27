@@ -35,6 +35,7 @@ defmodule Notes.App do
   end
 
   @sort_options ["Recent", "A-Z", "Oldest"]
+  @seed_now ~U[2026-03-27 18:31:00Z]
 
   # -- Plushie.App callbacks --------------------------------------------------
 
@@ -129,7 +130,7 @@ defmodule Notes.App do
   # -- Handlers ---------------------------------------------------------------
 
   defp seed_notes do
-    now = DateTime.utc_now()
+    now = @seed_now
 
     [
       %Note{

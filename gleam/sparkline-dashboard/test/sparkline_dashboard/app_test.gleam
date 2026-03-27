@@ -3,7 +3,7 @@
 import gleam/option
 import gleeunit/should
 import plushie/app as plushie_app
-import plushie/node.{BoolVal, ListVal, StringVal}
+import plushie/node.{BoolVal, StringVal}
 import plushie/testing
 import plushie/testing/element
 import sparkline_dashboard/app

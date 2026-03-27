@@ -55,12 +55,13 @@ mix plushie.gui GaugeDemo.TemperatureMonitor
 ## Test
 
 ```sh
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+mix plushie.build
 mix test
 ```
 
-All tests are unit tests that verify the extension definition, app
-logic, and view tree structure without a running renderer. No binary
-needed.
+The test suite uses the real custom renderer binary for the native
+gauge widget. Build it first, then run `mix test`.
 
 ## Project structure
 
@@ -105,7 +106,7 @@ When the user clicks "High (90 C)":
 2. The runtime encodes the `extension_command` as MessagePack
 3. The custom binary receives the command
 4. Rust `GaugeExtension::handle_command` processes `set_value`
-5. Rust updates internal state and emits `value_changed` event
+5. Rust updates internal state and emits `value_changed` from window `main`
 6. Elixir `update/2` receives `%WidgetEvent{type: {:gauge, :value_changed}}` and
    updates `model.temperature`
 

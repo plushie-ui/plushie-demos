@@ -7,8 +7,6 @@
 import gleam/float
 import gleam/int
 import gleam/list
-import gleam/option
-import plushie/app
 import plushie/command
 import plushie/event.{type Event, TimerTick, WidgetClick}
 import plushie/node.{type Node}

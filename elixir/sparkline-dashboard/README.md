@@ -58,12 +58,13 @@ mix plushie.gui SparklineDashboard.Dashboard
 ## Test
 
 ```sh
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+mix plushie.build
 mix test
 ```
 
-All tests are unit tests that verify the extension definition, app
-logic, subscriptions, and view tree structure without a running
-renderer. No binary needed.
+The test suite uses the real custom renderer binary for the native
+sparkline widget. Build it first, then run `mix test`.
 
 ## Project structure
 

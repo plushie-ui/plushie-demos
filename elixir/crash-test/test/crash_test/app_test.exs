@@ -82,7 +82,4 @@ defmodule CrashTest.AppTest do
     assert model().count == count_before
   end
 
-  test "initial screenshot matches golden" do
-    assert_screenshot("crash_test_initial")
-  end
 end

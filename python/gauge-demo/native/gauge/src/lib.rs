@@ -111,11 +111,14 @@ impl WidgetExtension for GaugeExtension {
                         state.generation.bump();
 
                         // Notify Python of the change
-                        return vec![OutgoingEvent::extension_event(
-                            "value_changed".to_string(),
-                            node_id.to_string(),
-                            Some(json!({"value": v})),
-                        )];
+                        return vec![
+                            OutgoingEvent::extension_event(
+                                "value_changed".to_string(),
+                                node_id.to_string(),
+                                Some(json!({"value": v})),
+                            )
+                            .with_window_id("main"),
+                        ];
                     }
                 }
                 vec![]

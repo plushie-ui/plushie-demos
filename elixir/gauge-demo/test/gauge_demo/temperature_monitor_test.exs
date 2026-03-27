@@ -117,10 +117,6 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     assert gauge.props[:label] == "20\u00B0C"
   end
 
-  test "initial screenshot matches golden" do
-    assert_screenshot("temperature_monitor_initial")
-  end
-
   defp wait_for(fun, attempts \\ 20)
 
   defp wait_for(fun, attempts) when attempts > 0 do

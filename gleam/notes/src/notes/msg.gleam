@@ -65,26 +65,26 @@ pub fn on_event(event: Event) -> Msg {
     // -- Keyboard shortcuts (only when not captured by a text field) --
     KeyPress(
       key: "n",
-      modifiers: Modifiers(ctrl: True, ..),
+      modifiers: Modifiers(command: True, ..),
       captured: False,
       ..,
     ) -> CreateNote
     KeyPress(
       key: "z",
-      modifiers: Modifiers(ctrl: True, shift: False, ..),
+      modifiers: Modifiers(command: True, shift: False, ..),
       captured: False,
       ..,
     ) -> Undo
     KeyPress(
       key: "z",
-      modifiers: Modifiers(ctrl: True, shift: True, ..),
+      modifiers: Modifiers(command: True, shift: True, ..),
       captured: False,
       ..,
     ) -> Redo
     KeyPress(
       key: "/",
       captured: False,
-      modifiers: Modifiers(ctrl: False, ..),
+      modifiers: Modifiers(command: False, ctrl: False, ..),
       ..,
     ) -> FocusSearch
     KeyPress(key: "Escape", captured: False, ..) -> ShowList

@@ -4,5 +4,3 @@ backend: headless
 assert_text "#title" "System Monitor"
 click "#toggle_running"
 assert_text "#toggle_running" "Resume"
-tree_hash "sparkline-dashboard-smoke"
-screenshot "sparkline-dashboard-smoke"

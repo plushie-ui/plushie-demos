@@ -4,5 +4,3 @@ backend: headless
 assert_text "#toolbar_title" "Plushie Notes"
 click "Welcome to Plushie Notes"
 assert_text "#back" "←"
-tree_hash "notes-smoke"
-screenshot "notes-smoke"

@@ -122,16 +122,15 @@ class NotesTest < Plushie::Test::Case
     click "#note_welcome_card"
     original_content = model.notes.find { |n| n.id == "welcome" }.content
     type_text "#editor_content", "Changed"
-    press "ctrl+z"
-    note = model.notes.find { |n| n.id == "welcome" }
+    note = dispatch_shortcut(model, "z").notes.find { |n| n.id == "welcome" }
     assert_equal original_content, note.content
   end
 
   def test_redo_reapplies_content
     click "#note_welcome_card"
     type_text "#editor_content", "Changed"
-    press "ctrl+z"
-    press "ctrl+y"
+    type_key "command+z"
+    type_key "command+y"
     note = model.notes.find { |n| n.id == "welcome" }
     assert_equal "Changed", note.content
   end
@@ -139,7 +138,7 @@ class NotesTest < Plushie::Test::Case
   def test_undo_when_nothing_to_undo_is_noop
     click "#note_welcome_card"
     notes_before = model.notes
-    press "ctrl+z"
+    type_key "command+z"
     assert_equal notes_before, model.notes
   end
 
@@ -212,25 +211,25 @@ class NotesTest < Plushie::Test::Case
 
   # -- keyboard shortcuts --
 
-  def test_ctrl_n_creates_note
-    press "ctrl+n"
-    assert_exists "#editor_title"
-    assert_equal 4, model.notes.length
+  def test_shortcut_n_creates_note
+    updated = dispatch_shortcut(model, "n")
+    assert_equal 4, updated.notes.length
+    assert_equal "/editor", Plushie::Route.current(updated.route)
   end
 
-  def test_ctrl_z_undoes_in_editor
+  def test_shortcut_z_undoes_in_editor
     click "#note_welcome_card"
     type_text "#editor_content", "Changed"
-    press "ctrl+z"
-    refute_equal "Changed", model.notes.find { |n| n.id == "welcome" }.content
+    updated = dispatch_shortcut(model, "z")
+    refute_equal "Changed", updated.notes.find { |n| n.id == "welcome" }.content
   end
 
-  def test_ctrl_y_redoes_in_editor
+  def test_shortcut_y_redoes_in_editor
     click "#note_welcome_card"
     type_text "#editor_content", "Changed"
-    press "ctrl+z"
-    press "ctrl+y"
-    assert_equal "Changed", model.notes.find { |n| n.id == "welcome" }.content
+    undone = dispatch_shortcut(model, "z")
+    redone = dispatch_shortcut(undone, "y")
+    assert_equal "Changed", redone.notes.find { |n| n.id == "welcome" }.content
   end
 
   # -- editor view structure --
@@ -262,5 +261,24 @@ class NotesTest < Plushie::Test::Case
     # Pressing a random key with no binding should be a no-op
     press "F12"
     assert_equal model_before, model
+  end
+
+  private
+
+  def dispatch_shortcut(model, key)
+    Notes.new.update(
+      model,
+      Plushie::Event::Key.new(
+        type: :press,
+        key: key,
+        modifiers: {
+          shift: false,
+          ctrl: false,
+          alt: false,
+          logo: false,
+          command: true
+        }
+      )
+    )
   end
 end

@@ -47,8 +47,13 @@ mix plushie.gui CrashTest.App
 ## Test
 
 ```sh
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+mix plushie.build
 mix test
 ```
+
+The test suite uses the real custom renderer binary for the native
+crash widget. Build it first, then run `mix test`.
 
 ## Project structure
 

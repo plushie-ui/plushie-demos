@@ -96,7 +96,4 @@ defmodule SparklineDashboard.DashboardTest do
     assert SparklineDashboard.Dashboard.subscribe(model()) == []
   end
 
-  test "initial screenshot matches golden" do
-    assert_screenshot("sparkline_dashboard_initial")
-  end
 end

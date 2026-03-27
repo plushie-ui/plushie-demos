@@ -111,11 +111,14 @@ impl WidgetExtension for GaugeExtension {
                         // The TypeScript update() handles this event and
                         // sets model.temperature -- the extension is the
                         // source of truth for the actual value.
-                        return vec![OutgoingEvent::extension_event(
-                            "value_changed".to_string(),
-                            node_id.to_string(),
-                            Some(json!({"value": v})),
-                        )];
+                        return vec![
+                            OutgoingEvent::extension_event(
+                                "value_changed".to_string(),
+                                node_id.to_string(),
+                                Some(json!({"value": v})),
+                            )
+                            .with_window_id("main"),
+                        ];
                     }
                 }
                 vec![]
