@@ -19,10 +19,10 @@ class CrashLabTest < Plushie::Test::Case
     assert_text "#clicks", "Clicks: 0"
   end
 
-  def test_initial_view_has_extension_panel
+  def test_initial_view_has_widget_panel
     assert_exists "#crasher"
-    assert_text "#panic_ext", "Panic Extension"
-    assert_text "#toggle_ext", "Remove from Tree"
+    assert_text "#panic_ext", "Panic Widget"
+    assert_text "#toggle_ext", "Remove Widget"
   end
 
   def test_initial_view_has_ruby_error_panel
@@ -57,7 +57,7 @@ class CrashLabTest < Plushie::Test::Case
   def test_toggle_ext_removes_extension
     click "#toggle_ext"
     assert_not_exists "#crasher"
-    assert_text "#toggle_ext", "Restore Extension"
+    assert_text "#toggle_ext", "Restore Widget"
   end
 
   def test_toggle_ext_restores_extension
@@ -66,7 +66,7 @@ class CrashLabTest < Plushie::Test::Case
 
     click "#toggle_ext"
     assert_exists "#crasher"
-    assert_text "#toggle_ext", "Remove from Tree"
+    assert_text "#toggle_ext", "Remove Widget"
   end
 
   def test_counter_works_after_toggle
