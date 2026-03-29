@@ -35,8 +35,8 @@ class SparklineExtensionTest < Minitest::Test
     assert_includes names, :event_rate
   end
 
-  def test_extension_props_metadata
-    props = SparklineExtension.extension_props
+  def test_widget_props_metadata
+    props = SparklineExtension.widget_props
     data_prop = props.find { |p| p[:name] == :data }
     assert_equal :any, data_prop[:type]
     assert_equal [], data_prop[:default]

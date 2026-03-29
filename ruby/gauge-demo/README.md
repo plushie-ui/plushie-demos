@@ -1,12 +1,12 @@
 # Gauge Demo
 
 Temperature monitor built with [Plushie](https://github.com/plushie-ui/plushie-ruby)
-and a custom Rust gauge extension.
+and a custom Rust gauge widget.
 
 Demonstrates:
 
-- Native Rust widget extensions via `include Plushie::Extension`
-- Extension commands (`set_value`, `animate_to`)
+- Native Rust custom widgets via `include Plushie::Widget`
+- Widget commands (`set_value`, `animate_to`)
 - Rust-side state management with `ExtensionCaches`
 - Optimistic updates (model updates immediately, command syncs Rust state)
 - Elm architecture (init/update/view)
@@ -23,7 +23,7 @@ Demonstrates:
 
 ## Build the custom renderer
 
-The gauge widget is a native Rust extension. Build a custom renderer
+The gauge is a native Rust custom widget. Build a custom renderer
 binary that includes it:
 
     bundle exec rake plushie:build
@@ -40,7 +40,7 @@ For a release (optimized) build:
 
     bundle exec rake test
 
-Unit tests run without the binary. They test extension metadata,
+Unit tests run without the binary. They test widget metadata,
 model behaviour, command generation, and view tree structure.
 
 ## How it works
@@ -58,25 +58,25 @@ per-node state. The `set_value` command emits a `value_changed` event
 back to Ruby confirming the change.
 
 **Event round-trip**: when the user clicks Reset or High, the Ruby
-update handler sends a `set_value` command to the Rust extension and
-updates `target_temp` immediately. The extension processes the command,
+update handler sends a `set_value` command to the Rust widget and
+updates `target_temp` immediately. The widget processes the command,
 updates its internal state, and emits a `value_changed` event back.
 Ruby's update handler receives this event and updates `temperature`
 and `history`. This means `temperature` only changes when the Rust
-extension confirms -- the slider's `animate_to` command updates the
+widget confirms -- the slider's `animate_to` command updates the
 target without confirmation.
 
 ## Project structure
 
 ```
 lib/
-  gauge_extension.rb       # Extension declaration (props, commands, Rust crate)
+  gauge_extension.rb       # Widget declaration (props, commands, Rust crate)
   temperature_monitor.rb   # Elm architecture app (init/update/view)
 native/
   gauge/
     Cargo.toml             # Rust crate depending on plushie-ext
     src/lib.rs             # WidgetExtension: init, prepare, render, handle_command, cleanup
 test/
-  gauge_extension_test.rb  # Extension metadata and build output tests
+  gauge_extension_test.rb  # Widget metadata and build output tests
   temperature_monitor_test.rb  # App behaviour, commands, and view tests
 ```

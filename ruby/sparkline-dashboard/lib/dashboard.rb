@@ -3,9 +3,9 @@
 require "plushie"
 require_relative "sparkline_extension"
 
-# Register the extension for custom builds.
+# Register the widget for custom builds.
 Plushie.configure do |config|
-  config.extensions = [SparklineExtension]
+  config.widgets = [SparklineExtension]
 end
 
 # Live dashboard with sparkline charts for simulated system metrics.

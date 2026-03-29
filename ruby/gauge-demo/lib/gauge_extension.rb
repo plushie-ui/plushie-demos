@@ -2,13 +2,13 @@
 
 require "plushie"
 
-# Gauge widget extension -- renders a numeric gauge with label and color.
+# Gauge custom widget -- renders a numeric gauge with label and color.
 #
-# Demonstrates extension commands and Rust-side state management via
+# Demonstrates widget commands and Rust-side state management via
 # ExtensionCaches. The Ruby side sends set_value and animate_to commands;
 # the Rust side tracks state between command receipt and next render.
 class GaugeExtension
-  include Plushie::Extension
+  include Plushie::Widget
 
   widget :gauge, kind: :native_widget
 

@@ -52,7 +52,7 @@ class CrashLabTest < Plushie::Test::Case
     assert_text "#clicks", "Clicks: 3"
   end
 
-  # -- toggle extension --
+  # -- toggle widget --
 
   def test_toggle_ext_removes_extension
     click "#toggle_ext"

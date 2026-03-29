@@ -28,7 +28,7 @@ class CrashExtensionTest < Minitest::Test
   end
 
   def test_command_declared
-    commands = CrashExtension.instance_variable_get(:@_extension_commands)
+    commands = CrashExtension.instance_variable_get(:@_widget_commands)
     names = commands.map { |c| c[:name] }
     assert_includes names, :panic
   end

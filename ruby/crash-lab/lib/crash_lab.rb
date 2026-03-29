@@ -4,15 +4,15 @@ require "plushie"
 require_relative "crash_extension"
 
 Plushie.configure do |config|
-  config.extensions = [CrashExtension]
+  config.widgets = [CrashExtension]
 end
 
 # Crash Lab -- demonstrates error resilience in Plushie.
 #
 # Two failure modes, two recovery mechanisms:
 #
-# 1. Rust extension panic: the renderer's catch_unwind catches it,
-#    marks the extension as "poisoned", and shows a red placeholder.
+# 1. Rust widget panic: the renderer's catch_unwind catches it,
+#    marks the widget as "poisoned", and shows a red placeholder.
 #    Remove the widget from the tree and re-add it to recover.
 #
 # 2. Ruby app error: the runtime rescues StandardError in update
@@ -23,12 +23,12 @@ class CrashLab
 
   Model = Plushie::Model.define(
     :count,           # increments to prove the app is alive
-    :extension_alive, # whether crash_widget is in the tree
+    :widget_alive, # whether crash_widget is in the tree
     :view_broken      # whether to raise in view
   )
 
   def init(_opts)
-    Model.new(count: 0, extension_alive: true, view_broken: false)
+    Model.new(count: 0, widget_alive: true, view_broken: false)
   end
 
   def update(model, event)
@@ -37,13 +37,13 @@ class CrashLab
     in Event::Widget[type: :click, id: "count"]
       model.with(count: model.count + 1)
 
-    # Extension panic -- sends a command that panics in Rust
+    # Widget panic -- sends a command that panics in Rust
     in Event::Widget[type: :click, id: "panic_ext"]
-      [model, Command.extension_command("crasher", "panic", {})]
+      [model, Command.widget_command("crasher", "panic", {})]
 
-    # Toggle extension -- remove/restore to clear poisoned state
+    # Toggle widget -- remove/restore to clear poisoned state
     in Event::Widget[type: :click, id: "toggle_ext"]
-      model.with(extension_alive: !model.extension_alive)
+      model.with(widget_alive: !model.widget_alive)
 
     # Ruby update error -- this raise is caught by the runtime
     in Event::Widget[type: :click, id: "raise_update"]
@@ -83,21 +83,21 @@ class CrashLab
 
         rule("sep1")
 
-        # -- Extension panic section --
-        text("ext_heading", "Extension Panic", size: 18)
+        # -- Widget panic section --
+        text("ext_heading", "Widget Panic", size: 18)
 
-        if model.extension_alive
+        if model.widget_alive
           _plushie_leaf("crash_widget", "crasher",
             label: "CrashWidget is healthy")
           row("ext_buttons", spacing: 8) do
-            button("panic_ext", "Panic Extension")
-            button("toggle_ext", "Remove from Tree")
+            button("panic_ext", "Panic Widget")
+            button("toggle_ext", "Remove Widget")
           end
         else
           text("ext_removed",
-            "Extension removed. Click Restore to re-add it with a fresh state.",
+            "Widget removed. Click Restore to re-add it with a fresh state.",
             size: 13, color: "#888888")
-          button("toggle_ext", "Restore Extension")
+          button("toggle_ext", "Restore Widget")
         end
 
         rule("sep2")

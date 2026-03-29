@@ -10,7 +10,7 @@ require "plushie"
 require_relative "lib/crash_extension"
 
 Plushie.configure do |config|
-  config.extensions = [CrashExtension]
+  config.widgets = [CrashExtension]
 end
 
 require "plushie/rake"

@@ -1,11 +1,11 @@
 # Sparkline Dashboard
 
 Live system monitor dashboard built with [Plushie](https://github.com/plushie-ui/plushie-ruby)
-and a custom Rust sparkline extension.
+and a custom Rust sparkline widget.
 
 Demonstrates:
 
-- Native Rust widget extensions via `include Plushie::Extension`
+- Native Rust widgets via `include Plushie::Widget`
 - Canvas-based custom rendering on the Rust side
 - Timer subscriptions for live data updates
 - Elm architecture (init/update/view/subscribe)
@@ -22,7 +22,7 @@ Demonstrates:
 
 ## Build the custom renderer
 
-The sparkline widget is a native Rust extension. Build a custom
+The sparkline widget is a native Rust widget. Build a custom
 renderer binary that includes it:
 
     bundle exec rake plushie:build
@@ -53,5 +53,5 @@ to render a canvas-based line chart from the props. Uses iced's
 
 The dashboard app (`lib/dashboard.rb`) uses timer subscriptions to
 generate simulated metrics every 500ms. Each tick adds a sample to the
-model; the view passes the samples as props to the sparkline extension
+model; the view passes the samples as props to the sparkline widget
 widgets. The Rust renderer reads the data array and draws the chart.

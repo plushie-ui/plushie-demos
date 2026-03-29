@@ -41,8 +41,8 @@ class TemperatureMonitorTest < Plushie::Test::Case
 
   def test_click_high_temperature_unchanged_without_confirmation
     click "#high"
-    # Temperature stays at initial until the extension confirms via value_changed.
-    # The mock backend processes extension_command as a no-op, so temperature
+    # Temperature stays at initial until the widget confirms via value_changed.
+    # The mock backend processes widget_command as a no-op, so temperature
     # won't change from the click alone.
     assert_equal 20.0, model.temperature
   end

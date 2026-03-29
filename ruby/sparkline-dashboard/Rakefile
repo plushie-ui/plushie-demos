@@ -10,7 +10,7 @@ require "plushie"
 require_relative "lib/sparkline_extension"
 
 Plushie.configure do |config|
-  config.extensions = [SparklineExtension]
+  config.widgets = [SparklineExtension]
 end
 
 require "plushie/rake"

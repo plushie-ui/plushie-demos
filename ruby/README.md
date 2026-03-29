@@ -6,7 +6,7 @@ Example Plushie applications written in Ruby using the
 ## Prerequisites
 
 - [Ruby](https://www.ruby-lang.org/) (3.2+)
-- [Rust](https://rustup.rs/) (for extension demos only)
+- [Rust](https://rustup.rs/) (for native widget demos only)
 - [plushie](https://github.com/plushie-ui/plushie) renderer binary
 
 ## Demos
@@ -45,26 +45,26 @@ See [notes/README.md](notes/README.md) for setup instructions.
 
 ### [crash-lab](crash-lab/)
 
-Error resilience demo. Deliberately crashes a Rust extension (panic
-in `handle_command`) and the Ruby app (raise in update and view) to
-show how the framework recovers. Extension panic shows the red
+Error resilience demo. Deliberately crashes a native Rust widget
+(panic in `handle_command`) and the Ruby app (raise in update and
+view) to show how the framework recovers. Widget panic shows the red
 placeholder; Ruby errors preserve the previous model and view.
 
 See [crash-lab/README.md](crash-lab/README.md) for setup instructions.
 
 ### [gauge-demo](gauge-demo/)
 
-Temperature monitor with a native Rust gauge extension. Demonstrates
-extension commands (`set_value`, `animate_to`), Rust-side state
+Temperature monitor with a native Rust gauge widget. Demonstrates
+widget commands (`set_value`, `animate_to`), Rust-side state
 management with `ExtensionCaches`, and the event confirmation pattern.
 
 See [gauge-demo/README.md](gauge-demo/README.md) for setup instructions.
 
 ### [sparkline-dashboard](sparkline-dashboard/)
 
-Live system monitor with a native Rust sparkline extension. Demonstrates
+Live system monitor with a native Rust sparkline widget. Demonstrates
 prop-driven canvas rendering, timer subscriptions, and multiple
-extension widget instances.
+widget instances.
 
 See [sparkline-dashboard/README.md](sparkline-dashboard/README.md)
 for setup instructions.

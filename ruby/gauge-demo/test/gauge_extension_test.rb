@@ -3,7 +3,7 @@
 require_relative "test_helper"
 
 class GaugeExtensionTest < Minitest::Test
-  # -- Extension metadata --
+  # -- Widget metadata --
 
   def test_type_names
     assert_equal [:gauge], GaugeExtension.type_names
@@ -42,7 +42,7 @@ class GaugeExtensionTest < Minitest::Test
   end
 
   def test_command_declarations
-    commands = GaugeExtension.instance_variable_get(:@_extension_commands)
+    commands = GaugeExtension.instance_variable_get(:@_widget_commands)
     names = commands.map { |c| c[:name] }
     assert_equal [:set_value, :animate_to], names
 
@@ -51,7 +51,7 @@ class GaugeExtensionTest < Minitest::Test
   end
 
   def test_props_metadata
-    props = GaugeExtension.extension_props
+    props = GaugeExtension.widget_props
 
     value_prop = props.find { |p| p[:name] == :value }
     assert_equal :number, value_prop[:type]

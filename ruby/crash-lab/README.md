@@ -5,9 +5,9 @@ Deliberately crashes things and shows how the framework recovers.
 
 ## What it demonstrates
 
-**Rust extension panic**: The crash widget has a `panic` command that
+**Rust widget panic**: The crash widget has a `panic` command that
 deliberately calls `panic!()` in the Rust handler. The renderer's
-`catch_unwind` catches it, marks the extension as "poisoned", and
+`catch_unwind` catches it, marks the widget as "poisoned", and
 shows a red error placeholder. Other widgets keep working. Remove the
 widget from the tree and re-add it to recover.
 
@@ -44,13 +44,13 @@ and restore normal rendering.
 
 ## How recovery works
 
-### Extension panic recovery
+### Widget panic recovery
 
-The renderer wraps all extension calls in `catch_unwind`. When a panic
-happens, the extension is "poisoned" -- `render()` returns a red error
+The renderer wraps all widget calls in `catch_unwind`. When a panic
+happens, the widget is "poisoned" -- `render()` returns a red error
 placeholder, and `handle_event`/`handle_command` calls are skipped.
 Poisoned state is keyed by node ID. Removing the widget from the tree
-(toggling `extension_alive`) and re-adding it creates a fresh node
+(toggling `widget_alive`) and re-adding it creates a fresh node
 with no poisoned state.
 
 ### Ruby error recovery
@@ -69,13 +69,13 @@ next view call succeeds.
 
 ```
 lib/
-  crash_extension.rb       # Extension declaration (label prop, panic command)
+  crash_extension.rb       # Widget declaration (label prop, panic command)
   crash_lab.rb             # App with intentional error triggers
 native/
   crash_widget/
     Cargo.toml             # Rust crate depending on plushie-ext
     src/lib.rs             # WidgetExtension with panic in handle_command
 test/
-  crash_extension_test.rb  # Extension metadata tests
+  crash_extension_test.rb  # Widget metadata tests
   crash_lab_test.rb        # App tests including error/recovery sequences
 ```

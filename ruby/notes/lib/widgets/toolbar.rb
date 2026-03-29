@@ -6,7 +6,7 @@ class Notes
   # Toolbar widget for the top of each view.
   # Pure Ruby composite -- no Rust, no binary rebuild.
   class Toolbar
-    include Plushie::Extension
+    include Plushie::Widget
     include Plushie::UI
 
     widget :toolbar, kind: :widget
@@ -16,7 +16,8 @@ class Notes
     prop :actions, :any, default: []
 
     def render(id, props)
-      container("#{id}_bar", padding: [8, 16]) do
+      Plushie::UI::Context.push([])
+      node = container("#{id}_bar", padding: [8, 16]) do
         row("#{id}_row", spacing: 12, width: "fill") do
           button("back", "<") if props[:show_back]
           text("#{id}_title", props[:title], size: 20)
@@ -26,6 +27,8 @@ class Notes
           end
         end
       end
+      Plushie::UI::Context.pop
+      node
     end
   end
 end

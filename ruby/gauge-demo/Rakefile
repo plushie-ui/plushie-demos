@@ -10,8 +10,8 @@ require "plushie"
 require_relative "lib/gauge_extension"
 
 Plushie.configure do |config|
-  config.extensions = [GaugeExtension]
-  config.extension_config = {
+  config.widgets = [GaugeExtension]
+  config.widget_config = {
     "gauge" => {"arc_width" => 8, "tick_count" => 10}
   }
 end

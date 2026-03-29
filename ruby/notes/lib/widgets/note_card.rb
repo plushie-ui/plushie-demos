@@ -6,7 +6,7 @@ class Notes
   # Card widget for displaying a note in the list view.
   # Pure Ruby composite -- no Rust, no binary rebuild.
   class NoteCard
-    include Plushie::Extension
+    include Plushie::Widget
     include Plushie::UI
 
     widget :note_card, kind: :widget
@@ -17,7 +17,8 @@ class Notes
     prop :selected, :boolean, default: false
 
     def render(id, props)
-      mouse_area("#{id}_card", on_press: true, cursor: :pointer) do
+      Plushie::UI::Context.push([])
+      node = mouse_area("#{id}_card", on_press: true, cursor: :pointer) do
         container("#{id}_inner", padding: 12) do
           row("#{id}_row", spacing: 12, width: "fill") do
             checkbox("select_#{id}", props[:selected])
@@ -37,6 +38,8 @@ class Notes
           end
         end
       end
+      Plushie::UI::Context.pop
+      node
     end
   end
 end
