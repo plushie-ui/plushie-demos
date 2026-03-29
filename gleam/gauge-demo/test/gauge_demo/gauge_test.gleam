@@ -3,7 +3,7 @@ import gleam/dict
 import gleam/list
 import gleeunit/should
 import plushie/command
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{FloatVal, StringVal}
 import plushie/prop/color
 import plushie/prop/length.{Fixed}
@@ -21,14 +21,14 @@ pub fn def_has_seven_props_test() {
 }
 
 pub fn def_prop_names_test() {
-  let names = extension.prop_names(gauge.def)
+  let names = native_widget.prop_names(gauge.def)
   should.equal(names, [
     "value", "min", "max", "color", "label", "width", "height",
   ])
 }
 
 pub fn def_has_two_commands_test() {
-  let names = extension.command_names(gauge.def)
+  let names = native_widget.command_names(gauge.def)
   should.equal(names, ["set_value", "animate_to"])
 }
 
@@ -41,7 +41,7 @@ pub fn def_rust_constructor_test() {
 }
 
 pub fn def_validates_successfully_test() {
-  extension.validate(gauge.def)
+  native_widget.validate(gauge.def)
   |> should.be_ok()
 }
 
@@ -154,7 +154,7 @@ pub fn gauge_minimal_still_has_all_props_test() {
 pub fn set_value_creates_extension_command_test() {
   let cmd = gauge.set_value("temp", 90.0)
   case cmd {
-    command.ExtensionCommand(node_id:, op:, payload:) -> {
+    command.WidgetCommand(node_id:, op:, payload:) -> {
       should.equal(node_id, "temp")
       should.equal(op, "set_value")
       should.equal(dict.get(payload, "value"), Ok(FloatVal(90.0)))
@@ -166,7 +166,7 @@ pub fn set_value_creates_extension_command_test() {
 pub fn animate_to_creates_extension_command_test() {
   let cmd = gauge.animate_to("temp", 75.0)
   case cmd {
-    command.ExtensionCommand(node_id:, op:, payload:) -> {
+    command.WidgetCommand(node_id:, op:, payload:) -> {
       should.equal(node_id, "temp")
       should.equal(op, "animate_to")
       should.equal(dict.get(payload, "value"), Ok(FloatVal(75.0)))
@@ -178,7 +178,7 @@ pub fn animate_to_creates_extension_command_test() {
 pub fn set_value_payload_has_single_entry_test() {
   let cmd = gauge.set_value("temp", 50.0)
   case cmd {
-    command.ExtensionCommand(payload:, ..) ->
+    command.WidgetCommand(payload:, ..) ->
       should.equal(dict.size(payload), 1)
     _ -> should.fail()
   }
@@ -187,7 +187,7 @@ pub fn set_value_payload_has_single_entry_test() {
 pub fn animate_to_payload_has_single_entry_test() {
   let cmd = gauge.animate_to("temp", 50.0)
   case cmd {
-    command.ExtensionCommand(payload:, ..) ->
+    command.WidgetCommand(payload:, ..) ->
       should.equal(dict.size(payload), 1)
     _ -> should.fail()
   }

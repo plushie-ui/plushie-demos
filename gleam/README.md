@@ -33,8 +33,8 @@ See [collab/README.md](collab/README.md) for full instructions.
 
 ### [gauge-demo](gauge-demo/)
 
-Temperature monitor with a native Rust gauge extension widget.
-Demonstrates extension commands (`set_value`, `animate_to`), the
+Temperature monitor with a native Rust gauge widget.
+Demonstrates widget commands (`set_value`, `animate_to`), the
 optimistic update pattern, and the custom binary build workflow.
 
 See [gauge-demo/README.md](gauge-demo/README.md) for setup instructions.
@@ -42,7 +42,7 @@ See [gauge-demo/README.md](gauge-demo/README.md) for setup instructions.
 ### [sparkline-dashboard](sparkline-dashboard/)
 
 Live system monitor with three sparkline charts for CPU, memory, and
-network metrics. Demonstrates a render-only Rust canvas extension,
+network metrics. Demonstrates a render-only Rust canvas native widget,
 timer subscriptions, and simulated live data.
 
 See [sparkline-dashboard/README.md](sparkline-dashboard/README.md) for
@@ -50,7 +50,7 @@ setup instructions.
 
 ### [notes](notes/)
 
-Note-taking app with pure Gleam widgets and no Rust extension. Demonstrates
+Note-taking app with pure Gleam widgets and no native Rust widget. Demonstrates
 custom message types (`app.application`), multi-view routing, undo/redo,
 search filtering, and keyboard shortcuts with a context-aware hint bar.
 
@@ -58,8 +58,8 @@ See [notes/README.md](notes/README.md) for setup instructions.
 
 ### [crash-lab](crash-lab/)
 
-Error resilience demonstration showing Rust extension panic isolation
-vs Gleam runtime crash recovery. Extension panics are caught and
+Error resilience demonstration showing Rust native widget panic isolation
+vs Gleam runtime crash recovery. Widget panics are caught and
 contained; Gleam panics reset the model.
 
 See [crash-lab/README.md](crash-lab/README.md) for setup instructions.

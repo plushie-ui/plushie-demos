@@ -31,7 +31,7 @@
 import gleam/list
 import gleam/result
 import plushie/command.{type Command}
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{type Node, FloatVal, StringVal}
 import plushie/prop/color.{type Color}
 import plushie/prop/length.{type Length}
@@ -40,22 +40,22 @@ import plushie/prop/length.{type Length}
 ///
 /// Declares 7 typed props and 2 commands that map to the Rust crate's
 /// `WidgetExtension` implementation in `native/gauge/src/lib.rs`.
-pub const def = extension.ExtensionDef(
+pub const def = native_widget.NativeDef(
   kind: "gauge",
   rust_crate: "native/gauge",
   rust_constructor: "gauge::GaugeExtension::new()",
   props: [
-    extension.NumberProp("value"),
-    extension.NumberProp("min"),
-    extension.NumberProp("max"),
-    extension.ColorProp("color"),
-    extension.StringProp("label"),
-    extension.LengthProp("width"),
-    extension.LengthProp("height"),
+    native_widget.NumberProp("value"),
+    native_widget.NumberProp("min"),
+    native_widget.NumberProp("max"),
+    native_widget.ColorProp("color"),
+    native_widget.StringProp("label"),
+    native_widget.LengthProp("width"),
+    native_widget.LengthProp("height"),
   ],
   commands: [
-    extension.CommandDef("set_value", [extension.NumberParam("value")]),
-    extension.CommandDef("animate_to", [extension.NumberParam("value")]),
+    native_widget.CommandDef("set_value", [native_widget.NumberParam("value")]),
+    native_widget.CommandDef("animate_to", [native_widget.NumberParam("value")]),
   ],
 )
 
@@ -118,7 +118,7 @@ const default_color_hex = "#3498db"
 pub fn gauge(id: String, value: Float, attrs: List(GaugeAttr)) -> Node {
   let assert Ok(default_color) = color.from_hex(default_color_hex)
 
-  extension.build(def, id, [
+  native_widget.build(def, id, [
     #("value", FloatVal(value)),
     #("min", FloatVal(resolve(attrs, extract_min, 0.0))),
     #("max", FloatVal(resolve(attrs, extract_max, 100.0))),
@@ -145,7 +145,7 @@ pub fn gauge(id: String, value: Float, attrs: List(GaugeAttr)) -> Node {
 /// Updates the Rust-side value immediately. Used for discrete changes
 /// (button clicks) where the new value is known.
 pub fn set_value(node_id: String, value: Float) -> Command(msg) {
-  extension.command(def, node_id, "set_value", [
+  native_widget.command(def, node_id, "set_value", [
     #("value", FloatVal(value)),
   ])
 }
@@ -155,7 +155,7 @@ pub fn set_value(node_id: String, value: Float) -> Command(msg) {
 /// Tells the Rust side to transition toward a target value. Used for
 /// continuous changes (slider drags) where the value may keep changing.
 pub fn animate_to(node_id: String, value: Float) -> Command(msg) {
-  extension.command(def, node_id, "animate_to", [
+  native_widget.command(def, node_id, "animate_to", [
     #("value", FloatVal(value)),
   ])
 }

@@ -3,7 +3,7 @@ import gleam/dict
 import gleam/list
 import gleeunit/should
 import plushie/command
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{StringVal}
 
 // ---------------------------------------------------------------------------
@@ -19,11 +19,11 @@ pub fn def_has_one_prop_test() {
 }
 
 pub fn def_prop_is_label_test() {
-  should.equal(extension.prop_names(crashable.def), ["label"])
+  should.equal(native_widget.prop_names(crashable.def), ["label"])
 }
 
 pub fn def_has_one_command_test() {
-  should.equal(extension.command_names(crashable.def), ["panic"])
+  should.equal(native_widget.command_names(crashable.def), ["panic"])
 }
 
 pub fn def_rust_crate_test() {
@@ -31,7 +31,7 @@ pub fn def_rust_crate_test() {
 }
 
 pub fn def_validates_test() {
-  extension.validate(crashable.def)
+  native_widget.validate(crashable.def)
   |> should.be_ok()
 }
 
@@ -71,7 +71,7 @@ pub fn crash_widget_is_leaf_test() {
 pub fn panic_command_creates_extension_command_test() {
   let cmd = crashable.panic_command("crasher")
   case cmd {
-    command.ExtensionCommand(node_id:, op:, payload:) -> {
+    command.WidgetCommand(node_id:, op:, payload:) -> {
       should.equal(node_id, "crasher")
       should.equal(op, "panic")
       should.equal(dict.size(payload), 0)

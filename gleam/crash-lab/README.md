@@ -1,8 +1,8 @@
 # Crash Lab
 
 Error resilience demonstration showing how plushie catches failures at
-every level: Rust extension panics, Gleam update panics, and Gleam view
-panics. The counter survives all three.
+every level: Rust native widget panics, Gleam update panics, and Gleam
+view panics. The counter survives all three.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ gleam deps download
 bin/build
 ```
 
-The build script fetches the renderer and extension SDK from crates.io.
+The build script fetches the renderer and native widget SDK from crates.io.
 
 ## Run
 
@@ -33,15 +33,15 @@ gleam test
 
 ## What it demonstrates
 
-A counter (proof of life) and a native Rust extension widget, with
-buttons that deliberately trigger failures at three different levels.
-The counter survives every one.
+A counter (proof of life) and a native Rust widget, with buttons that
+deliberately trigger failures at three different levels. The counter
+survives every one.
 
-### 1. Extension panic (Rust side)
+### 1. Native widget panic (Rust side)
 
-Click **Panic Extension**. The Rust extension's `handle_command`
+Click **Panic Extension**. The Rust native widget's `handle_command`
 calls `panic!()`. The renderer catches it via `catch_unwind` and
-marks the extension as poisoned. The widget is replaced with a red
+marks the widget as poisoned. The widget is replaced with a red
 error placeholder, but the app continues running.
 
 **Recovery:** Click **Remove Widget** to take the poisoned widget
@@ -70,7 +70,7 @@ model was never lost.
 
 | Failure | Caught by | Model survives? | View survives? |
 |---------|-----------|-----------------|----------------|
-| Extension panic | Rust `catch_unwind` | Yes | Widget replaced |
+| Native widget panic | Rust `catch_unwind` | Yes | Widget replaced |
 | Update panic | Erlang `try_call` | Yes | Unchanged |
 | View panic | Erlang `try_call` | Yes | Previous tree kept |
 
@@ -83,15 +83,15 @@ isolated and recovered from automatically.
 src/
   crash_lab.gleam             # Entry point
   crash_lab/
-    crashable.gleam           # Extension def, builder, panic command
+    crashable.gleam           # Native widget def, builder, panic command
     app.gleam                 # Model, init, update, view
 test/
   crash_lab/
-    crashable_test.gleam      # Extension def and builder tests
+    crashable_test.gleam      # Native widget def and builder tests
     app_test.gleam            # Update, view, recovery sequence tests
 native/crash_widget/
   Cargo.toml                  # Rust crate manifest
-  src/lib.rs                  # Extension that panics on command
+  src/lib.rs                  # Native widget that panics on command
 bin/
   build                       # Custom binary build script
   preflight                   # CI checks

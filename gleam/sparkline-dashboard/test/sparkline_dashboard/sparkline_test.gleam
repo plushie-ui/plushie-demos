@@ -1,7 +1,7 @@
 import gleam/dict
 import gleam/list
 import gleeunit/should
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{BoolVal, FloatVal, ListVal, StringVal}
 import plushie/prop/color
 import sparkline_dashboard/sparkline
@@ -19,12 +19,12 @@ pub fn def_has_five_props_test() {
 }
 
 pub fn def_prop_names_test() {
-  let names = extension.prop_names(sparkline.def)
+  let names = native_widget.prop_names(sparkline.def)
   should.equal(names, ["data", "color", "stroke_width", "fill", "height"])
 }
 
 pub fn def_has_no_commands_test() {
-  let names = extension.command_names(sparkline.def)
+  let names = native_widget.command_names(sparkline.def)
   should.equal(names, [])
 }
 
@@ -40,7 +40,7 @@ pub fn def_rust_constructor_test() {
 }
 
 pub fn def_validates_successfully_test() {
-  extension.validate(sparkline.def)
+  native_widget.validate(sparkline.def)
   |> should.be_ok()
 }
 

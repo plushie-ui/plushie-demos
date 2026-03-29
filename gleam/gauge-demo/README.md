@@ -1,7 +1,7 @@
 # Gauge Demo
 
-Temperature monitor with a native Rust gauge extension widget.
-Demonstrates extension commands (`set_value`, `animate_to`),
+Temperature monitor with a native Rust gauge widget.
+Demonstrates widget commands (`set_value`, `animate_to`),
 the optimistic update pattern, and the custom binary build workflow.
 
 ## Prerequisites
@@ -17,9 +17,9 @@ gleam deps download
 bin/build
 ```
 
-This builds a custom plushie binary with the gauge extension compiled
+This builds a custom plushie binary with the gauge native widget compiled
 in and installs it to `build/plushie/bin/gauge-demo-plushie`. The
-extension crate and renderer are fetched from crates.io automatically.
+widget crate and renderer are fetched from crates.io automatically.
 
 ## Run
 
@@ -29,7 +29,7 @@ PLUSHIE_BINARY_PATH=build/plushie/bin/gauge-demo-plushie gleam run -m gauge_demo
 
 ## Test
 
-Tests cover the extension definition, widget builder, commands,
+Tests cover the native widget definition, widget builder, commands,
 app logic (init/update/view), helpers, and edge cases. No custom
 binary needed -- all tests exercise pure Gleam code.
 
@@ -42,7 +42,7 @@ gleam test
 ### Architecture
 
 The app follows the standard Plushie Elm loop (`init`/`update`/`view`)
-with a native Rust extension widget for the gauge display.
+with a native Rust widget for the gauge display.
 
 ```
 Gleam (app logic)              Rust (gauge rendering)
@@ -61,14 +61,14 @@ view() builds tree with        render() displays
 ### Optimistic updates
 
 Button and slider handlers update the Gleam model immediately, then
-send an `ExtensionCommand` to sync the Rust side. The Rust extension
+send a `WidgetCommand` to sync the Rust side. The native widget
 does not echo events back -- this avoids race conditions when the user
 clicks rapidly.
 
-### Extension definition
+### Native widget definition
 
 The gauge widget is defined in `src/gauge_demo/gauge.gleam` using the
-SDK's `ExtensionDef` type. This declares 7 typed props and 2 commands
+SDK's `NativeDef` type. This declares 7 typed props and 2 commands
 that map to the Rust crate's `WidgetExtension` implementation.
 
 The builder uses a typed `GaugeAttr` list for optional properties,
@@ -91,11 +91,11 @@ Only `id` and `value` are required; all other props have defaults.
 src/
   gauge_demo.gleam            # Entry point (main)
   gauge_demo/
-    gauge.gleam               # Extension def, builder, commands
+    gauge.gleam               # Native widget def, builder, commands
     app.gleam                 # Model, init, update, view, helpers
 test/
   gauge_demo/
-    gauge_test.gleam          # Extension def and builder tests
+    gauge_test.gleam          # Native widget def and builder tests
     app_test.gleam            # App behaviour tests
 native/gauge/
   Cargo.toml                  # Rust crate manifest
@@ -115,5 +115,5 @@ The same demo exists in other languages:
 | Ruby | [ruby/gauge-demo](../../ruby/gauge-demo/) |
 | Python | [python/gauge-demo](../../python/gauge-demo/) |
 
-The Rust extension code is identical across all languages. Only the
+The Rust native widget code is identical across all languages. Only the
 host SDK code differs.

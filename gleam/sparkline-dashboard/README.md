@@ -1,7 +1,7 @@
 # Sparkline Dashboard
 
 Live system monitor with three sparkline charts for CPU, memory, and
-network metrics. Demonstrates a render-only Rust canvas extension,
+network metrics. Demonstrates a render-only Rust canvas native widget,
 timer subscriptions, and simulated live data.
 
 ## Prerequisites
@@ -17,9 +17,9 @@ gleam deps download
 bin/build
 ```
 
-This builds a custom plushie binary with the sparkline extension
+This builds a custom plushie binary with the sparkline native widget
 compiled in and installs it to
-`build/plushie/bin/sparkline-dashboard-plushie`. The extension crate
+`build/plushie/bin/sparkline-dashboard-plushie`. The widget crate
 and renderer are fetched from crates.io automatically.
 
 ```bash
@@ -34,7 +34,7 @@ PLUSHIE_BINARY_PATH=build/plushie/bin/sparkline-dashboard-plushie gleam run -m s
 
 ## Test
 
-Tests cover the extension definition, widget builder, app logic
+Tests cover the native widget definition, widget builder, app logic
 (init/update/subscribe/view), metric generation, and edge cases. No
 custom binary needed -- all tests exercise pure Gleam code.
 
@@ -46,7 +46,7 @@ gleam test
 
 ### Architecture
 
-The sparkline is a **render-only** extension: it has no commands or
+The sparkline is a **render-only** native widget: it has no commands or
 events. Data flows in one direction -- from Gleam model to Rust canvas.
 
 ```
@@ -99,11 +99,11 @@ Only `id` and `data` are required; all other props have defaults.
 src/
   sparkline_dashboard.gleam       # Entry point (main)
   sparkline_dashboard/
-    sparkline.gleam               # Extension def, builder
+    sparkline.gleam               # Native widget def, builder
     app.gleam                     # Model, Elm loop, metrics
 test/
   sparkline_dashboard/
-    sparkline_test.gleam          # Extension def and builder tests
+    sparkline_test.gleam          # Native widget def and builder tests
     app_test.gleam                # App behaviour tests
 native/sparkline/
   Cargo.toml                     # Rust crate manifest
@@ -123,5 +123,5 @@ The same demo exists in other languages:
 | Ruby | [ruby/sparkline-dashboard](../../ruby/sparkline-dashboard/) |
 | Python | [python/sparkline-dashboard](../../python/sparkline-dashboard/) |
 
-The Rust extension code is identical across all languages. Only the
+The Rust native widget code is identical across all languages. Only the
 host SDK code differs.

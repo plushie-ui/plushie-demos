@@ -22,7 +22,7 @@
 
 import gleam/list
 import gleam/result
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{type Node, BoolVal, FloatVal, ListVal}
 import plushie/prop/color.{type Color}
 
@@ -31,16 +31,16 @@ import plushie/prop/color.{type Color}
 /// Declares 5 typed props and no commands (render-only). The Rust crate
 /// in `native/sparkline/src/lib.rs` renders the line chart on an iced
 /// canvas.
-pub const def = extension.ExtensionDef(
+pub const def = native_widget.NativeDef(
   kind: "sparkline",
   rust_crate: "native/sparkline",
   rust_constructor: "sparkline::SparklineExtension::new()",
   props: [
-    extension.ListProp("data", "number"),
-    extension.ColorProp("color"),
-    extension.NumberProp("stroke_width"),
-    extension.BooleanProp("fill"),
-    extension.NumberProp("height"),
+    native_widget.ListProp("data", "number"),
+    native_widget.ColorProp("color"),
+    native_widget.NumberProp("stroke_width"),
+    native_widget.BooleanProp("fill"),
+    native_widget.NumberProp("height"),
   ],
   commands: [],
 )
@@ -97,7 +97,7 @@ pub fn sparkline(
 ) -> Node {
   let assert Ok(default_color) = color.from_hex(default_color_hex)
 
-  extension.build(def, id, [
+  native_widget.build(def, id, [
     #("data", ListVal(list.map(data, FloatVal))),
     #(
       "color",

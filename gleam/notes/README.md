@@ -2,7 +2,7 @@
 
 Note-taking app demonstrating custom message types, multi-view routing,
 undo/redo, search filtering, and keyboard shortcuts. Pure Gleam widgets
-only -- no Rust extension needed, runs with the stock plushie binary.
+only -- no native Rust widget needed, runs with the stock plushie binary.
 
 ## Prerequisites
 

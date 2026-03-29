@@ -175,6 +175,7 @@ fn key_press(
   captured captured: Bool,
 ) -> event.Event {
   event.KeyPress(
+    window_id: "",
     key:,
     modified_key: key,
     modifiers: event.Modifiers(

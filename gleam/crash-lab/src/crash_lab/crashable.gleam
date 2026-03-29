@@ -10,16 +10,16 @@
 import gleam/list
 import gleam/result
 import plushie/command.{type Command}
-import plushie/extension
+import plushie/native_widget
 import plushie/node.{type Node, StringVal}
 
 /// Extension definition for the crash widget.
-pub const def = extension.ExtensionDef(
+pub const def = native_widget.NativeDef(
   kind: "crash_widget",
   rust_crate: "native/crash_widget",
   rust_constructor: "crash_widget::CrashExtension::new()",
-  props: [extension.StringProp("label")],
-  commands: [extension.CommandDef("panic", [])],
+  props: [native_widget.StringProp("label")],
+  commands: [native_widget.CommandDef("panic", [])],
 )
 
 /// Attribute for configuring the crash widget.
@@ -34,7 +34,7 @@ pub fn label(text: String) -> CrashAttr {
 
 /// Build a crash widget node.
 pub fn crash_widget(id: String, attrs: List(CrashAttr)) -> Node {
-  extension.build(def, id, [
+  native_widget.build(def, id, [
     #("label", StringVal(resolve_label(attrs))),
   ])
 }
@@ -46,7 +46,7 @@ pub fn crash_widget(id: String, attrs: List(CrashAttr)) -> Node {
 /// widget is replaced with an error placeholder, but the rest of
 /// the app keeps running.
 pub fn panic_command(node_id: String) -> Command(msg) {
-  extension.command(def, node_id, "panic", [])
+  native_widget.command(def, node_id, "panic", [])
 }
 
 fn resolve_label(attrs: List(CrashAttr)) -> String {
