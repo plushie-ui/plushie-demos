@@ -1,15 +1,15 @@
 /**
- * Sparkline widget extension -- renders a line chart from sample data.
+ * Sparkline native widget -- renders a line chart from sample data.
  *
  * The TypeScript side declares the widget type and props. The Rust
  * side (in native/sparkline/) handles the canvas rendering using
  * iced's canvas::Program trait.
  */
 
-import { defineExtensionWidget } from "plushie"
-import type { ExtensionWidgetConfig } from "plushie"
+import { defineNativeWidget } from "plushie"
+import type { NativeWidgetConfig } from "plushie"
 
-export const sparklineConfig: ExtensionWidgetConfig = {
+export const sparklineConfig: NativeWidgetConfig = {
   type: "sparkline",
   props: {
     data: { list: "number" },
@@ -23,4 +23,4 @@ export const sparklineConfig: ExtensionWidgetConfig = {
 }
 
 /** Sparkline widget builder. */
-export const Sparkline = defineExtensionWidget(sparklineConfig)
+export const Sparkline = defineNativeWidget(sparklineConfig)

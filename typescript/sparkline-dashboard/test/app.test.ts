@@ -2,7 +2,7 @@
  * Integration tests for the sparkline dashboard app.
  *
  * These tests run the full app through the custom-built binary that
- * includes the sparkline Rust extension. Every interaction goes
+ * includes the sparkline Rust widget. Every interaction goes
  * through the wire protocol.
  *
  * Prerequisites:
@@ -82,9 +82,9 @@ integration("sparkline dashboard", () => {
     await session.assertExists("net_label")
   })
 
-  // ── Sparkline extension widgets ────────────────────────────────
+  // ── Sparkline native widgets ────────────────────────────────
 
-  test("sparkline widgets have the custom extension type", async () => {
+  test("sparkline widgets have the custom native widget type", async () => {
     const cpu = await session.find("cpu_spark")
     const mem = await session.find("mem_spark")
     const net = await session.find("net_spark")

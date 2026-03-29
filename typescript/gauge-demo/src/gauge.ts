@@ -1,15 +1,15 @@
 /**
- * Gauge extension definition and builder functions.
+ * Gauge native widget definition and builder functions.
  *
  * Defines the native gauge widget: a circular gauge rendered by
  * Rust/iced. The TypeScript side declares the props, events, and
  * commands; the Rust side handles rendering and animation.
  */
 
-import { defineExtensionWidget, extensionCommands } from "plushie"
-import type { ExtensionWidgetConfig } from "plushie"
+import { defineNativeWidget, nativeWidgetCommands } from "plushie"
+import type { NativeWidgetConfig } from "plushie"
 
-export const gaugeConfig: ExtensionWidgetConfig = {
+export const gaugeConfig: NativeWidgetConfig = {
   type: "gauge",
   props: {
     value: "number",
@@ -27,7 +27,7 @@ export const gaugeConfig: ExtensionWidgetConfig = {
 }
 
 /** Gauge widget builder. */
-export const Gauge = defineExtensionWidget(gaugeConfig)
+export const Gauge = defineNativeWidget(gaugeConfig)
 
 /** Gauge command constructors. */
-export const GaugeCmds = extensionCommands(gaugeConfig)
+export const GaugeCmds = nativeWidgetCommands(gaugeConfig)

@@ -1,18 +1,17 @@
 # Gauge Demo
 
-Temperature monitor built with plushie and a native Rust gauge widget
-extension. The gauge is rendered by Rust/iced; the app logic lives in
-TypeScript.
+Temperature monitor built with plushie and a native Rust gauge widget.
+The gauge is rendered by Rust/iced; the app logic lives in TypeScript.
 
 Demonstrates:
 
-- Defining a custom widget type (`gauge`) in TypeScript
+- Defining a native widget type (`gauge`) in TypeScript
 - Implementing `WidgetExtension` in Rust
-- Extension commands (`set_value`, `animate_to`)
-- Extension events (`value_changed` from Rust back to TypeScript)
-- Extension config via `settings.extensionConfig`
+- Native widget commands (`set_value`, `animate_to`)
+- Native widget events (`value_changed` from Rust back to TypeScript)
+- Native widget config via `settings.nativeWidgetConfig`
 - Building a custom binary with `npx plushie build`
-- Testing extension widgets through pure functions and the real binary
+- Testing native widgets through pure functions and the real binary
 
 ## Setup
 
@@ -21,7 +20,7 @@ pnpm install
 npx plushie download
 ```
 
-## Build the extension binary
+## Build the custom binary
 
 Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
 checked out locally (the `source_path` in `plushie.extensions.json`
@@ -33,7 +32,7 @@ npx plushie build
 
 This generates a custom binary at
 `node_modules/.plushie/build/target/debug/gauge-demo-plushie` with
-the gauge extension registered.
+the gauge widget registered.
 
 ## Run
 
@@ -47,12 +46,12 @@ npx plushie run src/app.tsx
 pnpm test
 ```
 
-Unit tests cover the extension definition, builder functions, app
-update logic (with simulated extension events), view tree structure,
+Unit tests cover the native widget definition, builder functions, app
+update logic (with simulated widget events), view tree structure,
 gauge wire props, settings, and a stateful journey test. No renderer
 binary needed -- these are pure TypeScript tests.
 
-Integration tests (when the extension binary is built) verify the
+Integration tests (when the custom binary is built) verify the
 wire-level interaction: gauge type on the wire, prop encoding, button
 clicks, and slider interactions. They are skipped automatically if
 the binary hasn't been built.
@@ -61,14 +60,14 @@ the binary hasn't been built.
 
 ```
 src/
-  gauge.ts              # TypeScript extension definition
+  gauge.ts              # Native widget definition
   app.tsx               # App using the gauge widget
 test/
   gauge.test.ts         # Unit tests: config, builder, commands
   app.test.ts           # App tests: helpers, update, view, settings, journey
 native/
   gauge/
-    Cargo.toml          # Rust crate for the extension
+    Cargo.toml          # Rust crate for the widget
     src/
       lib.rs            # WidgetExtension implementation
 plushie.extensions.json # Build configuration
@@ -77,16 +76,16 @@ vitest.config.ts        # Test runner config (JSX transform)
 
 ## How it works
 
-The gauge widget is a native Rust extension that renders using iced
-widgets. The TypeScript side defines the widget's props, events, and
-commands via `defineExtensionWidget`. The Rust side implements
+The gauge widget is a native Rust widget that renders using iced.
+The TypeScript side defines the widget's props, events, and
+commands via `defineNativeWidget`. The Rust side implements
 `WidgetExtension` to render the gauge and handle commands.
 
 `npx plushie build` reads `plushie.extensions.json`, generates a
 Cargo workspace with a custom `main.rs` that registers the gauge
-extension, and builds the binary.
+widget, and builds the binary.
 
-### Extension command wire path
+### Widget command wire path
 
 When the user clicks "High (90)", the following happens:
 
@@ -97,8 +96,3 @@ When the user clicks "High (90)", the following happens:
 5. The gauge re-renders with the new value
 6. Rust emits `value_changed` event back over the wire
 7. TypeScript `update()` receives the event and updates `model.temperature`
-
-The `temperature` field only changes when the Rust extension confirms
-the change via a `value_changed` event. Button handlers set `targetTemp`
-immediately for responsive UI; the extension is the source of truth
-for the actual displayed value.

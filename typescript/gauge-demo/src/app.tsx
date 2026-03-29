@@ -1,15 +1,15 @@
 /**
- * Temperature monitor app using a native Rust gauge extension.
+ * Temperature monitor app using a native Rust gauge widget.
  *
  * Demonstrates:
- * - Native widget extension (gauge rendered in Rust/iced)
- * - Extension commands (set_value, animate_to)
- * - Extension events (value_changed from Rust back to TypeScript)
- * - Settings with extension_config
+ * - Native widget (gauge rendered in Rust/iced)
+ * - Native widget commands (set_value, animate_to)
+ * - Native widget events (value_changed from Rust back to TypeScript)
+ * - Settings with nativeWidgetConfig
  *
- * The temperature field only updates when the Rust extension confirms
+ * The temperature field only updates when the Rust widget confirms
  * the change via a value_changed event. Button handlers set targetTemp
- * optimistically and send extension commands; the Rust side processes
+ * optimistically and send widget commands; the Rust side processes
  * the command and echoes the new value back.
  */
 
@@ -57,7 +57,7 @@ function appendHistory(history: number[], value: number): number[] {
 // -- Handlers ---------------------------------------------------------------
 //
 // Button handlers set targetTemp only. The temperature field changes when
-// the Rust extension responds with a value_changed event (handled in update).
+// the Rust widget responds with a value_changed event (handled in update).
 
 const setTarget = (s: Model, e: { value: unknown }): [Model, unknown] => [
   { ...s, targetTemp: e.value as number },
@@ -139,17 +139,17 @@ export default app<Model>({
   init: init(),
 
   settings: {
-    extensionConfig: {
+    nativeWidgetConfig: {
       gauge: { arcWidth: 8, tickCount: 10 },
     },
   },
 
   update(state, event) {
-    // Handle value_changed events from the Rust gauge extension.
-    // This is the only way temperature changes -- the extension is
+    // Handle value_changed events from the Rust gauge widget.
+    // This is the only way temperature changes -- the widget is
     // the source of truth. Button handlers only set targetTemp and
-    // send extension commands; the Rust side processes the command
-    // and echoes the confirmed value back.
+    // send widget commands; the Rust side processes the command and
+    // echoes the confirmed value back.
     if (
       isWidget(event) &&
       event.type === "value_changed" &&

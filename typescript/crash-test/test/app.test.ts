@@ -151,7 +151,7 @@ describe("view", () => {
     expect(findNode(tree, "count")).not.toBeNull()
   })
 
-  test("has crash_box extension widget", () => {
+  test("has crash_box native widget", () => {
     const tree = view(init())
     const box = findNode(tree, "crash-widget")
     expect(box).not.toBeNull()
@@ -215,7 +215,7 @@ describe("recovery sequence", () => {
 })
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Integration tests (require extension binary)
+// Integration tests (require custom binary)
 // ═══════════════════════════════════════════════════════════════════════════
 
 const binaryPath = resolve(
@@ -261,7 +261,7 @@ integration("crash test (integration)", () => {
   })
 
   test("counter works after panic command", async () => {
-    // Send the panic command to the Rust extension
+    // Send the panic command to the Rust widget
     await session.click("panic")
 
     // The crash_box is now poisoned, but the counter still works

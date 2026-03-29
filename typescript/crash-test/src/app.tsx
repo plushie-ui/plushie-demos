@@ -3,8 +3,8 @@
  *
  * Two layers of crash protection:
  *
- * 1. Rust extension panic: the renderer wraps extension calls in
- *    catch_unwind. A panic poisons the extension; subsequent renders
+ * 1. Rust widget panic: the renderer wraps widget calls in
+ *    catch_unwind. A panic poisons the widget; subsequent renders
  *    show an error placeholder. Other widgets keep working.
  *
  * 2. TypeScript runtime error: the runtime wraps handler/update/view
@@ -44,9 +44,9 @@ export const decrement = (s: Model): Model => ({
 })
 
 /**
- * Send a "panic" command to the Rust extension.
+ * Send a "panic" command to the Rust widget.
  *
- * The renderer catches the panic and poisons the extension. The
+ * The renderer catches the panic and poisons the widget. The
  * crash_box widget shows an error placeholder on subsequent renders.
  * Everything else keeps working.
  */
@@ -115,7 +115,7 @@ export function view(model: Model) {
           </Button>
         </Row>
 
-        {/* Rust extension widget -- shows error placeholder after panic */}
+        {/* Rust native widget -- shows error placeholder after panic */}
         {CrashBox("crash-widget", {
           label: "Extension OK",
           color: "#2ecc71",

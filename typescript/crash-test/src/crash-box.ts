@@ -1,19 +1,19 @@
 /**
- * Crash box extension -- a simple widget that panics on command.
+ * Crash box native widget -- a simple widget that panics on command.
  *
  * Normally renders a colored container with a label. When the
  * "panic" command is sent, the Rust side calls panic!(), which
- * the renderer catches via catch_unwind. The extension is marked
+ * the renderer catches via catch_unwind. The widget is marked
  * poisoned and subsequent renders show an error placeholder.
  *
  * The rest of the app keeps working -- panic isolation means one
- * broken extension can't take down the process.
+ * broken widget can't take down the process.
  */
 
-import { defineExtensionWidget, extensionCommands } from "plushie"
-import type { ExtensionWidgetConfig } from "plushie"
+import { defineNativeWidget, nativeWidgetCommands } from "plushie"
+import type { NativeWidgetConfig } from "plushie"
 
-export const crashBoxConfig: ExtensionWidgetConfig = {
+export const crashBoxConfig: NativeWidgetConfig = {
   type: "crash_box",
   props: {
     label: "string",
@@ -25,7 +25,7 @@ export const crashBoxConfig: ExtensionWidgetConfig = {
 }
 
 /** Crash box widget builder. */
-export const CrashBox = defineExtensionWidget(crashBoxConfig)
+export const CrashBox = defineNativeWidget(crashBoxConfig)
 
 /** Crash box command constructors. */
-export const CrashBoxCmds = extensionCommands(crashBoxConfig)
+export const CrashBoxCmds = nativeWidgetCommands(crashBoxConfig)

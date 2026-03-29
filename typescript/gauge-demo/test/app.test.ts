@@ -7,7 +7,7 @@
  * app's update function.
  *
  * Integration tests (via real binary) are in a separate describe
- * block and skipped if the extension binary hasn't been built.
+ * block and skipped if the custom binary hasn't been built.
  */
 
 import { existsSync } from "node:fs"
@@ -53,7 +53,7 @@ function findNode(
   return null
 }
 
-/** Simulate a value_changed event from the Rust extension. */
+/** Simulate a value_changed event from the Rust widget. */
 function valueChangedEvent(value: number) {
   return {
     kind: "widget" as const,
@@ -97,7 +97,7 @@ describe("init", () => {
   test("history starts with [20]", () => expect(init().history).toEqual([20]))
 })
 
-// -- Update (button handlers + extension events) ----------------------------
+// -- Update (button handlers + widget events) ----------------------------
 
 describe("update", () => {
   test("reset sets targetTemp and returns set_value command", () => {
@@ -170,7 +170,7 @@ describe("view", () => {
     expect(tree.id).toBe("main")
   })
 
-  test("has gauge widget with extension type", () => {
+  test("has gauge widget with native widget type", () => {
     const tree = view(init())
     const gauge = findNode(tree, "temp")
     expect(gauge).not.toBeNull()
@@ -210,14 +210,14 @@ describe("view", () => {
 // -- Settings ---------------------------------------------------------------
 
 describe("settings", () => {
-  test("extension_config is present", () => {
+  test("nativeWidgetConfig is present", () => {
     const settings = gaugeApp.config.settings
     expect(settings).toBeDefined()
-    expect(settings!.extensionConfig).toBeDefined()
+    expect(settings!.nativeWidgetConfig).toBeDefined()
   })
 
   test("gauge config values", () => {
-    const cfg = gaugeApp.config.settings!.extensionConfig!["gauge"] as Record<
+    const cfg = gaugeApp.config.settings!.nativeWidgetConfig!["gauge"] as Record<
       string,
       unknown
     >
@@ -335,7 +335,7 @@ describe("rapid clicks", () => {
 })
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Integration tests (require extension binary)
+// Integration tests (require custom binary)
 // ═══════════════════════════════════════════════════════════════════════════
 
 const binaryPath = resolve(
@@ -376,7 +376,7 @@ integration("gauge app (integration)", () => {
     expect(tree!.type).toBe("window")
   })
 
-  test("gauge widget has extension type on the wire", async () => {
+  test("gauge widget has native widget type on the wire", async () => {
     const gauge = await session.find("temp")
     expect(gauge).not.toBeNull()
     expect(gauge!.type).toBe("gauge")

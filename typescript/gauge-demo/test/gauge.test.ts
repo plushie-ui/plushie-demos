@@ -1,10 +1,9 @@
 /**
- * Unit tests for the gauge extension definition and builder functions.
+ * Unit tests for the gauge native widget definition and builder functions.
  *
- * Verifies the TypeScript side of the extension: widget builders
- * produce correct UINode shapes, command constructors return proper
- * Command objects, and the config matches what plushie.extensions.json
- * expects.
+ * Verifies the TypeScript side: widget builders produce correct UINode
+ * shapes, command constructors return proper Command objects, and the
+ * config matches what plushie.extensions.json expects.
  *
  * No binary needed -- pure TypeScript logic.
  */
@@ -35,7 +34,7 @@ describe("gaugeConfig", () => {
     expect(gaugeConfig.events).toEqual(["value_changed"])
   })
 
-  test("declares extension commands", () => {
+  test("declares widget commands", () => {
     expect(gaugeConfig.commands).toEqual(["set_value", "animate_to"])
   })
 

@@ -5,7 +5,7 @@ protection that keep the app running when things go wrong.
 
 Demonstrates:
 
-- Rust extension panic isolation (`catch_unwind`, poisoned state)
+- Rust native widget panic isolation (`catch_unwind`, poisoned state)
 - TypeScript handler error recovery (model revert, rate-limited logging)
 - TypeScript view error recovery (frozen UI, handler-driven recovery)
 - App stays alive after any crash (counter keeps counting)
@@ -17,7 +17,7 @@ pnpm install
 npx plushie download
 ```
 
-## Build the extension binary
+## Build the custom binary
 
 Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
 checked out locally (the `source_path` in `plushie.extensions.json`
@@ -46,13 +46,13 @@ type of crash.
 
 ## How it works
 
-### Rust extension panic
+### Rust widget panic
 
-Click **Panic Widget**. The Rust extension's `handle_command` calls
+Click **Panic Widget**. The Rust widget's `handle_command` calls
 `panic!()`. The renderer catches it with `catch_unwind`:
 
 1. Panic is caught and logged
-2. Extension marked "poisoned"
+2. Widget marked "poisoned"
 3. Subsequent renders show an error placeholder
 4. Other widgets (the counter) keep working
 5. Poisoned state clears on the next full snapshot
@@ -86,7 +86,7 @@ throw -- the handler clears the flag before the next view() call.
 
 ```
 src/
-  crash-box.ts          -- extension definition (panics on command)
+  crash-box.ts          -- native widget definition (panics on command)
   app.tsx               -- the crash test app
 test/
   app.test.ts           -- handler, view, recovery, integration tests

@@ -2,16 +2,16 @@
 
 Live system monitor dashboard built with
 [plushie](https://github.com/plushie-ui/plushie-typescript) and a
-custom Rust sparkline extension.
+custom Rust sparkline widget.
 
 Demonstrates:
 
-- Defining a native Rust widget extension in TypeScript
+- Defining a native Rust widget in TypeScript
 - Canvas-based custom rendering on the Rust side (`canvas::Program`)
 - Timer subscriptions for live data updates
 - Inline handlers (pause/resume, clear)
-- Render-only extension (no commands or events)
-- Testing extension widgets through the real binary
+- Render-only native widget (no commands or events)
+- Testing native widgets through the real binary
 
 ## Setup
 
@@ -20,7 +20,7 @@ pnpm install
 npx plushie download
 ```
 
-## Build the extension binary
+## Build the custom binary
 
 Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
 checked out locally (the `source_path` in `plushie.extensions.json`
@@ -32,7 +32,7 @@ npx plushie build
 
 This generates a custom binary at
 `node_modules/.plushie/build/target/debug/sparkline-dashboard-plushie`
-with the sparkline extension registered.
+with the sparkline widget registered.
 
 ## Run
 
@@ -42,8 +42,8 @@ npx plushie run src/app.tsx
 
 ## Test
 
-Unit tests (extension definition) run without the binary. Integration
-tests require the extension binary built above.
+Unit tests (widget definition) run without the binary. Integration
+tests require the custom binary built above.
 
 ```sh
 pnpm test            # run all tests
@@ -56,14 +56,14 @@ been built.
 
 ```
 src/
-  sparkline.ts           # TypeScript extension definition
+  sparkline.ts           # Native widget definition
   app.tsx                # Dashboard app with timer subs and sparklines
 test/
   sparkline.test.ts      # Unit tests: config shape, widget builder
   app.test.ts            # Integration tests: full app via custom binary
 native/
   sparkline/
-    Cargo.toml           # Rust crate for the extension
+    Cargo.toml           # Rust crate for the widget
     src/
       lib.rs             # WidgetExtension implementation (canvas rendering)
 plushie.extensions.json  # Build configuration
@@ -91,6 +91,6 @@ Each tick generates three simulated values:
 - **Network I/O**: pure random values (0-100)
 
 Samples are capped at 100 per metric. The view passes the sample
-arrays as props to the sparkline extension widgets. The Rust renderer
-reads the data array and draws the chart. Pause/resume toggles the
-timer subscription; clear resets all samples.
+arrays as props to the sparkline widgets. The Rust renderer reads
+the data array and draws the chart. Pause/resume toggles the timer
+subscription; clear resets all samples.

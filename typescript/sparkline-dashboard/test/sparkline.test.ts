@@ -1,5 +1,5 @@
 /**
- * Unit tests for the sparkline extension definition.
+ * Unit tests for the sparkline widget definition.
  *
  * Verifies the TypeScript side produces correct widget nodes and
  * config metadata.
@@ -32,7 +32,7 @@ describe("sparklineConfig", () => {
     )
   })
 
-  test("has no declared commands (render-only extension)", () => {
+  test("has no declared commands (render-only native widget)", () => {
     expect(sparklineConfig.commands).toBeUndefined()
   })
 
