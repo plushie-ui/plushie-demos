@@ -1,8 +1,8 @@
-"""Tests for the gauge extension definition and builder functions.
+"""Tests for the gauge native widget definition and builder functions.
 
-These verify the Python side of the extension: widget builders produce
-correct node shapes, command constructors return proper Command objects,
-and the definition matches what pyproject.toml expects.
+These verify the Python side of the native widget: widget builders
+produce correct node shapes, command constructors return proper
+Command objects, and the definition passes validation.
 
 No binary needed -- pure Python logic.
 """
@@ -16,11 +16,11 @@ from gauge_demo.gauge import (
     set_gauge_value,
 )
 from plushie.commands import Command
-from plushie.extension import validate
+from plushie.native_widget import validate
 
 
 class TestGaugeDef:
-    """Validate the gauge extension definition."""
+    """Validate the gauge native widget definition."""
 
     def test_validation_passes(self) -> None:
         errors = validate(gauge_def)

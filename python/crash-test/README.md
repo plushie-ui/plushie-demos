@@ -14,7 +14,7 @@ The app provides buttons that deliberately crash in various ways:
 - **Return None** -- Exercises the edge case where `update()` returns
   an unexpected value.
 
-**Rust-side crashes** (require the extension binary):
+**Rust-side crashes** (require the custom binary):
 - **Panic render** -- Sets `panic_on_render=True` on the crasher
   widget. The renderer catches the panic and shows fallback content.
 - **Panic command** -- Sends a command that panics inside
@@ -32,20 +32,23 @@ pip install -e /path/to/plushie-python[dev]
 pip install -e .
 ```
 
+## Build the binary
+
+The crasher widget is a native Rust widget. Build a custom
+renderer binary:
+
+```sh
+python -m plushie build
+```
+
 ## Run
 
 ```sh
 # With the standard binary (Rust crashes won't fire):
-plushie run crash_test.app:CrashTestApp
+python -m plushie run crash_test.app:CrashTestApp
 
-# With the extension binary (after building):
-plushie run crash_test.app:CrashTestApp --binary _plushie_build/crasher
-```
-
-## Build the extension binary
-
-```sh
-plushie build
+# With the custom binary (after building):
+python -m plushie run crash_test.app:CrashTestApp
 ```
 
 ## Test
@@ -58,24 +61,18 @@ Tests are pure Python and don't require the binary. They verify that
 update crashes are caught, view crashes are caught, and the counter
 keeps working through failures.
 
-## Preflight (all checks)
-
-```sh
-./preflight
-```
-
 ## Project structure
 
 ```
 src/crash_test/
   __init__.py          # package marker
-  crasher.py           # extension def, builder, command
+  crasher.py           # native widget definition and commands
   app.py               # CrashTestApp (Elm architecture)
 native/crasher/
   Cargo.toml           # Rust crate deps
   src/lib.rs           # CrasherExtension (panics on demand)
 tests/
   conftest.py          # shared fixtures
-  test_crasher.py      # extension def and builder tests
+  test_crasher.py      # native widget definition and builder tests
   test_app.py          # app update/view crash recovery tests
 ```

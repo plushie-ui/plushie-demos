@@ -1,4 +1,4 @@
-"""Gauge extension definition and builder functions.
+"""Gauge native widget definition and builder functions.
 
 Defines the native gauge widget: a circular gauge rendered by Rust/iced.
 The Python side declares the props and commands; the Rust side handles
@@ -8,16 +8,16 @@ rendering and animation.
 from __future__ import annotations
 
 from plushie.commands import Command
-from plushie.extension import (
+from plushie.native_widget import (
     CommandDef,
-    ExtensionDef,
+    NativeWidgetDef,
     ParamDef,
     PropDef,
     build_command,
     build_node,
 )
 
-gauge_def = ExtensionDef(
+gauge_def = NativeWidgetDef(
     kind="gauge",
     rust_crate="native/gauge",
     rust_constructor="gauge::GaugeExtension::new()",

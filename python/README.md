@@ -6,14 +6,14 @@ Example projects using the [plushie Python SDK](https://github.com/plushie-ui/pl
 
 ### [gauge-demo](gauge-demo/)
 
-Temperature monitor with a native Rust gauge widget extension.
+Temperature monitor with a native Rust gauge widget.
 Demonstrates extension commands (`set_value`, `animate_to`),
-optimistic updates, and `pyproject.toml` extension configuration.
+optimistic updates, and `pyproject.toml` widget configuration.
 
 ### [sparkline-dashboard](sparkline-dashboard/)
 
 Live system monitor with 3 sparkline charts for CPU, memory, and
-network metrics. Demonstrates a render-only Rust canvas extension,
+network metrics. Demonstrates a render-only native Rust widget,
 timer subscriptions, and simulated live data.
 
 ### [collab](collab/)
@@ -51,5 +51,5 @@ The same demos exist in other languages:
 | Sparkline | [sparkline-dashboard](sparkline-dashboard/) | [sparkline-dashboard](../typescript/sparkline-dashboard/) | [sparkline-dashboard](../ruby/sparkline-dashboard/) | [sparkline-dashboard](../elixir/sparkline-dashboard/) | [sparkline-dashboard](../gleam/sparkline-dashboard/) |
 | Collab | [collab](collab/) | -- | -- | [collab](../elixir/collab/) | [collab](../gleam/collab/) |
 
-The Rust extension code is identical across languages -- only the
-host SDK code differs.
+The Rust widget code is identical across languages -- only the host
+SDK code differs.

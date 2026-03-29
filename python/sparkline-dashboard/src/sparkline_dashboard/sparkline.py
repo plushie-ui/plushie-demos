@@ -1,16 +1,16 @@
-"""Sparkline extension definition and builder function.
+"""Sparkline native widget definition and builder function.
 
 Defines the native sparkline widget: a line chart rendered by Rust/iced.
 The Python side declares the props; the Rust side handles canvas rendering.
 
-This is a render-only extension -- no commands or events.
+This is a render-only native widget -- no commands or events.
 """
 
 from __future__ import annotations
 
-from plushie.extension import ExtensionDef, PropDef, build_node
+from plushie.native_widget import NativeWidgetDef, PropDef, build_node
 
-sparkline_def = ExtensionDef(
+sparkline_def = NativeWidgetDef(
     kind="sparkline",
     rust_crate="native/sparkline",
     rust_constructor="sparkline::SparklineExtension::new()",

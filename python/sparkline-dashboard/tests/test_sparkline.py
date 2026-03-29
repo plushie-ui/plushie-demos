@@ -1,7 +1,7 @@
-"""Tests for the sparkline extension definition and builder function.
+"""Tests for the sparkline native widget definition and builder function.
 
-These verify the Python side of the extension: the definition metadata
-and the widget builder produce correct node shapes.
+These verify the Python side of the native widget: the definition
+metadata and the widget builder produce correct node shapes.
 
 No binary needed -- pure Python logic.
 """
@@ -9,7 +9,7 @@ No binary needed -- pure Python logic.
 from __future__ import annotations
 
 from sparkline_dashboard.sparkline import sparkline, sparkline_def
-from plushie.extension import validate
+from plushie.native_widget import validate
 
 
 class TestSparklineDef:

@@ -1,12 +1,12 @@
 # Sparkline Dashboard
 
 Live system monitor dashboard built with plushie and a native Rust
-sparkline extension. The sparkline is rendered by Rust/iced; the app
+sparkline widget. The sparkline is rendered by Rust/iced; the app
 logic lives in Python.
 
 Demonstrates:
 
-- Native Rust widget extension (render-only, no commands or events)
+- Native Rust widget (render-only, no commands or events)
 - Canvas-based custom rendering on the Rust side (`canvas::Program`)
 - Timer subscriptions for live data updates
 - Elm architecture (init/update/view/subscribe)
@@ -23,28 +23,21 @@ pip install -e /path/to/plushie-python"[dev]"
 pip install -e .
 ```
 
-## Build the extension binary
+## Build the binary
 
-The sparkline widget is a native Rust extension. Build a custom
+The sparkline widget is a native Rust widget. Build a custom
 renderer binary that includes it:
-
-```sh
-python -m plushie build
-```
-
-For a release (optimized) build:
 
 ```sh
 python -m plushie build --release
 ```
 
 This reads `[[tool.plushie.extensions]]` from `pyproject.toml` and
-generates a custom binary with the sparkline extension registered.
+generates a custom binary with the sparkline widget registered.
 
-The stock (downloaded) binary does not include the sparkline extension.
-The custom binary produced by `plushie build` links the sparkline Rust
-crate and registers it at startup, making the `"sparkline"` widget type
-available on the wire.
+> **Note:** `python -m plushie download` will refuse to download a
+> precompiled binary when native widgets are configured -- the stock
+> binary doesn't include custom widget crates.
 
 ## Run
 
@@ -58,16 +51,16 @@ python -m plushie run sparkline_dashboard.app:Dashboard
 pytest -v
 ```
 
-Unit tests cover the extension definition, builder function, app update
-logic, and view tree structure. No renderer binary needed -- these are
-pure Python tests.
+Unit tests cover the native widget definition, builder function, app
+update logic, and view tree structure. No renderer binary needed --
+these are pure Python tests.
 
 ## Project structure
 
 ```
 src/
   sparkline_dashboard/
-    sparkline.py        # Python extension definition + builder
+    sparkline.py        # Native widget definition (NativeWidgetDef)
     app.py              # Dashboard app with timer subs and sparklines
 tests/
   conftest.py           # Shared fixtures, binary detection
@@ -75,10 +68,10 @@ tests/
   test_app.py           # App tests: update logic, view tree, wire props
 native/
   sparkline/
-    Cargo.toml          # Rust crate for the extension
+    Cargo.toml          # Rust crate for the widget
     src/
       lib.rs            # WidgetExtension implementation (canvas rendering)
-pyproject.toml          # Build configuration + extension declarations
+pyproject.toml          # Build configuration + widget declarations
 ```
 
 ## How it works
@@ -103,13 +96,13 @@ Each tick generates three simulated values:
 - **Network I/O**: pure random values (0-100)
 
 Samples are capped at 100 per metric. The view passes the sample
-arrays as props to the sparkline extension widgets. The Rust renderer
-reads the data array and draws the chart. Pause/resume toggles the
-timer subscription; clear resets all samples.
+arrays as props to the sparkline widgets. The Rust renderer reads the
+data array and draws the chart. Pause/resume toggles the timer
+subscription; clear resets all samples.
 
-### Extension wire path
+### Wire path
 
-This is a render-only extension. The full wire path:
+This is a render-only native widget. The full wire path:
 
 1. Python timer tick fires `TimerTick(tag="sample")`
 2. `update()` generates simulated samples and adds them to the model
@@ -118,5 +111,5 @@ This is a render-only extension. The full wire path:
 5. Rust `SparklineExtension::render()` reads the data array
 6. iced `canvas::Program` draws the line chart
 
-There is no reverse path (no events from the extension). This is the
-simplest extension pattern: pure props in, rendered pixels out.
+There is no reverse path (no events from the widget). This is the
+simplest native widget pattern: pure props in, rendered pixels out.
