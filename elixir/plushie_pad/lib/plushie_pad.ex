@@ -175,8 +175,11 @@ defmodule PlushiePad do
     window "main", title: "Plushie Pad" do
       column width: :fill, height: :fill do
         row width: :fill, height: :fill do
-          # Sidebar
-          file_list(model)
+          # Sidebar (custom widget)
+          PlushiePad.FileList.new("sidebar",
+            files: model.files,
+            active_file: model.active_file
+          )
 
           # Editor
           text_editor "editor", model.source do
@@ -204,47 +207,14 @@ defmodule PlushiePad do
           button("save", "Save")
           checkbox("auto-save", model.auto_save)
           text("auto-label", "Auto-save")
+          text_input("new-name", model.new_name,
+            placeholder: "name.ex",
+            on_submit: true
+          )
         end
 
-        scrollable "log", height: 120 do
-          column spacing: 2, padding: 4 do
-            for {entry, i} <- Enum.with_index(model.event_log) do
-              text("log-#{i}", entry, size: 12, font: :monospace)
-            end
-          end
-        end
-      end
-    end
-  end
-
-  defp file_list(model) do
-    column width: 180, height: :fill, padding: 8, spacing: 8 do
-      text("sidebar-title", "Experiments", size: 14)
-
-      scrollable "file-scroll", height: :fill do
-        keyed_column spacing: 2 do
-          for file <- model.files do
-            container file do
-              row spacing: 4 do
-                button(
-                  "select",
-                  file,
-                  width: :fill,
-                  style: if(file == model.active_file, do: :primary, else: :text)
-                )
-
-                button("delete", "x")
-              end
-            end
-          end
-        end
-      end
-
-      row spacing: 4 do
-        text_input("new-name", model.new_name,
-          placeholder: "name.ex",
-          on_submit: true
-        )
+        # Event log (custom widget)
+        PlushiePad.EventLog.new("event-log", events: model.event_log)
       end
     end
   end
