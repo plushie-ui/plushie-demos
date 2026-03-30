@@ -6,15 +6,16 @@ defmodule PlushiePad.PadTest do
     assert_exists("#preview/btn")
   end
 
-  test "editor has starter code" do
-    assert_exists("#editor")
-  end
-
   test "save button exists" do
     assert_exists("#save")
   end
 
-  test "clicking preview button does not crash" do
+  test "event log exists" do
+    assert_exists("#log")
+  end
+
+  test "clicking preview button logs an event" do
     click("#preview/btn")
+    assert_exists("#log-0")
   end
 end

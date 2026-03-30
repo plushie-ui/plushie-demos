@@ -22,7 +22,8 @@ defmodule PlushiePad do
     model = %{
       source: @starter_code,
       preview: nil,
-      error: nil
+      error: nil,
+      event_log: []
     }
 
     case compile_preview(model.source) do
@@ -40,6 +41,12 @@ defmodule PlushiePad do
       {:ok, tree} -> %{model | preview: tree, error: nil}
       {:error, msg} -> %{model | error: msg, preview: nil}
     end
+  end
+
+  # Events from preview widgets (scoped under "preview" container)
+  def update(model, %WidgetEvent{scope: ["preview" | _]} = event) do
+    entry = format_event(event)
+    %{model | event_log: Enum.take([entry | model.event_log], 20)}
   end
 
   def update(model, _event), do: model
@@ -71,6 +78,14 @@ defmodule PlushiePad do
         row padding: 8 do
           button("save", "Save")
         end
+
+        scrollable "log", height: 120 do
+          column spacing: 2, padding: 4 do
+            for {entry, i} <- Enum.with_index(model.event_log) do
+              text("log-#{i}", entry, size: 12, font: :monospace)
+            end
+          end
+        end
       end
     end
   end
@@ -96,6 +111,13 @@ defmodule PlushiePad do
         after
           Code.put_compiler_option(:ignore_module_conflict, false)
         end
+    end
+  end
+
+  defp format_event(%WidgetEvent{type: type, id: id, value: value}) do
+    case value do
+      nil -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}}"
+      val -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}, value: #{inspect(val)}}"
     end
   end
 end
