@@ -65,8 +65,8 @@ defmodule PlushiePad do
     %{model | source: source, dirty: true}
   end
 
-  # Save button
-  def update(model, %WidgetEvent{type: :click, id: "save"}) do
+  # Save button (canvas version emits :canvas_element_click)
+  def update(model, %WidgetEvent{type: :canvas_element_click, id: "save"}) do
     case compile_preview(model.source) do
       {:ok, tree} ->
         if model.active_file, do: save_experiment(model.active_file, model.source)
@@ -204,7 +204,7 @@ defmodule PlushiePad do
         end
 
         row padding: 4, spacing: 8 do
-          button("save", "Save")
+          save_button()
           checkbox("auto-save", model.auto_save)
           text("auto-label", "Auto-save")
           text_input("new-name", model.new_name,
@@ -215,6 +215,30 @@ defmodule PlushiePad do
 
         # Event log (custom widget)
         PlushiePad.EventLog.new("event-log", events: model.event_log)
+      end
+    end
+  end
+
+  defp save_button do
+    canvas "save-canvas", width: 100, height: 36 do
+      layer "button" do
+        group "save",
+          on_click: true,
+          cursor: :pointer,
+          focusable: true,
+          a11y: %{role: :button, label: "Save experiment"},
+          hover_style: %{fill: "#2563eb"},
+          pressed_style: %{fill: "#1d4ed8"} do
+
+          rect(0, 0, 100, 36,
+            fill: linear_gradient({0, 0}, {100, 0}, [
+              {0.0, "#3b82f6"},
+              {1.0, "#2563eb"}
+            ]),
+            radius: 6
+          )
+          text(50, 11, "Save", fill: "#ffffff", size: 14)
+        end
       end
     end
   end
