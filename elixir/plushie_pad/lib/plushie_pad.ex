@@ -1,9 +1,12 @@
 defmodule PlushiePad do
   use Plushie.App
 
+  alias Plushie.Command
   alias Plushie.Event.WidgetEvent
 
   import Plushie.UI
+
+  @experiments_dir "lib/pad/experiments"
 
   @starter_code """
   defmodule Pad.Experiments.Hello do
@@ -19,31 +22,103 @@ defmodule PlushiePad do
   """
 
   def init(_opts) do
+    files = list_experiments()
+
+    {source, active} =
+      case files do
+        [first | _] -> {load_experiment(first), first}
+        [] -> {@starter_code, nil}
+      end
+
     model = %{
-      source: @starter_code,
+      source: source,
       preview: nil,
       error: nil,
-      event_log: []
+      event_log: [],
+      files: files,
+      active_file: active,
+      new_name: "",
+      auto_save: false
     }
 
-    case compile_preview(model.source) do
+    case compile_preview(source) do
       {:ok, tree} -> %{model | preview: tree}
       {:error, msg} -> %{model | error: msg}
     end
   end
 
+  # Editor content changes
   def update(model, %WidgetEvent{type: :input, id: "editor", value: source}) do
     %{model | source: source}
   end
 
+  # Save button
   def update(model, %WidgetEvent{type: :click, id: "save"}) do
     case compile_preview(model.source) do
+      {:ok, tree} ->
+        if model.active_file, do: save_experiment(model.active_file, model.source)
+        %{model | preview: tree, error: nil}
+
+      {:error, msg} ->
+        %{model | error: msg, preview: nil}
+    end
+  end
+
+  # New experiment name input
+  def update(model, %WidgetEvent{type: :input, id: "new-name", value: text}) do
+    %{model | new_name: text}
+  end
+
+  # Submit new experiment
+  def update(model, %WidgetEvent{type: :submit, id: "new-name"}) do
+    create_new_experiment(model)
+  end
+
+  # Auto-save toggle
+  def update(model, %WidgetEvent{type: :toggle, id: "auto-save", value: checked}) do
+    %{model | auto_save: checked}
+  end
+
+  # Switch to a different file
+  def update(model, %WidgetEvent{type: :click, id: "select", scope: [file | _]}) do
+    if model.active_file != nil do
+      save_experiment(model.active_file, model.source)
+    end
+
+    source = load_experiment(file)
+    model = %{model | active_file: file, source: source}
+
+    case compile_preview(source) do
       {:ok, tree} -> %{model | preview: tree, error: nil}
       {:error, msg} -> %{model | error: msg, preview: nil}
     end
   end
 
-  # Events from preview widgets (scoped under "preview" container)
+  # Delete an experiment
+  def update(model, %WidgetEvent{type: :click, id: "delete", scope: [file | _]}) do
+    delete_experiment(file)
+    files = list_experiments()
+
+    if file == model.active_file do
+      case files do
+        [first | _] ->
+          source = load_experiment(first)
+          model = %{model | files: files, active_file: first, source: source}
+
+          case compile_preview(source) do
+            {:ok, tree} -> %{model | preview: tree, error: nil}
+            {:error, msg} -> %{model | error: msg, preview: nil}
+          end
+
+        [] ->
+          %{model | files: [], active_file: nil, source: @starter_code, preview: nil, error: nil}
+      end
+    else
+      %{model | files: files}
+    end
+  end
+
+  # Events from preview widgets
   def update(model, %WidgetEvent{scope: ["preview" | _]} = event) do
     entry = format_event(event)
     %{model | event_log: Enum.take([entry | model.event_log], 20)}
@@ -55,6 +130,10 @@ defmodule PlushiePad do
     window "main", title: "Plushie Pad" do
       column width: :fill, height: :fill do
         row width: :fill, height: :fill do
+          # Sidebar
+          file_list(model)
+
+          # Editor
           text_editor "editor", model.source do
             width {:fill_portion, 1}
             height :fill
@@ -62,7 +141,8 @@ defmodule PlushiePad do
             font :monospace
           end
 
-          container "preview", width: {:fill_portion, 1}, height: :fill, padding: 16 do
+          # Preview
+          container "preview", width: {:fill_portion, 1}, height: :fill, padding: 8 do
             if model.error do
               text("error", model.error, color: :red)
             else
@@ -75,8 +155,10 @@ defmodule PlushiePad do
           end
         end
 
-        row padding: 8 do
+        row padding: 4, spacing: 8 do
           button("save", "Save")
+          checkbox("auto-save", model.auto_save)
+          text("auto-label", "Auto-save")
         end
 
         scrollable "log", height: 120 do
@@ -86,6 +168,68 @@ defmodule PlushiePad do
             end
           end
         end
+      end
+    end
+  end
+
+  defp file_list(model) do
+    column width: 180, height: :fill, padding: 8, spacing: 8 do
+      text("sidebar-title", "Experiments", size: 14)
+
+      scrollable "file-scroll", height: :fill do
+        keyed_column spacing: 2 do
+          for file <- model.files do
+            container file do
+              row spacing: 4 do
+                button(
+                  "select",
+                  file,
+                  width: :fill,
+                  style: if(file == model.active_file, do: :primary, else: :text)
+                )
+
+                button("delete", "x")
+              end
+            end
+          end
+        end
+      end
+
+      row spacing: 4 do
+        text_input("new-name", model.new_name,
+          placeholder: "name.ex",
+          on_submit: true
+        )
+      end
+    end
+  end
+
+  defp create_new_experiment(model) do
+    name = String.trim(model.new_name)
+
+    if name == "" or not String.ends_with?(name, ".ex") do
+      model
+    else
+      template = """
+      defmodule Pad.Experiments.#{name |> Path.rootname() |> Macro.camelize()} do
+        import Plushie.UI
+
+        def render do
+          column padding: 16 do
+            text("hello", "New experiment")
+          end
+        end
+      end
+      """
+
+      save_experiment(name, template)
+      files = list_experiments()
+
+      model = %{model | files: files, active_file: name, source: template, new_name: ""}
+
+      case compile_preview(template) do
+        {:ok, tree} -> {%{model | preview: tree, error: nil}, Command.focus("editor")}
+        {:error, msg} -> {%{model | error: msg, preview: nil}, Command.focus("editor")}
       end
     end
   end
@@ -119,5 +263,27 @@ defmodule PlushiePad do
       nil -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}}"
       val -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}, value: #{inspect(val)}}"
     end
+  end
+
+  defp list_experiments do
+    File.mkdir_p!(@experiments_dir)
+
+    @experiments_dir
+    |> File.ls!()
+    |> Enum.filter(&String.ends_with?(&1, ".ex"))
+    |> Enum.sort()
+  end
+
+  defp save_experiment(name, source) do
+    File.mkdir_p!(@experiments_dir)
+    File.write!(Path.join(@experiments_dir, name), source)
+  end
+
+  defp load_experiment(name) do
+    Path.join(@experiments_dir, name) |> File.read!()
+  end
+
+  defp delete_experiment(name) do
+    Path.join(@experiments_dir, name) |> File.rm!()
   end
 end
