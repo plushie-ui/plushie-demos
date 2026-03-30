@@ -2,6 +2,8 @@ defmodule PlushiePad do
   use Plushie.App
 
   alias Plushie.Command
+  alias Plushie.Event.Key
+  alias Plushie.Event.Timer
   alias Plushie.Event.WidgetEvent
 
   import Plushie.UI
@@ -38,7 +40,8 @@ defmodule PlushiePad do
       files: files,
       active_file: active,
       new_name: "",
-      auto_save: false
+      auto_save: false,
+      dirty: false
     }
 
     case compile_preview(source) do
@@ -47,9 +50,19 @@ defmodule PlushiePad do
     end
   end
 
+  def subscribe(model) do
+    subs = [Plushie.Subscription.on_key_press(:keys)]
+
+    if model.auto_save and model.dirty do
+      [Plushie.Subscription.every(1000, :auto_save) | subs]
+    else
+      subs
+    end
+  end
+
   # Editor content changes
   def update(model, %WidgetEvent{type: :input, id: "editor", value: source}) do
-    %{model | source: source}
+    %{model | source: source, dirty: true}
   end
 
   # Save button
@@ -115,6 +128,38 @@ defmodule PlushiePad do
       end
     else
       %{model | files: files}
+    end
+  end
+
+  # Keyboard shortcuts
+  def update(model, %Key{key: "s", modifiers: %{command: true}}) do
+    case compile_preview(model.source) do
+      {:ok, tree} ->
+        if model.active_file, do: save_experiment(model.active_file, model.source)
+        %{model | preview: tree, error: nil, dirty: false}
+
+      {:error, msg} ->
+        %{model | error: msg, preview: nil}
+    end
+  end
+
+  def update(model, %Key{key: "n", modifiers: %{command: true}}) do
+    {model, Command.focus("new-name")}
+  end
+
+  def update(model, %Key{key: :escape}) do
+    %{model | error: nil}
+  end
+
+  # Auto-save timer
+  def update(model, %Timer{tag: :auto_save}) do
+    case compile_preview(model.source) do
+      {:ok, tree} ->
+        if model.active_file, do: save_experiment(model.active_file, model.source)
+        %{model | preview: tree, error: nil, dirty: false}
+
+      {:error, msg} ->
+        %{model | error: msg, preview: nil}
     end
   end
 
