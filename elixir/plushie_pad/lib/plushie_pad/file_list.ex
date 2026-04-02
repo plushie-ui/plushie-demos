@@ -1,11 +1,11 @@
 defmodule PlushiePad.FileList do
   use Plushie.Widget
 
-  widget :file_list
-  prop :files, :any
-  prop :active_file, :any
+  widget(:file_list)
+  prop(:files, :any)
+  prop(:active_file, :any)
 
-  def render(id, props) do
+  def view(id, props) do
     import Plushie.UI
 
     column id: id, width: 200, height: :fill, padding: 8, spacing: 8 do

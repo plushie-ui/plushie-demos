@@ -1,14 +1,14 @@
 defmodule PlushiePad.EventLog do
   use Plushie.Widget
 
-  widget :event_log
+  widget(:event_log)
 
-  prop :events, :any
+  prop(:events, :any)
 
-  state expanded: true
+  state(expanded: true)
 
   @impl Plushie.Widget.Handler
-  def render(id, props, state) do
+  def view(id, props, state) do
     import Plushie.UI
 
     column id: id, spacing: 4 do

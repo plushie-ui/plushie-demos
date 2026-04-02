@@ -1,7 +1,7 @@
 # collab
 
-Collaborative scratchpad showing 5 ways to run the same Plushie app --
-native desktop, shared-state WebSocket, and SSH -- all sharing a single
+Collaborative scratchpad showing 5 ways to run the same Plushie app:
+native desktop, shared-state WebSocket, and SSH, all sharing a single
 app definition in `lib/collab.ex`.
 
 ## Setup
@@ -21,7 +21,7 @@ in `priv/static/` where the HTTP server serves them.
 ## Quick start
 
 ```bash
-# Native desktop -- a window appears
+# Native desktop (a window appears)
 mix plushie.gui Collab
 
 # Or start the shared server and open a browser
@@ -38,9 +38,9 @@ open http://localhost:8080/websocket.html
 | 4 | `bin/plushie --listen --exec "mix plushie.connect Collab"` | Native desktop. Renderer spawns Elixir. |
 | 5 | `bin/plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"` | Native renderer over SSH (needs mode 2 running). |
 
-Mode 1 (client-side WASM) exists only in the gleam version -- Elixir
-doesn't compile to JavaScript. Mode 2 serves the same browser renderer
-but with Elixir on the server.
+Mode 1 (client-side WASM) exists only in the gleam version since
+Elixir doesn't compile to JavaScript. Mode 2 serves the same browser
+renderer but with Elixir on the server.
 
 ## Collaborative demo
 
@@ -63,11 +63,11 @@ open http://localhost:8080/websocket.html
 ```
 
 All clients share the same counter and notes in real time. The
-dark-mode toggle is per-client -- each user picks their own theme.
+dark-mode toggle is per-client; each user picks their own theme.
 
 ## The app
 
-The entire app is in `lib/collab.ex` -- a standard `Plushie.App`
+The entire app is in `lib/collab.ex`, a standard `Plushie.App`
 with init/update/view. The collaborative infrastructure (shared
 state, WebSocket handler, SSH adapter) lives in `lib/collab/`.
 
@@ -79,20 +79,20 @@ to see changes across all clients.
 
 ```
 lib/
-  collab.ex                    -- the app (model, update, view)
+  collab.ex                    - the app (model, update, view)
   collab/
-    shared.ex                  -- GenServer shared state
-    websocket_server.ex        -- Bandit HTTP + WebSocket handler
-    ssh_server.ex              -- SSH daemon startup
-    ssh_channel.ex             -- SSH channel adapter (pure Elixir)
-    static.ex                  -- static file serving
+    shared.ex                  - GenServer shared state
+    websocket_server.ex        - Bandit HTTP + WebSocket handler
+    ssh_server.ex              - SSH daemon startup
+    ssh_channel.ex             - SSH channel adapter (pure Elixir)
+    static.ex                  - static file serving
   mix/tasks/
-    collab.server.ex           -- mix collab.server task
+    collab.server.ex           - mix collab.server task
 priv/static/
-  index.html                   -- landing page
-  websocket.html               -- browser renderer client
+  index.html                   - landing page
+  websocket.html               - browser renderer client
 bin/
-  plushie                      -- symlink to downloaded binary
+  plushie                      - symlink to downloaded binary
 ```
 
 ## Security
@@ -111,9 +111,9 @@ Do not expose these ports to the internet.
 
 ## Troubleshooting
 
-**"plushie binary not found"** -- Run `mix plushie.download` first.
+**"plushie binary not found"** - Run `mix plushie.download` first.
 
-**Browser shows "plushie-wasm not found"** -- Run
+**Browser shows "plushie-wasm not found"** - Run
 `mix plushie.download` (config downloads WASM to `priv/static/`).
 
-**SSH connection refused** -- Start the server first (`mix collab.server`).
+**SSH connection refused** - Start the server first (`mix collab.server`).

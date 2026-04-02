@@ -1,12 +1,12 @@
 defmodule GaugeDemo.TemperatureMonitor do
   @moduledoc """
-  Temperature monitor app using a native Rust gauge extension.
+  Temperature monitor app using a native Rust gauge widget.
 
   Demonstrates:
 
-  - Native widget extension (gauge rendered in Rust/iced)
-  - Extension commands (`set_value`, `animate_to`)
-  - Extension events (`{:gauge, :value_changed}` from Rust back to Elixir)
+  - Native widget (gauge rendered in Rust/iced)
+  - Widget commands (`set_value`, `animate_to`)
+  - Widget events (`{:gauge, :value_changed}` from Rust back to Elixir)
   - Optimistic updates with confirmed state
   - Settings with `extension_config`
 
@@ -42,13 +42,13 @@ defmodule GaugeDemo.TemperatureMonitor do
     %Model{temperature: 20.0, target_temp: 20.0, history: [20.0]}
   end
 
-  # Extension event: Rust gauge confirms the value change.
+  # Widget event: Rust gauge confirms the value change.
   # This is the only path that updates `temperature` -- button handlers
   # only update `target_temp` optimistically.
   @impl true
   def update(
         model,
-        %WidgetEvent{type: {:gauge, :value_changed}, id: "temp", data: %{"value" => new_temp}}
+        %WidgetEvent{type: {:gauge, :value_changed}, id: "temp", data: %{value: new_temp}}
       ) do
     %{model | temperature: new_temp, history: append_history(model.history, new_temp)}
   end
@@ -120,7 +120,7 @@ defmodule GaugeDemo.TemperatureMonitor do
   @impl true
   def settings do
     [
-      extension_config: %{
+      widget_config: %{
         "gauge" => %{"arcWidth" => 8, "tickCount" => 10}
       }
     ]

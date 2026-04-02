@@ -3,7 +3,7 @@ defmodule CrashTest.CrashExtensionTest do
 
   alias CrashTest.CrashExtension
 
-  describe "extension metadata" do
+  describe "widget metadata" do
     test "type_names" do
       assert CrashExtension.type_names() == [:crash_widget]
     end
@@ -38,9 +38,9 @@ defmodule CrashTest.CrashExtensionTest do
   end
 
   describe "panic command" do
-    test "produces an extension_command" do
+    test "produces a widget command" do
       cmd = CrashExtension.panic("w1")
-      assert cmd.type == :extension_command
+      assert cmd.type == :widget_command
       assert cmd.payload.node_id == "w1"
       assert cmd.payload.op == "panic"
       assert cmd.payload.payload == %{}

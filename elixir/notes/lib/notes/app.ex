@@ -15,7 +15,7 @@ defmodule Notes.App do
 
   alias Notes.Note
   alias Notes.Widgets.{NoteCard, ShortcutBar, Toolbar}
-  alias Plushie.Event.Key
+  alias Plushie.Event.KeyEvent
   alias Plushie.Event.WidgetEvent
 
   defmodule Model do
@@ -92,16 +92,16 @@ defmodule Notes.App do
 
   # -- Keyboard shortcuts --
 
-  def update(model, %Key{type: :press, key: "n", modifiers: %{command: true}}),
+  def update(model, %KeyEvent{type: :press, key: "n", modifiers: %{command: true}}),
     do: create_note(model)
 
-  def update(model, %Key{type: :press, key: "z", modifiers: %{command: true}}),
+  def update(model, %KeyEvent{type: :press, key: "z", modifiers: %{command: true}}),
     do: perform_undo(model)
 
-  def update(model, %Key{type: :press, key: "y", modifiers: %{command: true}}),
+  def update(model, %KeyEvent{type: :press, key: "y", modifiers: %{command: true}}),
     do: perform_redo(model)
 
-  def update(model, %Key{type: :press, key: :escape}),
+  def update(model, %KeyEvent{type: :press, key: :escape}),
     do: handle_escape(model)
 
   # -- Catch-all --

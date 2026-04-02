@@ -1,15 +1,15 @@
 defmodule GaugeDemo do
   @moduledoc """
-  Temperature gauge demo -- native Rust widget extension for Plushie.
+  Temperature gauge demo - native Rust widget for Plushie.
 
-  This project demonstrates how to build a native Rust extension widget
-  and use it from an Elixir Plushie app. The two main modules are:
+  This project demonstrates how to build a native Rust widget and use
+  it from an Elixir Plushie app. The two main modules are:
 
-  - `GaugeDemo.GaugeExtension` -- extension definition (props, commands,
+  - `GaugeDemo.GaugeExtension` - widget definition (props, commands,
     Rust crate references). The macro generates the struct, setters,
     Widget protocol implementation, and command functions.
 
-  - `GaugeDemo.TemperatureMonitor` -- Plushie app module implementing
+  - `GaugeDemo.TemperatureMonitor` - Plushie app module implementing
     init/update/view/settings. Demonstrates the optimistic update
     pattern: `target_temp` updates immediately while `temperature`
     waits for Rust confirmation via `{:gauge, :value_changed}` events.
@@ -19,6 +19,6 @@ defmodule GaugeDemo do
       mix plushie.gui GaugeDemo.TemperatureMonitor
 
   Requires a custom binary built with `mix plushie.build` that includes
-  the gauge Rust extension. See the README for full setup instructions.
+  the gauge native widget. See the README for full setup instructions.
   """
 end

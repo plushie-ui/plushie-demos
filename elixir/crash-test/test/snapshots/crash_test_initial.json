@@ -127,7 +127,7 @@
               "children": [],
               "id": "panic_widget",
               "props": {
-                "label": "Panic extension"
+                "label": "Panic widget"
               },
               "type": "button"
             },
@@ -136,7 +136,7 @@
               "id": "panic_desc",
               "props": {
                 "color": "#888888",
-                "content": "Sends a command that panics the Rust extension's handle_command. The renderer isolates it via catch_unwind and replaces the widget with a red placeholder.",
+                "content": "Sends a command that panics the Rust widget's handle_command. The renderer isolates it via catch_unwind and replaces the widget with a red placeholder.",
                 "size": 12
               },
               "type": "text"
@@ -151,10 +151,6 @@
         {
           "children": [],
           "id": "crash_ext",
-          "meta": {
-            "__extension_widget_events__": [],
-            "__extension_widget_type__": "crash_widget"
-          },
           "props": {
             "label": "Widget OK"
           },

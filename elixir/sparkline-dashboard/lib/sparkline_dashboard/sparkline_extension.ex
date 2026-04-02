@@ -1,13 +1,13 @@
 defmodule SparklineDashboard.SparklineExtension do
   @moduledoc """
-  Sparkline widget extension -- renders a line chart from sample data.
+  Sparkline widget - renders a line chart from sample data.
 
-  Defines a render-only native Rust extension widget. The Rust side
+  Defines a render-only native Rust widget. The Rust side
   (`native/sparkline/src/lib.rs`) implements `WidgetExtension` with
   canvas-based rendering via iced's `canvas::Program` trait.
 
-  No commands or events -- data flows in through props, rendered
-  pixels flow out. This is the simplest extension pattern (Tier A).
+  No commands or events - data flows in through props, rendered
+  pixels flow out. This is the simplest native widget pattern.
 
   ## Props
 
@@ -18,7 +18,7 @@ defmodule SparklineDashboard.SparklineExtension do
   - `height` -- widget height in pixels (number, default 60.0)
   """
 
-  use Plushie.Extension, :native_widget
+  use Plushie.Widget, :native_widget
 
   widget(:sparkline)
 

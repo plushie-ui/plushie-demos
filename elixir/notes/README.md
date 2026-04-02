@@ -1,15 +1,15 @@
 # Notes
 
 Notes app demonstrating pure Elixir widgets and state helpers. No
-Rust extensions, no custom binary -- everything is Elixir.
+Rust extensions, no custom binary. Everything is Elixir.
 
 Demonstrates:
 
-- `Plushie.Route` -- stack-based navigation between list and editor
-- `Plushie.Selection` -- multi-select notes with checkboxes
-- `Plushie.Undo` -- undo/redo for editor content with coalescing
-- `Plushie.Data` -- search across title+content, sort by date/name
-- Pure Elixir composite widgets (`use Plushie.Extension, :widget`)
+- `Plushie.Route` - stack-based navigation between list and editor
+- `Plushie.Selection` - multi-select notes with checkboxes
+- `Plushie.Undo` - undo/redo for editor content with coalescing
+- `Plushie.Data` - search across title+content, sort by date/name
+- Pure Elixir composite widgets (`use Plushie.Widget`)
 - Keyboard shortcuts with a context-aware hint bar
 - Pattern matching in `update/2` as a routing table
 
@@ -78,22 +78,22 @@ multi-select) and `/editor` (title + content editing with undo).
 
 ### State helpers
 
-Each helper is a pure data structure -- no processes, no side effects.
+Each helper is a pure data structure with no processes or side effects.
 They compose naturally in the model:
 
-- **Route**: `push("/editor", %{note_id: id})` / `pop()` / `current()`
-- **Selection**: `toggle(sel, id)` / `selected?(sel, id)` / `clear(sel)`
-- **Undo**: `new(content)` / `apply(undo, command)` / `undo(u)` / `redo(u)`
-- **Data**: `query(records, search: ..., sort: ...)`
+- **Route** - `push("/editor", %{note_id: id})` / `pop()` / `current()`
+- **Selection** - `toggle(sel, id)` / `selected?(sel, id)` / `clear(sel)`
+- **Undo** - `new(content)` / `apply(undo, command)` / `undo(u)` / `redo(u)`
+- **Data** - `query(records, search: ..., sort: ...)`
 
 ### Custom widgets
 
-Three pure Elixir composites built with `use Plushie.Extension, :widget`.
-Each declares props and implements `render/2`:
+Three pure Elixir composites built with `use Plushie.Widget`.
+Each declares props and implements `view/2`:
 
-- **Toolbar** -- title, optional back button, dynamic action buttons
-- **NoteCard** -- checkbox for selection, button for opening, preview text
-- **ShortcutBar** -- context-aware hints with key/action visual distinction
+- **Toolbar** - title, optional back button, dynamic action buttons
+- **NoteCard** - checkbox for selection, button for opening, preview text
+- **ShortcutBar** - context-aware hints with key/action visual distinction
 
 No Rust, no binary rebuild. These work with any precompiled binary.
 

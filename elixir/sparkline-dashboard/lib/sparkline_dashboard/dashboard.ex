@@ -4,9 +4,9 @@ defmodule SparklineDashboard.Dashboard do
 
   Demonstrates:
 
-  - Native widget extension (sparkline rendered in Rust/iced canvas)
+  - Native widget (sparkline rendered in Rust/iced canvas)
   - Timer subscriptions for live data updates
-  - Render-only extension (no commands or events)
+  - Render-only native widget (no commands or events)
   - Conditional subscriptions based on model state
   - Multiple instances of the same extension widget
 
@@ -18,7 +18,7 @@ defmodule SparklineDashboard.Dashboard do
   use Plushie.App
 
   alias SparklineDashboard.SparklineExtension, as: Sparkline
-  alias Plushie.Event.{Timer, WidgetEvent}
+  alias Plushie.Event.{TimerEvent, WidgetEvent}
   alias Plushie.Subscription
 
   defmodule Model do
@@ -55,7 +55,7 @@ defmodule SparklineDashboard.Dashboard do
   # Only fires when running -- the subscription is removed when paused,
   # but we also guard here for safety.
   @impl true
-  def update(%Model{running: true} = model, %Timer{tag: :sample}) do
+  def update(%Model{running: true} = model, %TimerEvent{tag: :sample}) do
     %{
       model
       | cpu_samples: cap_samples(model.cpu_samples, cpu_sample(model.tick_count)),

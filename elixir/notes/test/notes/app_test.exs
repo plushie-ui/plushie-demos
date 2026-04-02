@@ -48,12 +48,12 @@ defmodule Notes.AppTest do
   # -- Navigation -------------------------------------------------------------
 
   test "clicking a note opens the editor" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     assert Plushie.Route.current(model().route) == "/editor"
   end
 
   test "back button returns to list" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     click("#back")
     assert Plushie.Route.current(model().route) == "/list"
   end
@@ -85,29 +85,29 @@ defmodule Notes.AppTest do
   # -- Editor -----------------------------------------------------------------
 
   test "editor shows title input" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     assert_exists("#editor_title")
   end
 
   test "editor shows content input" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     assert_exists("#editor_content")
   end
 
   test "editor shows back button" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     assert_exists("#back")
   end
 
   test "updating title changes the note" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     type_text("#editor_title", "New Title")
     note = Enum.find(model().notes, &(&1.id == "welcome"))
     assert note.title == "New Title"
   end
 
   test "editing content tracks undo" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     type_text("#editor_content", "New content")
     assert Plushie.Undo.can_undo?(model().undo)
   end
@@ -115,7 +115,7 @@ defmodule Notes.AppTest do
   # -- Undo/Redo --------------------------------------------------------------
 
   test "undo restores previous content" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     original = Enum.find(model().notes, &(&1.id == "welcome")).content
     type_text("#editor_content", "Changed")
     click("#undo")
@@ -124,7 +124,7 @@ defmodule Notes.AppTest do
   end
 
   test "redo reapplies undone content" do
-    click("Welcome to Plushie Notes")
+    click({:text, "Welcome to Plushie Notes"})
     type_text("#editor_content", "Changed")
     click("#undo")
     click("#redo")
@@ -148,7 +148,7 @@ defmodule Notes.AppTest do
   # -- Sort -------------------------------------------------------------------
 
   test "sort by title" do
-    select("#sort", "A-Z")
+    select("#sort", "A-Z", window: "main")
     assert model().sort_by == :title
   end
 

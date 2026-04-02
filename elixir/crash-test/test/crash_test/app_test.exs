@@ -60,7 +60,7 @@ defmodule CrashTest.AppTest do
     assert_exists("#panic_desc")
   end
 
-  test "has crash extension widget" do
+  test "has crash widget" do
     element = find!("#crash_ext")
     assert element.type == "crash_widget"
   end
@@ -81,5 +81,4 @@ defmodule CrashTest.AppTest do
     click("#dec")
     assert model().count == count_before
   end
-
 end

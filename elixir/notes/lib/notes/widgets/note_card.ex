@@ -15,7 +15,7 @@ defmodule Notes.Widgets.NoteCard do
   - `selected` -- whether the checkbox is checked (boolean, default false)
   """
 
-  use Plushie.Extension, :widget
+  use Plushie.Widget
 
   widget(:note_card)
 
@@ -24,7 +24,7 @@ defmodule Notes.Widgets.NoteCard do
   prop(:timestamp, :string, default: "")
   prop(:selected, :boolean, default: false)
 
-  def render(id, props) do
+  def view(id, props) do
     import Plushie.UI
 
     # The id arriving here is "note_<note_id>", so we derive

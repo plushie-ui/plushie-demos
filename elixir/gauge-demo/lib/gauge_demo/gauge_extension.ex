@@ -1,28 +1,28 @@
 defmodule GaugeDemo.GaugeExtension do
   @moduledoc """
-  Gauge widget extension -- renders a numeric gauge with label and color.
+  Gauge native widget - renders a numeric gauge with label and color.
 
-  Defines a native Rust extension widget with typed props and two
-  commands. The Rust side (`native/gauge/src/lib.rs`) implements
+  Defines a native Rust widget with typed props and two commands.
+  The Rust side (`native/gauge/src/lib.rs`) implements
   `WidgetExtension` to render the gauge and handle commands.
 
   ## Props
 
-  - `value` -- current gauge value (number)
-  - `min` / `max` -- value range (number, defaults 0 / 100)
-  - `color` -- arc/fill color
-  - `label` -- center label text
-  - `width` / `height` -- widget dimensions (length)
+  - `value` - current gauge value (number)
+  - `min` / `max` - value range (number, defaults 0 / 100)
+  - `color` - arc/fill color
+  - `label` - center label text
+  - `width` / `height` - widget dimensions (length)
 
   ## Commands
 
-  - `set_value(widget_id, value)` -- set gauge to a value immediately;
+  - `set_value(widget_id, value)` - set gauge to a value immediately;
     the Rust side confirms by emitting a `value_changed` event
-  - `animate_to(widget_id, value)` -- animate gauge toward a target
+  - `animate_to(widget_id, value)` - animate gauge toward a target
     value; no confirmation event
   """
 
-  use Plushie.Extension, :native_widget
+  use Plushie.Widget, :native_widget
 
   widget(:gauge)
 
@@ -36,7 +36,7 @@ defmodule GaugeDemo.GaugeExtension do
   prop(:label, :string, default: "")
   prop(:width, :length)
   prop(:height, :length)
-  events([:value_changed])
+  event(:value_changed, data: [value: :number])
 
   command(:set_value, value: :number)
   command(:animate_to, value: :number)

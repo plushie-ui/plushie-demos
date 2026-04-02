@@ -3,9 +3,7 @@ defmodule GaugeDemo.GaugeExtensionTest do
 
   alias GaugeDemo.GaugeExtension, as: Gauge
 
-  # -- Extension metadata -----------------------------------------------------
-
-  describe "extension metadata" do
+  describe "widget metadata" do
     test "type_names returns the gauge widget type" do
       assert Gauge.type_names() == [:gauge]
     end
@@ -35,8 +33,6 @@ defmodule GaugeDemo.GaugeExtensionTest do
       assert :a11y in names
     end
   end
-
-  # -- Widget struct ----------------------------------------------------------
 
   describe "widget struct" do
     test "new/2 creates a struct with defaults" do
@@ -68,8 +64,6 @@ defmodule GaugeDemo.GaugeExtensionTest do
       assert widget.height == nil
     end
   end
-
-  # -- Setter pipeline --------------------------------------------------------
 
   describe "setter pipeline" do
     test "setters return updated structs" do
@@ -112,8 +106,6 @@ defmodule GaugeDemo.GaugeExtensionTest do
       assert widget.label == "75%"
     end
   end
-
-  # -- Build output -----------------------------------------------------------
 
   describe "build/1" do
     test "converts struct to node map with correct type" do
@@ -159,20 +151,18 @@ defmodule GaugeDemo.GaugeExtensionTest do
     end
   end
 
-  # -- Command generation -----------------------------------------------------
-
   describe "command generation" do
-    test "set_value produces an extension_command" do
+    test "set_value produces a widget_command" do
       cmd = Gauge.set_value("temp", 42)
-      assert cmd.type == :extension_command
+      assert cmd.type == :widget_command
       assert cmd.payload.node_id == "temp"
       assert cmd.payload.op == "set_value"
       assert cmd.payload.payload == %{value: 42}
     end
 
-    test "animate_to produces an extension_command" do
+    test "animate_to produces a widget_command" do
       cmd = Gauge.animate_to("temp", 90.0)
-      assert cmd.type == :extension_command
+      assert cmd.type == :widget_command
       assert cmd.payload.node_id == "temp"
       assert cmd.payload.op == "animate_to"
       assert cmd.payload.payload == %{value: 90.0}
@@ -202,8 +192,6 @@ defmodule GaugeDemo.GaugeExtensionTest do
       end
     end
   end
-
-  # -- A11y support -----------------------------------------------------------
 
   describe "a11y support" do
     test "a11y prop available without explicit declaration" do

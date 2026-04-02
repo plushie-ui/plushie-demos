@@ -11,7 +11,7 @@ defmodule Notes.Widgets.Toolbar do
   - `actions` -- list of `{id, label}` tuples for action buttons
   """
 
-  use Plushie.Extension, :widget
+  use Plushie.Widget
 
   widget(:toolbar)
 
@@ -19,7 +19,7 @@ defmodule Notes.Widgets.Toolbar do
   prop(:show_back, :boolean, default: false)
   prop(:actions, :any, default: [])
 
-  def render(id, props) do
+  def view(id, props) do
     import Plushie.UI
 
     row padding: {12, 0}, spacing: 12, width: :fill do

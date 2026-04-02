@@ -70,10 +70,6 @@
             {
               "children": [],
               "id": "cpu_card/cpu_spark",
-              "meta": {
-                "__extension_widget_events__": [],
-                "__extension_widget_type__": "sparkline"
-              },
               "props": {
                 "color": "#4caf50",
                 "data": [],
@@ -115,10 +111,6 @@
             {
               "children": [],
               "id": "mem_card/mem_spark",
-              "meta": {
-                "__extension_widget_events__": [],
-                "__extension_widget_type__": "sparkline"
-              },
               "props": {
                 "color": "#2196f3",
                 "data": [],
@@ -160,10 +152,6 @@
             {
               "children": [],
               "id": "net_card/net_spark",
-              "meta": {
-                "__extension_widget_events__": [],
-                "__extension_widget_type__": "sparkline"
-              },
               "props": {
                 "color": "#ff9800",
                 "data": [],

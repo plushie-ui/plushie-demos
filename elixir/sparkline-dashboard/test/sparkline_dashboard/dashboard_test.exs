@@ -95,5 +95,4 @@ defmodule SparklineDashboard.DashboardTest do
     click("#toggle_running")
     assert SparklineDashboard.Dashboard.subscribe(model()) == []
   end
-
 end

@@ -1,7 +1,7 @@
 defmodule CrashTest.App do
   @moduledoc """
-  Crash resilience demo -- deliberately crashes Elixir handlers and
-  a Rust extension to show how the framework recovers.
+  Crash resilience demo - deliberately crashes Elixir handlers and
+  a Rust native widget to show how the framework recovers.
 
   A working counter proves the app keeps functioning through all crashes.
 
@@ -27,14 +27,14 @@ defmodule CrashTest.App do
     defstruct [:count, :crash_view]
   end
 
-  # -- Plushie.App callbacks --------------------------------------------------
+  # Plushie.App callbacks
 
   @impl true
   def init(_opts) do
     %Model{count: 0, crash_view: false}
   end
 
-  # -- Working counter (proof of life) --
+  # Working counter (proof of life)
 
   @impl true
   def update(model, %WidgetEvent{type: :click, id: "inc"}),
@@ -43,23 +43,23 @@ defmodule CrashTest.App do
   def update(model, %WidgetEvent{type: :click, id: "dec"}),
     do: %{model | count: model.count - 1}
 
-  # -- Deliberate crash in update/2 --
+  # Deliberate crash in update/2.
   # The runtime catches this and rolls back the model.
 
   def update(_model, %WidgetEvent{type: :click, id: "crash_update"}) do
-    raise "Deliberate crash in update/2 -- the runtime catches this and rolls back the model"
+    raise "Deliberate crash in update/2 - the runtime catches this and rolls back the model"
   end
 
-  # -- Trigger crash in view/1 --
+  # Trigger crash in view/1.
   # Sets a flag that causes the NEXT view/1 call to raise.
   # The runtime catches the view crash and rolls back the model,
-  # clearing the flag -- so it's a one-shot crash.
+  # clearing the flag, so it's a one-shot crash.
 
   def update(model, %WidgetEvent{type: :click, id: "crash_view"}) do
     %{model | crash_view: true}
   end
 
-  # -- Panic the Rust extension --
+  # Panic the Rust widget.
   # Sends a command that calls panic!() in handle_command.
   # The renderer isolates it via catch_unwind and shows a red placeholder.
 
@@ -71,7 +71,7 @@ defmodule CrashTest.App do
 
   @impl true
   def view(%Model{crash_view: true}) do
-    raise "Deliberate crash in view/1 -- the runtime catches this and shows the previous tree"
+    raise "Deliberate crash in view/1 - the runtime catches this and shows the previous tree"
   end
 
   def view(model) do
@@ -81,7 +81,7 @@ defmodule CrashTest.App do
       column padding: 20, spacing: 20, width: :fill do
         text("title", "Crash Test", size: 24)
 
-        # -- Working counter (proof of life) --
+        # Working counter (proof of life)
         row spacing: 12 do
           text("count", "Count: #{model.count}", size: 18)
           button("inc", "+")
@@ -95,7 +95,7 @@ defmodule CrashTest.App do
 
         rule()
 
-        # -- Elixir update crash --
+        # Elixir update crash
         column spacing: 4 do
           button("crash_update", "Crash update/2")
 
@@ -108,7 +108,7 @@ defmodule CrashTest.App do
           )
         end
 
-        # -- Elixir view crash --
+        # Elixir view crash
         column spacing: 4 do
           button("crash_view", "Crash view/1")
 
@@ -124,13 +124,13 @@ defmodule CrashTest.App do
 
         rule()
 
-        # -- Rust extension panic --
+        # Rust widget panic
         column spacing: 4 do
-          button("panic_widget", "Panic extension")
+          button("panic_widget", "Panic widget")
 
           text(
             "panic_desc",
-            "Sends a command that panics the Rust extension's " <>
+            "Sends a command that panics the Rust widget's " <>
               "handle_command. The renderer isolates it via catch_unwind " <>
               "and replaces the widget with a red placeholder.",
             size: 12,

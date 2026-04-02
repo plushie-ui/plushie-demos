@@ -1,2 +1,5 @@
 /gleam/*/build/
 /gleam/*/dist/
+
+elixir/plushie_pad/bin/
+elixir/plushie_pad/priv/experiments/

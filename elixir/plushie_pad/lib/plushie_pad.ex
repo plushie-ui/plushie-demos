@@ -2,19 +2,19 @@ defmodule PlushiePad do
   use Plushie.App
 
   alias Plushie.Command
-  alias Plushie.Event.Key
-  alias Plushie.Event.Timer
+  alias Plushie.Event.KeyEvent
+  alias Plushie.Event.TimerEvent
   alias Plushie.Event.WidgetEvent
 
   import Plushie.UI
 
-  @experiments_dir "lib/pad/experiments"
+  @experiments_dir "priv/experiments"
 
   @starter_code """
   defmodule Pad.Experiments.Hello do
     import Plushie.UI
 
-    def render do
+    def view do
       column padding: 16, spacing: 8 do
         text("greeting", "Hello, Plushie!", size: 24)
         button("btn", "Click Me")
@@ -132,7 +132,7 @@ defmodule PlushiePad do
   end
 
   # Keyboard shortcuts
-  def update(model, %Key{key: "s", modifiers: %{command: true}}) do
+  def update(model, %KeyEvent{key: "s", modifiers: %{command: true}}) do
     case compile_preview(model.source) do
       {:ok, tree} ->
         if model.active_file, do: save_experiment(model.active_file, model.source)
@@ -143,16 +143,16 @@ defmodule PlushiePad do
     end
   end
 
-  def update(model, %Key{key: "n", modifiers: %{command: true}}) do
+  def update(model, %KeyEvent{key: "n", modifiers: %{command: true}}) do
     {model, Command.focus("new-name")}
   end
 
-  def update(model, %Key{key: :escape}) do
+  def update(model, %KeyEvent{key: :escape}) do
     %{model | error: nil}
   end
 
   # Auto-save timer
-  def update(model, %Timer{tag: :auto_save}) do
+  def update(model, %TimerEvent{tag: :auto_save}) do
     case compile_preview(model.source) do
       {:ok, tree} ->
         if model.active_file, do: save_experiment(model.active_file, model.source)
@@ -163,13 +163,11 @@ defmodule PlushiePad do
     end
   end
 
-  # Events from preview widgets
-  def update(model, %WidgetEvent{scope: ["preview" | _]} = event) do
+  # Log everything else
+  def update(model, event) do
     entry = format_event(event)
     %{model | event_log: Enum.take([entry | model.event_log], 20)}
   end
-
-  def update(model, _event), do: model
 
   def view(model) do
     window "main", title: "Plushie Pad" do
@@ -183,10 +181,10 @@ defmodule PlushiePad do
 
           # Editor
           text_editor "editor", model.source do
-            width {:fill_portion, 1}
-            height :fill
-            highlight_syntax "ex"
-            font :monospace
+            width({:fill_portion, 1})
+            height(:fill)
+            highlight_syntax("ex")
+            font(:monospace)
           end
 
           # Preview
@@ -207,6 +205,7 @@ defmodule PlushiePad do
           save_button()
           checkbox("auto-save", model.auto_save)
           text("auto-label", "Auto-save")
+
           text_input("new-name", model.new_name,
             placeholder: "name.ex",
             on_submit: true
@@ -229,14 +228,15 @@ defmodule PlushiePad do
           a11y: %{role: :button, label: "Save experiment"},
           hover_style: %{fill: "#2563eb"},
           pressed_style: %{fill: "#1d4ed8"} do
-
           rect(0, 0, 100, 36,
-            fill: linear_gradient({0, 0}, {100, 0}, [
-              {0.0, "#3b82f6"},
-              {1.0, "#2563eb"}
-            ]),
+            fill:
+              linear_gradient({0, 0}, {100, 0}, [
+                {0.0, "#3b82f6"},
+                {1.0, "#2563eb"}
+              ]),
             radius: 6
           )
+
           text(50, 11, "Save", fill: "#ffffff", size: 14)
         end
       end
@@ -253,7 +253,7 @@ defmodule PlushiePad do
       defmodule Pad.Experiments.#{name |> Path.rootname() |> Macro.camelize()} do
         import Plushie.UI
 
-        def render do
+        def view do
           column padding: 16 do
             text("hello", "New experiment")
           end
@@ -284,10 +284,10 @@ defmodule PlushiePad do
           Code.put_compiler_option(:ignore_module_conflict, true)
           [{module, _}] = Code.compile_string(source)
 
-          if function_exported?(module, :render, 0) do
-            {:ok, module.render()}
+          if function_exported?(module, :view, 0) do
+            {:ok, module.view()}
           else
-            {:error, "Module must export a render/0 function"}
+            {:error, "Module must export a view/0 function"}
           end
         rescue
           e -> {:error, Exception.message(e)}
@@ -297,11 +297,16 @@ defmodule PlushiePad do
     end
   end
 
-  defp format_event(%WidgetEvent{type: type, id: id, value: value}) do
-    case value do
-      nil -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}}"
-      val -> "%WidgetEvent{type: #{inspect(type)}, id: #{inspect(id)}, value: #{inspect(val)}}"
-    end
+  defp format_event(%mod{} = event) do
+    name = mod |> Module.split() |> List.last()
+
+    fields =
+      event
+      |> Map.from_struct()
+      |> Enum.map(fn {k, v} -> "#{k}: #{inspect(v)}" end)
+      |> Enum.join(", ")
+
+    "%#{name}{#{fields}}"
   end
 
   defp list_experiments do

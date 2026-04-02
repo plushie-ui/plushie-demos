@@ -14,13 +14,13 @@ defmodule Notes.Widgets.ShortcutBar do
     The key is rendered in a lighter color, the action in a darker color.
   """
 
-  use Plushie.Extension, :widget
+  use Plushie.Widget
 
   widget(:shortcut_bar)
 
   prop(:hints, :any, default: [])
 
-  def render(id, props) do
+  def view(id, props) do
     import Plushie.UI
 
     row padding: {8, 0}, spacing: 16 do

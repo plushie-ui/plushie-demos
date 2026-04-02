@@ -38,7 +38,7 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     assert_exists("#high")
   end
 
-  test "has gauge extension widget" do
+  test "has gauge widget" do
     element = find!("#temp")
     assert element.type == "gauge"
   end
@@ -97,10 +97,10 @@ defmodule GaugeDemo.TemperatureMonitorTest do
 
   # -- Settings ---------------------------------------------------------------
 
-  test "settings has extension_config" do
+  test "settings has widget_config" do
     settings = GaugeDemo.TemperatureMonitor.settings()
-    assert Keyword.has_key?(settings, :extension_config)
-    assert settings[:extension_config]["gauge"]["arcWidth"] == 8
+    assert Keyword.has_key?(settings, :widget_config)
+    assert settings[:widget_config]["gauge"]["arcWidth"] == 8
   end
 
   # -- Gauge wire props -------------------------------------------------------

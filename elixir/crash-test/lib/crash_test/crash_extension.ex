@@ -1,17 +1,17 @@
 defmodule CrashTest.CrashExtension do
   @moduledoc """
-  Minimal native extension that can be deliberately panicked.
+  Minimal native widget that can be deliberately panicked.
 
   Renders a green box with "Widget OK" text. Has a single `panic`
   command that calls `panic!()` in Rust's `handle_command`. After
   the panic, the renderer replaces this widget with a red placeholder
   via `catch_unwind` isolation.
 
-  The extension stays broken for the rest of the session --
+  The widget stays broken for the rest of the session -
   demonstrating that the panic is per-widget-instance, not per-app.
   """
 
-  use Plushie.Extension, :native_widget
+  use Plushie.Widget, :native_widget
 
   widget(:crash_widget)
 

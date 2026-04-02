@@ -1,6 +1,8 @@
 defmodule PlushiePad.PadTest do
   use Plushie.Test.Case, app: PlushiePad
 
+  @moduletag capture_log: true
+
   # Ch 3: verify layout
   test "pad has editor and preview panes" do
     assert_exists("#editor")

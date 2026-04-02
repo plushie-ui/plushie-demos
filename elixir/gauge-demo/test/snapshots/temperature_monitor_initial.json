@@ -14,12 +14,6 @@
         {
           "children": [],
           "id": "temp",
-          "meta": {
-            "__extension_widget_events__": [
-              "value_changed"
-            ],
-            "__extension_widget_type__": "gauge"
-          },
           "props": {
             "color": "#3498db",
             "event_rate": 30,
