@@ -28,23 +28,16 @@ defmodule PlushiePad.EventLogTest do
       assert_exists("#log-scroll")
     end
 
-    test "clicking toggle hides the log on next render" do
+    test "clicking toggle hides the log" do
       click("#toggle-log")
-
-      # Widget state updates are applied on the next render cycle.
-      # Trigger a re-render by pressing a key that reaches the harness app.
-      press("a")
-
       assert_not_exists("#log-scroll")
     end
 
     test "clicking toggle twice shows the log again" do
       click("#toggle-log")
-      press("a")
       assert_not_exists("#log-scroll")
 
       click("#toggle-log")
-      press("a")
       assert_exists("#log-scroll")
     end
 
@@ -52,7 +45,6 @@ defmodule PlushiePad.EventLogTest do
       assert_text("#toggle-log", "Hide Log")
 
       click("#toggle-log")
-      press("a")
       assert_text("#toggle-log", "Show Log")
     end
   end
