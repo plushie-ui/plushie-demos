@@ -86,8 +86,8 @@ defmodule PlushiePad do
     %{model | source: source, dirty: true, undo: undo}
   end
 
-  # Save button (canvas version emits :canvas_element_click)
-  def update(model, %WidgetEvent{type: :canvas_element_click, id: "save"}) do
+  # Save button (canvas element click arrives as :click with scope)
+  def update(model, %WidgetEvent{type: :click, id: "save", scope: ["save-canvas" | _]}) do
     case compile_preview(model.source) do
       {:ok, tree} ->
         if model.active_file, do: save_experiment(model.active_file, model.source)
