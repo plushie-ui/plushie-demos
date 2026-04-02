@@ -2,11 +2,17 @@ defmodule PlushiePad do
   use Plushie.App
 
   alias Plushie.Command
+  alias Plushie.Effect
+  alias Plushie.Event.EffectEvent
   alias Plushie.Event.KeyEvent
   alias Plushie.Event.TimerEvent
   alias Plushie.Event.WidgetEvent
+  alias Plushie.Event.WindowEvent
+  alias Plushie.Type.Border
+  alias Plushie.{Data, Route, Selection, Undo}
 
   import Plushie.UI
+  import PlushiePad.Design
 
   @experiments_dir "priv/experiments"
 
@@ -41,7 +47,12 @@ defmodule PlushiePad do
       active_file: active,
       new_name: "",
       auto_save: false,
-      dirty: false
+      dirty: false,
+      detached: false,
+      undo: Undo.new(source),
+      search_query: "",
+      selection: Selection.new(mode: :multi),
+      route: Route.new(:editor)
     }
 
     case compile_preview(source) do
@@ -60,9 +71,19 @@ defmodule PlushiePad do
     end
   end
 
-  # Editor content changes
+  # Editor content changes -- tracked with undo/redo
   def update(model, %WidgetEvent{type: :input, id: "editor", value: source}) do
-    %{model | source: source, dirty: true}
+    old_source = model.source
+
+    undo =
+      Undo.apply(model.undo, %{
+        apply: fn _old -> source end,
+        undo: fn _new -> old_source end,
+        coalesce: :typing,
+        coalesce_window_ms: 500
+      })
+
+    %{model | source: source, dirty: true, undo: undo}
   end
 
   # Save button (canvas version emits :canvas_element_click)
@@ -92,6 +113,55 @@ defmodule PlushiePad do
     %{model | auto_save: checked}
   end
 
+  # Search input for filtering experiments
+  def update(model, %WidgetEvent{type: :input, id: "search", value: query}) do
+    %{model | search_query: query}
+  end
+
+  # Toggle file selection via checkbox
+  def update(model, %WidgetEvent{type: :toggle, id: "file-select", scope: [file | _]}) do
+    %{model | selection: Selection.toggle(model.selection, file)}
+  end
+
+  # Delete selected experiments
+  def update(model, %WidgetEvent{type: :click, id: "delete-selected"}) do
+    selected = Selection.selected(model.selection)
+
+    Enum.each(selected, fn file ->
+      delete_experiment(file)
+    end)
+
+    files = list_experiments()
+
+    model =
+      if MapSet.member?(selected, model.active_file) do
+        case files do
+          [first | _] ->
+            source = load_experiment(first)
+            model = %{model | files: files, active_file: first, source: source}
+
+            case compile_preview(source) do
+              {:ok, tree} -> %{model | preview: tree, error: nil}
+              {:error, msg} -> %{model | error: msg, preview: nil}
+            end
+
+          [] ->
+            %{
+              model
+              | files: [],
+                active_file: nil,
+                source: @starter_code,
+                preview: nil,
+                error: nil
+            }
+        end
+      else
+        %{model | files: files}
+      end
+
+    %{model | selection: Selection.clear(model.selection)}
+  end
+
   # Switch to a different file
   def update(model, %WidgetEvent{type: :click, id: "select", scope: [file | _]}) do
     if model.active_file != nil do
@@ -99,7 +169,7 @@ defmodule PlushiePad do
     end
 
     source = load_experiment(file)
-    model = %{model | active_file: file, source: source}
+    model = %{model | active_file: file, source: source, undo: Undo.new(source)}
 
     case compile_preview(source) do
       {:ok, tree} -> %{model | preview: tree, error: nil}
@@ -128,6 +198,26 @@ defmodule PlushiePad do
       end
     else
       %{model | files: files}
+    end
+  end
+
+  # Undo (Ctrl+Z)
+  def update(model, %KeyEvent{key: "z", modifiers: %{command: true, shift: false}}) do
+    if Undo.can_undo?(model.undo) do
+      undo = Undo.undo(model.undo)
+      %{model | undo: undo, source: Undo.current(undo)}
+    else
+      model
+    end
+  end
+
+  # Redo (Ctrl+Shift+Z)
+  def update(model, %KeyEvent{key: "z", modifiers: %{command: true, shift: true}}) do
+    if Undo.can_redo?(model.undo) do
+      undo = Undo.redo(model.undo)
+      %{model | undo: undo, source: Undo.current(undo)}
+    else
+      model
     end
   end
 
@@ -163,6 +253,58 @@ defmodule PlushiePad do
     end
   end
 
+  # Import file dialog
+  def update(model, %WidgetEvent{type: :click, id: "import"}) do
+    {model, Effect.file_open(:import, title: "Import Experiment")}
+  end
+
+  # Export file dialog
+  def update(model, %WidgetEvent{type: :click, id: "export"}) do
+    {model, Effect.file_save(:export, title: "Export Experiment")}
+  end
+
+  # Copy source to clipboard
+  def update(model, %WidgetEvent{type: :click, id: "copy"}) do
+    {model, Effect.clipboard_write(:copy, model.source)}
+  end
+
+  # Detach preview into its own window
+  def update(model, %WidgetEvent{type: :click, id: "detach"}) do
+    %{model | detached: true}
+  end
+
+  # Navigate to browser view
+  def update(model, %WidgetEvent{type: :click, id: "show-browser"}) do
+    %{model | route: Route.push(model.route, :browser)}
+  end
+
+  # Navigate back from browser view
+  def update(model, %WidgetEvent{type: :click, id: "back-to-editor"}) do
+    %{model | route: Route.pop(model.route)}
+  end
+
+  # Import effect result
+  def update(model, %EffectEvent{tag: :import, result: {:ok, %{path: path}}}) do
+    source = File.read!(path)
+    %{model | source: source}
+  end
+
+  # Export effect result
+  def update(model, %EffectEvent{tag: :export, result: {:ok, %{path: path}}}) do
+    File.write!(path, model.source)
+    model
+  end
+
+  # Effect cancelled (import/export/copy)
+  def update(model, %EffectEvent{result: :cancelled}) do
+    model
+  end
+
+  # Closing the detached experiment window
+  def update(model, %WindowEvent{type: :close_requested, window_id: "experiment"}) do
+    %{model | detached: false}
+  end
+
   # Log everything else
   def update(model, event) do
     entry = format_event(event)
@@ -170,51 +312,135 @@ defmodule PlushiePad do
   end
 
   def view(model) do
-    window "main", title: "Plushie Pad" do
-      column width: :fill, height: :fill do
-        row width: :fill, height: :fill do
-          # Sidebar (custom widget)
-          PlushiePad.FileList.new("sidebar",
-            files: model.files,
-            active_file: model.active_file
-          )
+    case Route.current(model.route) do
+      :editor -> editor_view(model)
+      :browser -> browser_view(model)
+    end
+  end
 
-          # Editor
-          text_editor "editor", model.source do
-            width({:fill_portion, 1})
-            height(:fill)
-            highlight_syntax("ex")
-            font(:monospace)
+  defp editor_view(model) do
+    main =
+      window "main", title: "Plushie Pad", theme: :dark do
+        column width: :fill, height: :fill, spacing: 0 do
+          row width: :fill, height: :fill, spacing: 0 do
+            # Sidebar with a right border
+            container "sidebar-wrap",
+              border: Border.new() |> Border.width(1) |> Border.color("#333") do
+              PlushiePad.FileList.new("sidebar",
+                files: filtered_files(model),
+                active_file: model.active_file,
+                search_query: model.search_query,
+                selection: model.selection
+              )
+            end
+
+            # Editor
+            text_editor "editor", model.source do
+              width({:fill_portion, 1})
+              height(:fill)
+              highlight_syntax("ex")
+              font(:monospace)
+            end
+
+            unless model.detached do
+              preview_pane(model)
+            end
           end
 
-          # Preview
-          container "preview", width: {:fill_portion, 1}, height: :fill, padding: 8 do
-            if model.error do
-              text("error", model.error, color: :red)
-            else
-              if model.preview do
-                model.preview
-              else
-                text("placeholder", "Press Save to compile and preview")
+          row padding: {spacing(:xs), spacing(:sm)}, spacing: spacing(:sm) do
+            save_button()
+            button("import", "Import")
+            button("export", "Export")
+            button("copy", "Copy")
+            button("detach", "Detach")
+            button("show-browser", "Browse")
+            checkbox("auto-save", model.auto_save)
+            text("auto-label", "Auto-save", size: font_size(:sm))
+
+            if MapSet.size(Selection.selected(model.selection)) > 0 do
+              button("delete-selected", "Delete Selected")
+            end
+
+            text_input("new-name", model.new_name,
+              placeholder: "name.ex",
+              on_submit: true
+            )
+          end
+
+          # Event log (custom widget)
+          PlushiePad.EventLog.new("event-log", events: model.event_log)
+        end
+      end
+
+    if model.detached do
+      [
+        main,
+        window "experiment",
+          title: "Experiment: #{model.active_file}",
+          exit_on_close_request: false do
+          container "detached-preview", padding: spacing(:md) do
+            preview_content(model)
+          end
+        end
+      ]
+    else
+      main
+    end
+  end
+
+  defp browser_view(model) do
+    window "main", title: "Plushie Pad - Browse", theme: :dark do
+      column width: :fill, height: :fill, padding: spacing(:md), spacing: spacing(:sm) do
+        row spacing: spacing(:sm) do
+          button("back-to-editor", "Back")
+          text("browser-title", "All Experiments", size: 20)
+        end
+
+        scrollable "browser-scroll", height: :fill do
+          keyed_column spacing: spacing(:sm) do
+            for file <- model.files do
+              container file, padding: spacing(:sm) do
+                row spacing: spacing(:sm) do
+                  text("name", file, size: font_size(:sm))
+                end
               end
             end
           end
         end
-
-        row padding: 4, spacing: 8 do
-          save_button()
-          checkbox("auto-save", model.auto_save)
-          text("auto-label", "Auto-save")
-
-          text_input("new-name", model.new_name,
-            placeholder: "name.ex",
-            on_submit: true
-          )
-        end
-
-        # Event log (custom widget)
-        PlushiePad.EventLog.new("event-log", events: model.event_log)
       end
+    end
+  end
+
+  defp preview_pane(model) do
+    container "preview",
+      width: {:fill_portion, 1},
+      height: :fill,
+      padding: spacing(:md) do
+      preview_content(model)
+    end
+  end
+
+  defp preview_content(model) do
+    if model.error do
+      text("error", model.error, color: "#ef4444", size: font_size(:sm))
+    else
+      if model.preview do
+        model.preview
+      else
+        text("placeholder", "Press Save to compile and preview")
+      end
+    end
+  end
+
+  defp filtered_files(model) do
+    if model.search_query == "" do
+      model.files
+    else
+      Data.query(
+        Enum.map(model.files, &%{name: &1}),
+        search: {[:name], model.search_query}
+      ).entries
+      |> Enum.map(& &1.name)
     end
   end
 
