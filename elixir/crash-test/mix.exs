@@ -21,7 +21,7 @@ defmodule CrashTest.MixProject do
 
   defp deps do
     [
-      {:plushie, path: "../../../plushie-elixir"},
+      {:plushie, "== 0.6.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:file_system, "~> 1.0", only: :dev, runtime: false}
     ]
