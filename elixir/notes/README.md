@@ -1,7 +1,7 @@
 # Notes
 
 Notes app demonstrating pure Elixir widgets and state helpers. No
-Rust extensions, no custom binary. Everything is Elixir.
+Rust, no custom binary. Everything is Elixir.
 
 Demonstrates:
 
@@ -41,9 +41,8 @@ mix plushie.gui Notes.App
 mix test
 ```
 
-86 tests covering the app logic, all three widgets, navigation,
-CRUD, undo/redo, search/sort, keyboard shortcuts, and view tree
-structure.
+Tests cover the app logic, all three widgets, navigation, CRUD,
+undo/redo, search/sort, keyboard shortcuts, and view tree structure.
 
 ## Project structure
 

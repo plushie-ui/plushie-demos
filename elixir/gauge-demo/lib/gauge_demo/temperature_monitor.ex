@@ -8,7 +8,7 @@ defmodule GaugeDemo.TemperatureMonitor do
   - Widget commands (`set_value`, `animate_to`)
   - Widget events (`{:gauge, :value_changed}` from Rust back to Elixir)
   - Optimistic updates with confirmed state
-  - Settings with `extension_config`
+  - Settings with `widget_config`
 
   Run:
 

@@ -8,7 +8,7 @@ defmodule SparklineDashboard.Dashboard do
   - Timer subscriptions for live data updates
   - Render-only native widget (no commands or events)
   - Conditional subscriptions based on model state
-  - Multiple instances of the same extension widget
+  - Multiple instances of the same native widget
 
   Run:
 

@@ -1,4 +1,4 @@
-# Resolve the plushie binary (downloaded or built with extensions).
+# Resolve the plushie binary (downloaded or built with native widgets).
 binary = Plushie.Binary.path!()
 Application.put_env(:plushie, :test_binary_path, binary)
 

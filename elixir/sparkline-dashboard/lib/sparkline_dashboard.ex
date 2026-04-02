@@ -3,7 +3,7 @@ defmodule SparklineDashboard do
   Live system monitor demo - native Rust sparkline widget for Plushie.
 
   This project demonstrates how to build a render-only native Rust
-  extension widget and drive it with timer subscriptions. The two
+  widget and drive it with timer subscriptions. The two
   main modules are:
 
   - `SparklineDashboard.SparklineExtension` - native widget definition
@@ -20,6 +20,6 @@ defmodule SparklineDashboard do
       mix plushie.gui SparklineDashboard.Dashboard
 
   Requires a custom binary built with `mix plushie.build` that includes
-  the sparkline Rust extension. See the README for full setup instructions.
+  the sparkline Rust widget. See the README for full setup instructions.
   """
 end

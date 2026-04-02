@@ -4,7 +4,7 @@ defmodule Notes do
 
   A full-featured notes editor demonstrating how to compose multiple
   Plushie SDK features into a real application. Everything is pure
-  Elixir -- no native extensions, no custom binary build.
+  Elixir -- no native widgets, no custom binary build.
 
   ## State helpers used
 
