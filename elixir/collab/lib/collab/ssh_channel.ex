@@ -101,16 +101,25 @@ defmodule Collab.SshChannel do
   def handle_msg(_msg, state), do: {:ok, state}
 
   @impl true
+  # Maximum accumulated buffer size (64 MiB, matching bridge.ex).
+  @max_buffer_size 64 * 1024 * 1024
+
   def handle_ssh_msg({:ssh_cm, _conn, {:data, _channel, 0, data}}, state) do
-    # Deframe and forward complete messages to Bridge
     combined = state.buffer <> data
-    {frames, buffer} = Framing.decode_packets(combined)
 
-    Enum.each(frames, fn frame ->
-      if state.bridge, do: send(state.bridge, {:iostream_data, frame})
-    end)
+    if byte_size(combined) > @max_buffer_size do
+      require Logger
+      Logger.error("collab SSH: buffer exceeded #{@max_buffer_size} bytes, dropping")
+      {:ok, %{state | buffer: <<>>}}
+    else
+      {frames, buffer} = Framing.decode_packets(combined)
 
-    {:ok, %{state | buffer: buffer}}
+      Enum.each(frames, fn frame ->
+        if state.bridge, do: send(state.bridge, {:iostream_data, frame})
+      end)
+
+      {:ok, %{state | buffer: buffer}}
+    end
   end
 
   def handle_ssh_msg({:ssh_cm, _conn, {:eof, _channel}}, state) do

@@ -23,10 +23,13 @@ defmodule Collab.SshServer do
 
     system_dir = ensure_host_keys()
 
+    user_dir = Path.expand("~/.ssh")
+
     {:ok, _} =
       :ssh.daemon({127, 0, 0, 1}, port,
         system_dir: String.to_charlist(system_dir),
-        no_auth_needed: true,
+        user_dir: String.to_charlist(user_dir),
+        auth_methods: ~c"publickey",
         subsystems: [
           {~c"plushie", {Collab.SshChannel, [shared]}}
         ]
@@ -34,7 +37,7 @@ defmodule Collab.SshServer do
   end
 
   defp ensure_host_keys do
-    dir = Path.join(System.tmp_dir!(), "plushie_demo_ssh_keys")
+    dir = Path.join(:code.priv_dir(:collab), "ssh")
     File.mkdir_p!(dir)
     rsa_key = Path.join(dir, "ssh_host_rsa_key")
 
