@@ -8,9 +8,15 @@ defmodule Collab do
 
   In collaborative modes (WebSocket, SSH), `name`, `notes`, and
   `count` are shared across all connected clients. The `dark_mode`
-  toggle is per-client -- each user picks their own theme. The
-  `status` field is set externally by the server adapter to show
-  the current connection count.
+  toggle is per-client (kept in the local Runtime's model, preserved
+  across broadcasts). The `status` field is set by the shared server
+  to show the current connection count.
+
+  In shared mode, user events are forwarded to `Collab.Shared` which
+  runs `update/2` centrally and broadcasts the result to all client
+  runtimes via `Plushie.Runtime.dispatch/2`. The local runtime
+  handles `Collab.Broadcast` events by replacing shared fields while
+  preserving per-client state (dark_mode).
   """
 
   use Plushie.App
@@ -21,9 +27,11 @@ defmodule Collab do
     @moduledoc """
     Collab app state.
 
-    - `name`, `notes`, `count` -- shared across all connected clients
-    - `dark_mode` -- per-client (not forwarded to the shared server)
-    - `status` -- set externally by the server adapter (connection count)
+    - `name`, `notes`, `count` - shared across all connected clients
+    - `dark_mode` - per-client (preserved across broadcasts)
+    - `status` - set by the shared server (connection count)
+    - `client_id` - this client's ID (nil in standalone mode)
+    - `shared` - PID of the shared server (nil in standalone mode)
     """
 
     @type t :: %__MODULE__{
@@ -31,31 +39,63 @@ defmodule Collab do
             notes: String.t(),
             count: integer(),
             dark_mode: boolean(),
-            status: String.t()
+            status: String.t(),
+            client_id: String.t() | nil,
+            shared: pid() | nil
           }
 
     @enforce_keys [:name, :notes, :count, :dark_mode, :status]
-    defstruct [:name, :notes, :count, :dark_mode, :status]
+    defstruct [:name, :notes, :count, :dark_mode, :status, :client_id, :shared]
   end
 
   @impl true
-  def init(_opts) do
-    %Model{name: "", notes: "", count: 0, dark_mode: false, status: ""}
+  def init(opts) do
+    case Keyword.get(opts, :shared_model) do
+      nil ->
+        %Model{name: "", notes: "", count: 0, dark_mode: false, status: ""}
+
+      shared_model ->
+        # Seed from the shared server's authoritative state
+        client_id = Keyword.get(opts, :client_id)
+        shared = Keyword.get(opts, :shared)
+
+        %{shared_model | dark_mode: false, client_id: client_id, shared: shared}
+    end
   end
 
   @impl true
-  def update(model, %WidgetEvent{type: :click, id: "inc"}),
-    do: %{model | count: model.count + 1}
+  def update(model, %Collab.Broadcast{model: shared_model, originator_id: originator_id}) do
+    if originator_id == model.client_id and originator_id != nil do
+      # We originated this event, our model is already up to date
+      # (except for status which the shared server manages)
+      %{model | status: shared_model.status}
+    else
+      # Replace shared fields, preserve per-client state
+      %{shared_model | dark_mode: model.dark_mode, client_id: model.client_id, shared: model.shared}
+    end
+  end
 
-  def update(model, %WidgetEvent{type: :click, id: "dec"}),
-    do: %{model | count: model.count - 1}
+  def update(model, %WidgetEvent{type: :click, id: "inc"} = event) do
+    maybe_forward(model, event)
+    %{model | count: model.count + 1}
+  end
 
-  def update(model, %WidgetEvent{type: :input, id: "name", value: value}),
-    do: %{model | name: value}
+  def update(model, %WidgetEvent{type: :click, id: "dec"} = event) do
+    maybe_forward(model, event)
+    %{model | count: model.count - 1}
+  end
 
-  def update(model, %WidgetEvent{type: :input, id: "notes", value: value}),
-    do: %{model | notes: value}
+  def update(model, %WidgetEvent{type: :input, id: "name", value: value} = event) do
+    maybe_forward(model, event)
+    %{model | name: value}
+  end
 
+  def update(model, %WidgetEvent{type: :input, id: "notes", value: value} = event) do
+    maybe_forward(model, event)
+    %{model | notes: value}
+  end
+
+  # Dark mode is per-client, never forwarded to shared server
   def update(model, %WidgetEvent{type: :toggle, id: "theme", value: checked}),
     do: %{model | dark_mode: checked}
 
@@ -95,4 +135,12 @@ defmodule Collab do
 
   @impl true
   def settings, do: [default_event_rate: 30]
+
+  # In shared mode, forward events to the shared server for broadcast.
+  # In standalone mode, this is a no-op.
+  defp maybe_forward(%Model{shared: nil}, _event), do: :ok
+
+  defp maybe_forward(%Model{shared: shared, client_id: client_id}, event) do
+    Collab.Shared.event(shared, client_id, event)
+  end
 end

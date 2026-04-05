@@ -1,35 +1,35 @@
 defmodule Collab.SshChannel do
   @moduledoc """
-  SSH channel adapter implementing the plushie wire protocol.
+  SSH channel iostream adapter for the collaborative demo.
 
-  Each SSH connection spawns one of these. It registers with the
-  Collab.Shared GenServer, decodes incoming protocol messages from
-  the native plushie binary, and sends snapshot responses back
-  over the SSH channel.
+  Each SSH connection gets a dedicated `Plushie.Runtime` that handles
+  the full SDK pipeline (rendering, tree diffing, patching,
+  subscriptions). This channel acts as a transparent iostream adapter,
+  forwarding bytes between the SSH transport and the Bridge.
 
-  Uses msgpack with 4-byte length-prefixed framing (the default
-  wire format). The protocol handshake is:
-  1. We send settings on channel open
-  2. Renderer replies with hello
-  3. We register with the shared GenServer (which sends the first snapshot)
+  Events flow through the local Runtime's `update/2`, which forwards
+  shared events to `Collab.Shared`. The shared server broadcasts model
+  changes to all client runtimes via `Runtime.dispatch/2`.
+
+  Wire protocol: MessagePack with 4-byte length-prefixed framing.
   """
 
   @behaviour :ssh_server_channel
 
-  alias Plushie.Event.WidgetEvent
   alias Plushie.Transport.Framing
+
+  @handshake_timeout 15_000
 
   defstruct [
     :shared,
     :client_id,
     :conn,
     :channel,
-    buffer: <<>>,
-    dark_mode: false,
-    handshake_done: false
+    :bridge,
+    :plushie_sup,
+    :handshake_timer,
+    buffer: <<>>
   ]
-
-  # -- ssh_server_channel callbacks -------------------------------------------
 
   @impl true
   def init([shared]) do
@@ -40,29 +40,77 @@ defmodule Collab.SshChannel do
   @impl true
   def handle_msg({:ssh_channel_up, channel, conn}, state) do
     state = %{state | conn: conn, channel: channel}
-    send_settings(state)
+
+    # Start handshake timeout
+    timer = Process.send_after(self(), :handshake_timeout, @handshake_timeout)
+
+    # Fetch authoritative model to seed the client's init
+    model = Collab.Shared.get_model(state.shared)
+
+    # Start a Plushie supervisor with this channel as iostream adapter.
+    # The Bridge drives the settings/hello handshake automatically.
+    plushie_name = :"collab_#{state.client_id}"
+
+    {:ok, sup} =
+      Plushie.start_link(Collab,
+        name: plushie_name,
+        transport: {:iostream, self()},
+        format: :msgpack,
+        daemon: true,
+        app_opts: [
+          shared_model: model,
+          client_id: state.client_id,
+          shared: state.shared
+        ]
+      )
+
+    # Register the runtime for broadcast delivery
+    runtime = Plushie.runtime_for(plushie_name)
+    Collab.Shared.connect(state.shared, state.client_id, runtime)
+
+    {:ok, %{state | plushie_sup: sup, handshake_timer: timer}}
+  end
+
+  # iostream protocol: Bridge registers itself
+  def handle_msg({:iostream_bridge, bridge_pid}, state) do
+    {:ok, %{state | bridge: bridge_pid}}
+  end
+
+  # iostream protocol: Bridge sends encoded data to the renderer (SSH client)
+  def handle_msg({:iostream_send, data}, state) do
+    # Cancel handshake timer on first outgoing data (Bridge is alive)
+    state =
+      if state.handshake_timer do
+        Process.cancel_timer(state.handshake_timer)
+        %{state | handshake_timer: nil}
+      else
+        state
+      end
+
+    packet = Framing.encode_packet(data) |> IO.iodata_to_binary()
+    :ssh_connection.send(state.conn, state.channel, packet)
     {:ok, state}
   end
 
-  def handle_msg({:model_changed, model}, state) do
-    if state.handshake_done do
-      client_model = %{model | dark_mode: state.dark_mode}
-      send_snapshot(client_model, state)
-    end
-
-    {:ok, state}
+  # Handshake timeout
+  def handle_msg(:handshake_timeout, state) do
+    cleanup(state)
+    {:stop, state.channel, state}
   end
 
-  def handle_msg(_msg, state) do
-    {:ok, state}
-  end
+  def handle_msg(_msg, state), do: {:ok, state}
 
   @impl true
   def handle_ssh_msg({:ssh_cm, _conn, {:data, _channel, 0, data}}, state) do
+    # Deframe and forward complete messages to Bridge
     combined = state.buffer <> data
-    {frames, new_buffer} = Framing.decode_packets(combined)
-    state = Enum.reduce(frames, state, &handle_frame/2)
-    {:ok, %{state | buffer: new_buffer}}
+    {frames, buffer} = Framing.decode_packets(combined)
+
+    Enum.each(frames, fn frame ->
+      if state.bridge, do: send(state.bridge, {:iostream_data, frame})
+    end)
+
+    {:ok, %{state | buffer: buffer}}
   end
 
   def handle_ssh_msg({:ssh_cm, _conn, {:eof, _channel}}, state) do
@@ -70,70 +118,33 @@ defmodule Collab.SshChannel do
   end
 
   def handle_ssh_msg({:ssh_cm, _conn, {:closed, _channel}}, state) do
-    disconnect(state)
+    cleanup(state)
     {:stop, state.channel, state}
   end
 
-  def handle_ssh_msg(_msg, state) do
-    {:ok, state}
-  end
+  def handle_ssh_msg(_msg, state), do: {:ok, state}
 
   @impl true
   def terminate(_reason, state) do
-    disconnect(state)
+    cleanup(state)
     :ok
   end
 
-  # -- Internals --------------------------------------------------------------
+  defp cleanup(state) do
+    if state.handshake_timer, do: Process.cancel_timer(state.handshake_timer)
 
-  defp disconnect(state) do
-    if state.handshake_done do
-      Collab.Shared.disconnect(state.shared, state.client_id)
+    Collab.Shared.disconnect(state.shared, state.client_id)
+
+    if state.bridge do
+      send(state.bridge, {:iostream_closed, :ssh_closed})
     end
-  end
 
-  defp handle_frame(frame, state) do
-    case Plushie.Protocol.Decode.decode_message(frame, :msgpack) do
-      %WidgetEvent{type: :toggle, id: "theme", value: checked} ->
-        %{state | dark_mode: checked}
-
-      %_{} = event ->
-        if state.handshake_done do
-          Collab.Shared.event(state.shared, state.client_id, event)
-        end
-
-        state
-
-      {:hello, _} ->
-        # Renderer acknowledged our settings -- handshake complete
-        Collab.Shared.connect(state.shared, state.client_id)
-        %{state | handshake_done: true}
-
-      _ ->
-        state
+    if state.plushie_sup do
+      try do
+        Plushie.stop(state.plushie_sup)
+      catch
+        :exit, _ -> :ok
+      end
     end
-  end
-
-  defp send_settings(state) do
-    data =
-      Plushie.Protocol.encode_settings(
-        %{
-          "antialiasing" => true,
-          "default_text_size" => 16.0,
-          "default_event_rate" => 30
-        },
-        :msgpack
-      )
-
-    packet = Framing.encode_packet(data)
-    :ssh_connection.send(state.conn, state.channel, IO.iodata_to_binary(packet))
-  end
-
-  defp send_snapshot(model, state) do
-    tree = Collab.view(model)
-    normalized = Plushie.Tree.normalize(tree)
-    data = Plushie.Protocol.encode_snapshot(normalized, :msgpack)
-    packet = Framing.encode_packet(data)
-    :ssh_connection.send(state.conn, state.channel, IO.iodata_to_binary(packet))
   end
 end

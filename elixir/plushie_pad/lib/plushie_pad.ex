@@ -29,7 +29,16 @@ defmodule PlushiePad do
   end
   """
 
-  def init(_opts) do
+  def init(opts) do
+    # In shared mode, opts contains a :shared_model with the authoritative state.
+    # In standalone mode, build the model from scratch.
+    case Keyword.get(opts, :shared_model) do
+      nil -> init_standalone()
+      model -> model
+    end
+  end
+
+  defp init_standalone do
     files = list_experiments()
 
     {source, active} =
@@ -303,6 +312,11 @@ defmodule PlushiePad do
   # Closing the detached experiment window
   def update(model, %WindowEvent{type: :close_requested, window_id: "experiment"}) do
     %{model | detached: false}
+  end
+
+  # Shared state broadcast: replace local model with authoritative state
+  def update(_model, %PlushiePad.Broadcast{model: shared_model}) do
+    shared_model
   end
 
   # Log everything else
