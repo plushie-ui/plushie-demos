@@ -25,9 +25,11 @@ defmodule SparklineDashboard.SparklineExtension do
   rust_crate("native/sparkline")
   rust_constructor("sparkline::SparklineExtension::new()")
 
-  prop(:data, {:list, :number}, default: [])
-  prop(:color, :color, default: "#4CAF50")
-  prop(:stroke_width, :number, default: 2.0)
-  prop(:fill, :boolean, default: false)
-  prop(:height, :number, default: 60.0)
+  field(:data, {:list, :number}, default: [])
+  field(:color, :color, default: "#4CAF50")
+  field(:stroke_width, :number, default: 2.0)
+  field(:fill, :boolean, default: false)
+  field(:height, :number, default: 60.0)
+    field :event_rate, :integer, doc: "Max events per second."
+    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 end

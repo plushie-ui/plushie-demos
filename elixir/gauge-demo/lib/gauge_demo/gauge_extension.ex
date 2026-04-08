@@ -29,13 +29,15 @@ defmodule GaugeDemo.GaugeExtension do
   rust_crate("native/gauge")
   rust_constructor("gauge::GaugeExtension::new()")
 
-  prop(:value, :number)
-  prop(:min, :number, default: 0)
-  prop(:max, :number, default: 100)
-  prop(:color, :color, default: "#3498db")
-  prop(:label, :string, default: "")
-  prop(:width, :length)
-  prop(:height, :length)
+  field(:value, :number)
+  field(:min, :number, default: 0)
+  field(:max, :number, default: 100)
+  field(:color, :color, default: "#3498db")
+  field(:label, :string, default: "")
+  field(:width, :length)
+  field(:height, :length)
+    field :event_rate, :integer, doc: "Max events per second."
+    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
   event(:value_changed, data: [value: :number])
 
   command(:set_value, value: :number)

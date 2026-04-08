@@ -3,7 +3,9 @@ defmodule PlushiePad.EventLog do
 
   widget(:event_log)
 
-  prop(:events, :any)
+  field(:events, :any)
+    field :event_rate, :integer, doc: "Max events per second."
+    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   state(expanded: true)
 

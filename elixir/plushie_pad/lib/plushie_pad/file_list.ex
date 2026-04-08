@@ -2,10 +2,12 @@ defmodule PlushiePad.FileList do
   use Plushie.Widget
 
   widget(:file_list)
-  prop(:files, :any)
-  prop(:active_file, :any)
-  prop(:search_query, :any)
-  prop(:selection, :any)
+  field(:files, :any)
+  field(:active_file, :any)
+  field(:search_query, :any)
+  field(:selection, :any)
+    field :event_rate, :integer, doc: "Max events per second."
+    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   def view(id, props) do
     import Plushie.UI

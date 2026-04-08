@@ -19,10 +19,12 @@ defmodule Notes.Widgets.NoteCard do
 
   widget(:note_card)
 
-  prop(:title, :string, default: "")
-  prop(:preview, :string, default: "")
-  prop(:timestamp, :string, default: "")
-  prop(:selected, :boolean, default: false)
+  field(:title, :string, default: "")
+  field(:preview, :string, default: "")
+  field(:timestamp, :string, default: "")
+  field(:selected, :boolean, default: false)
+    field :event_rate, :integer, doc: "Max events per second."
+    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   def view(id, props) do
     import Plushie.UI
