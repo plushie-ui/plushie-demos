@@ -1,5 +1,5 @@
-use plushie_ext::iced::widget::Column;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced::widget::Column;
+use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 

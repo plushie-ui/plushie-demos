@@ -4,7 +4,7 @@
 //! Demonstrates the full PlushieWidget lifecycle: prepare, render,
 //! handle_widget_op (with event echo), and clone_for_session.
 
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 
@@ -81,15 +81,15 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         let display = format!("{:.0}%", pct * 100.0);
 
         container(
-            plushie_ext::iced::widget::column![
+            plushie_widget_sdk::iced::widget::column![
                 text(label).size(16),
                 text(display).size(32).color(color),
             ]
-            .align_x(plushie_ext::iced::alignment::Horizontal::Center),
+            .align_x(plushie_widget_sdk::iced::alignment::Horizontal::Center),
         )
         .width(w)
         .height(h)
-        .center(plushie_ext::iced::Length::Fill)
+        .center(plushie_widget_sdk::iced::Length::Fill)
         .into()
     }
 

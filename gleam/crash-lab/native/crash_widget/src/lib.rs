@@ -1,4 +1,4 @@
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::prelude::*;
 
 // ---------------------------------------------------------------------------
 // Widget

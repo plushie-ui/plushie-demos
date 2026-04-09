@@ -4,8 +4,8 @@
 //! Demonstrates the PlushieWidget trait with init, prepare, render,
 //! handle_widget_op, cleanup, and clone_for_session.
 
-use plushie_ext::iced;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced;
+use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 

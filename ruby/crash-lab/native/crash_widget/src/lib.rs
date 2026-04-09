@@ -5,8 +5,8 @@
 //! catches via catch_unwind. The widget is poisoned and subsequent
 //! renders show a red error placeholder.
 
-use plushie_ext::iced;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced;
+use plushie_widget_sdk::prelude::*;
 
 pub struct CrashExtension;
 

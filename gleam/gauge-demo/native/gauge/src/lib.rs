@@ -1,4 +1,4 @@
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::prelude::*;
 use std::collections::HashMap;
 
 // ---------------------------------------------------------------------------
@@ -58,7 +58,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
     }
 
     fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
-        use plushie_ext::iced;
+        use plushie_widget_sdk::iced;
 
         let props = node.props.as_object();
 

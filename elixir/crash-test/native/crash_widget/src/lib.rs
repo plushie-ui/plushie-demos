@@ -5,8 +5,8 @@
 //! `catch_unwind` panic isolation -- after the panic, this widget is
 //! replaced with a red placeholder while the rest of the app continues.
 
-use plushie_ext::iced;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced;
+use plushie_widget_sdk::prelude::*;
 
 /// Crash widget -- renders a green status box.
 pub struct CrashExtension;

@@ -8,7 +8,7 @@
 //! This demonstrates that a bug in one widget cannot crash the
 //! renderer or affect other widgets.
 
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::prelude::*;
 
 /// Crash box widget -- panics on command to demonstrate isolation.
 pub struct CrashBoxExtension;
@@ -45,7 +45,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashBoxExtension {
         container(text(label).size(14).color(color))
             .width(Length::Fill)
             .height(Length::Fixed(60.0))
-            .center(plushie_ext::iced::Length::Fill)
+            .center(plushie_widget_sdk::iced::Length::Fill)
             .into()
     }
 

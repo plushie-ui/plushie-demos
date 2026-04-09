@@ -4,8 +4,8 @@
 //! iced's canvas::Program trait. Supports stroke color, fill, and
 //! configurable height.
 
-use plushie_ext::iced;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced;
+use plushie_widget_sdk::prelude::*;
 
 /// Sparkline widget -- renders a canvas-based line chart.
 pub struct SparklineExtension;

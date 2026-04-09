@@ -1,5 +1,5 @@
-use plushie_ext::iced;
-use plushie_ext::prelude::*;
+use plushie_widget_sdk::iced;
+use plushie_widget_sdk::prelude::*;
 
 // ---------------------------------------------------------------------------
 // Widget
