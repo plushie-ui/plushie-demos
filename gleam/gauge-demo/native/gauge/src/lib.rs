@@ -1,14 +1,19 @@
 use plushie_ext::prelude::*;
+use std::collections::HashMap;
 
 // ---------------------------------------------------------------------------
-// Extension
+// Widget
 // ---------------------------------------------------------------------------
 
-pub struct GaugeExtension;
+pub struct GaugeExtension {
+    states: HashMap<String, GaugeState>,
+}
 
 impl GaugeExtension {
     pub fn new() -> Self {
-        Self
+        Self {
+            states: HashMap::new(),
+        }
     }
 }
 
@@ -27,31 +32,32 @@ impl GaugeState {
 }
 
 // ---------------------------------------------------------------------------
-// WidgetExtension trait
+// PlushieWidget trait
 // ---------------------------------------------------------------------------
 
-impl WidgetExtension for GaugeExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
     fn type_names(&self) -> &[&str] {
         &["gauge"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "gauge"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(GaugeExtension::new())
     }
 
-    fn prepare(&mut self, node: &TreeNode, caches: &mut ExtensionCaches, _theme: &Theme) {
+    fn prepare(&mut self, node: &TreeNode, _window_id: &str, _theme: &Theme) {
         let props = node.props.as_object();
         let value = prop_f32(props, "value").unwrap_or(0.0);
-        let state: &mut GaugeState =
-            caches.get_or_insert(self.config_key(), &node.id, || GaugeState::new(value));
+        let state = self.states
+            .entry(node.id.clone())
+            .or_insert_with(|| GaugeState::new(value));
         state.rust_value = value;
     }
 
-    fn render<'a>(&self, node: &'a TreeNode, _env: &WidgetEnv<'a>) -> Element<'a, Message> {
+    fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
         use plushie_ext::iced;
 
         let props = node.props.as_object();
@@ -87,28 +93,25 @@ impl WidgetExtension for GaugeExtension {
         .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         node_id: &str,
         op: &str,
         payload: &Value,
-        caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "set_value" | "animate_to" => {
                 if let Some(v) = payload.get("value").and_then(|v| v.as_f64()) {
-                    if let Some(state) =
-                        caches.get_mut::<GaugeState>(self.config_key(), node_id)
-                    {
+                    if let Some(state) = self.states.get_mut(node_id) {
                         state.rust_value = f64_to_f32(v);
                     }
                 }
                 // No event emitted: the host side updates its model
                 // optimistically before the command arrives. Echoing
                 // an event back would race with rapid interactions.
-                vec![]
+                Some(vec![])
             }
-            _ => vec![],
+            _ => None,
         }
     }
 }

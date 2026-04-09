@@ -8,24 +8,24 @@ impl CrasherExtension {
     }
 }
 
-impl WidgetExtension for CrasherExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for CrasherExtension {
     fn type_names(&self) -> &[&str] {
         &["crasher"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "crasher"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(CrasherExtension::new())
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
         if prop_bool(props, "panic_on_render").unwrap_or(false) {
             panic!("deliberate render panic for crash testing");
@@ -37,16 +37,15 @@ impl WidgetExtension for CrasherExtension {
             .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         _node_id: &str,
         op: &str,
         _payload: &Value,
-        _caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         if op == "panic" {
             panic!("deliberate command panic for crash testing");
         }
-        vec![]
+        None
     }
 }

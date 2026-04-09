@@ -9,24 +9,24 @@ impl SparklineExtension {
     }
 }
 
-impl WidgetExtension for SparklineExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
     fn type_names(&self) -> &[&str] {
         &["sparkline"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "sparkline"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(SparklineExtension::new())
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
 
         let data: Vec<f64> = props

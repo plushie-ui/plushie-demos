@@ -1,6 +1,6 @@
-//! Crash widget extension for plushie.
+//! Crash native widget for plushie.
 //!
-//! Minimal extension that renders a green box and can be deliberately
+//! Minimal widget that renders a green box and can be deliberately
 //! panicked via the `panic` command. Demonstrates the renderer's
 //! `catch_unwind` panic isolation -- after the panic, this widget is
 //! replaced with a red placeholder while the rest of the app continues.
@@ -8,7 +8,7 @@
 use plushie_ext::iced;
 use plushie_ext::prelude::*;
 
-/// Crash widget extension -- renders a green status box.
+/// Crash widget -- renders a green status box.
 pub struct CrashExtension;
 
 impl CrashExtension {
@@ -17,24 +17,24 @@ impl CrashExtension {
     }
 }
 
-impl WidgetExtension for CrashExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
     fn type_names(&self) -> &[&str] {
         &["crash_widget"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "crash_widget"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(CrashExtension::new())
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
         let label = prop_str(props, "label").unwrap_or_else(|| "Widget OK".to_string());
 
@@ -59,18 +59,17 @@ impl WidgetExtension for CrashExtension {
         .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         _node_id: &str,
         op: &str,
         _payload: &Value,
-        _caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "panic" => {
-                panic!("Deliberate panic in handle_command -- catch_unwind isolates this")
+                panic!("Deliberate panic in handle_widget_op -- catch_unwind isolates this")
             }
-            _ => vec![],
+            _ => None,
         }
     }
 }

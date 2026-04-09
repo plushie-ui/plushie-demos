@@ -1,23 +1,28 @@
-//! Gauge widget extension for plushie.
+//! Gauge native widget for plushie.
 //!
 //! Renders a temperature gauge using iced container and text widgets.
-//! Demonstrates the WidgetExtension trait with init, prepare, render,
-//! handle_command, cleanup, and new_instance.
+//! Demonstrates the PlushieWidget trait with init, prepare, render,
+//! handle_widget_op, cleanup, and clone_for_session.
 
 use plushie_ext::iced;
 use plushie_ext::prelude::*;
 use serde_json::json;
+use std::collections::HashMap;
 
-/// Gauge extension -- renders a numeric gauge with label and color.
-pub struct GaugeExtension;
+/// Gauge widget -- renders a numeric gauge with label and color.
+pub struct GaugeExtension {
+    states: HashMap<String, GaugeState>,
+}
 
 impl GaugeExtension {
     pub fn new() -> Self {
-        Self
+        Self {
+            states: HashMap::new(),
+        }
     }
 }
 
-/// Per-node state stored in ExtensionCaches.
+/// Per-node state owned by the widget.
 ///
 /// Tracks current and target values independently. The current_value
 /// is synced from Elixir props each frame via prepare(). The
@@ -39,16 +44,16 @@ impl GaugeState {
     }
 }
 
-impl WidgetExtension for GaugeExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
     fn type_names(&self) -> &[&str] {
         &["gauge"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "gauge"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(GaugeExtension::new())
     }
 
@@ -59,25 +64,23 @@ impl WidgetExtension for GaugeExtension {
     fn prepare(
         &mut self,
         node: &TreeNode,
-        caches: &mut ExtensionCaches,
+        _window_id: &str,
         _theme: &Theme,
     ) {
         let props = node.props();
         let value = prop_f32(props, "value").unwrap_or(0.0);
-        let state = caches.get_or_insert::<GaugeState>(
-            self.config_key(),
-            &node.id,
-            || GaugeState::new(value),
-        );
+        let state = self.states
+            .entry(node.id.clone())
+            .or_insert_with(|| GaugeState::new(value));
         // Sync from Elixir props each frame
         state.current_value = value;
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
         let value = prop_f32(props, "value").unwrap_or(0.0);
         let min = prop_f32(props, "min").unwrap_or(0.0);
@@ -104,18 +107,15 @@ impl WidgetExtension for GaugeExtension {
         .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         node_id: &str,
         op: &str,
         payload: &Value,
-        caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "set_value" => {
-                if let Some(state) =
-                    caches.get_mut::<GaugeState>(self.config_key(), node_id)
-                {
+                if let Some(state) = self.states.get_mut(node_id) {
                     if let Some(v) =
                         payload.get("value").and_then(|v| v.as_f64())
                     {
@@ -123,22 +123,20 @@ impl WidgetExtension for GaugeExtension {
                         state.generation.bump();
 
                         // Notify Elixir of the confirmed value change
-                        return vec![
-                            OutgoingEvent::extension_event(
+                        return Some(vec![
+                            OutgoingEvent::widget_event(
                                 "gauge:value_changed".to_string(),
                                 node_id.to_string(),
                                 Some(json!({"value": v})),
                             )
                             .with_window_id("main"),
-                        ];
+                        ]);
                     }
                 }
-                vec![]
+                Some(vec![])
             }
             "animate_to" => {
-                if let Some(state) =
-                    caches.get_mut::<GaugeState>(self.config_key(), node_id)
-                {
+                if let Some(state) = self.states.get_mut(node_id) {
                     if let Some(v) =
                         payload.get("value").and_then(|v| v.as_f64())
                     {
@@ -147,13 +145,13 @@ impl WidgetExtension for GaugeExtension {
                     }
                 }
                 // No event emitted -- animate_to only updates the target
-                vec![]
+                Some(vec![])
             }
-            _ => vec![],
+            _ => None,
         }
     }
 
-    fn cleanup(&mut self, node_id: &str, caches: &mut ExtensionCaches) {
-        caches.remove(self.config_key(), node_id);
+    fn cleanup(&mut self, node_id: &str) {
+        self.states.remove(node_id);
     }
 }

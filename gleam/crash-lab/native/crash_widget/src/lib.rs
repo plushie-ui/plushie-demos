@@ -1,7 +1,7 @@
 use plushie_ext::prelude::*;
 
 // ---------------------------------------------------------------------------
-// Extension
+// Widget
 // ---------------------------------------------------------------------------
 
 pub struct CrashExtension;
@@ -12,20 +12,20 @@ impl CrashExtension {
     }
 }
 
-impl WidgetExtension for CrashExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
     fn type_names(&self) -> &[&str] {
         &["crash_widget"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "crash_widget"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(CrashExtension::new())
     }
 
-    fn render<'a>(&self, node: &'a TreeNode, _env: &WidgetEnv<'a>) -> Element<'a, Message> {
+    fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
         let props = node.props.as_object();
         let label = prop_str(props, "label").unwrap_or_default();
         let color = Color::from_rgb(0.298, 0.686, 0.314); // green
@@ -35,16 +35,15 @@ impl WidgetExtension for CrashExtension {
             .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         _node_id: &str,
         op: &str,
         _payload: &Value,
-        _caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         match op {
-            "panic" => panic!("intentional panic from crash_widget extension"),
-            _ => vec![],
+            "panic" => panic!("intentional panic from crash_widget"),
+            _ => None,
         }
     }
 }

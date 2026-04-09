@@ -1,16 +1,16 @@
-//! Crash box extension for plushie.
+//! Crash box native widget for plushie.
 //!
 //! A simple widget that renders a colored box with a label. When the
 //! "panic" command is received, it intentionally panics. The renderer
-//! catches the panic via catch_unwind, marks the extension as poisoned,
+//! catches the panic via catch_unwind, marks the widget as poisoned,
 //! and shows an error placeholder for subsequent renders.
 //!
-//! This demonstrates that a bug in one extension cannot crash the
+//! This demonstrates that a bug in one widget cannot crash the
 //! renderer or affect other widgets.
 
 use plushie_ext::prelude::*;
 
-/// Crash box extension -- panics on command to demonstrate isolation.
+/// Crash box widget -- panics on command to demonstrate isolation.
 pub struct CrashBoxExtension;
 
 impl CrashBoxExtension {
@@ -19,24 +19,24 @@ impl CrashBoxExtension {
     }
 }
 
-impl WidgetExtension for CrashBoxExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for CrashBoxExtension {
     fn type_names(&self) -> &[&str] {
         &["crash_box"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "crash_box"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(CrashBoxExtension::new())
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
         let label = prop_str(props, "label").unwrap_or_default();
         let color = prop_color(props, "color")
@@ -49,18 +49,17 @@ impl WidgetExtension for CrashBoxExtension {
             .into()
     }
 
-    fn handle_command(
+    fn handle_widget_op(
         &mut self,
         _node_id: &str,
         op: &str,
         _payload: &Value,
-        _caches: &mut ExtensionCaches,
-    ) -> Vec<OutgoingEvent> {
+    ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "panic" => {
-                panic!("intentional panic from crash_box extension -- this is expected")
+                panic!("intentional panic from crash_box widget -- this is expected")
             }
-            _ => vec![],
+            _ => None,
         }
     }
 }

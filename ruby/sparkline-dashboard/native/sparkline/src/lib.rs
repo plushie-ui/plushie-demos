@@ -9,24 +9,24 @@ impl SparklineExtension {
     }
 }
 
-impl WidgetExtension for SparklineExtension {
+impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
     fn type_names(&self) -> &[&str] {
         &["sparkline"]
     }
 
-    fn config_key(&self) -> &str {
+    fn namespace(&self) -> &str {
         "sparkline"
     }
 
-    fn new_instance(&self) -> Box<dyn WidgetExtension> {
+    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(SparklineExtension::new())
     }
 
     fn render<'a>(
-        &self,
+        &'a self,
         node: &'a TreeNode,
-        _env: &WidgetEnv<'a>,
-    ) -> Element<'a, Message> {
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, Theme, R> {
         let props = node.props();
 
         let data: Vec<f64> = props
@@ -39,9 +39,8 @@ impl WidgetExtension for SparklineExtension {
         let fill = prop_bool(props, "fill").unwrap_or(false);
         let height = prop_f32(props, "height").unwrap_or(60.0);
 
-        let color = prop_color(props, "color").unwrap_or(Color::from_rgb(
-            0.298, 0.686, 0.314,
-        ));
+        let color = prop_color(props, "color")
+            .unwrap_or(Color::from_rgb(0.298, 0.686, 0.314));
 
         canvas::Canvas::new(SparklineDraw {
             data,
@@ -55,6 +54,7 @@ impl WidgetExtension for SparklineExtension {
     }
 }
 
+/// Canvas program that draws the sparkline chart.
 struct SparklineDraw {
     data: Vec<f64>,
     color: Color,
