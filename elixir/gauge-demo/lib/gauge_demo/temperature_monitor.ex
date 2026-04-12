@@ -48,7 +48,7 @@ defmodule GaugeDemo.TemperatureMonitor do
   @impl true
   def update(
         model,
-        %WidgetEvent{type: {:gauge, :value_changed}, id: "temp", data: %{value: new_temp}}
+        %WidgetEvent{type: {:gauge, :value_changed}, id: "temp", value: %{value: new_temp}}
       ) do
     %{model | temperature: new_temp, history: append_history(model.history, new_temp)}
   end

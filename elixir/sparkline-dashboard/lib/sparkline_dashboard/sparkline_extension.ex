@@ -30,6 +30,4 @@ defmodule SparklineDashboard.SparklineExtension do
   field(:stroke_width, :number, default: 2.0)
   field(:fill, :boolean, default: false)
   field(:height, :number, default: 60.0)
-    field :event_rate, :integer, doc: "Max events per second."
-    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 end

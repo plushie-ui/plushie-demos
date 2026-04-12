@@ -36,9 +36,8 @@ defmodule GaugeDemo.GaugeExtension do
   field(:label, :string, default: "")
   field(:width, :length)
   field(:height, :length)
-    field :event_rate, :integer, doc: "Max events per second."
-    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
-  event(:value_changed, data: [value: :number])
+
+  event(:value_changed, fields: [value: :number])
 
   command(:set_value, value: :number)
   command(:animate_to, value: :number)
