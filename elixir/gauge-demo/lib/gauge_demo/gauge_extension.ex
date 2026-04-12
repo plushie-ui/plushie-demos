@@ -29,16 +29,16 @@ defmodule GaugeDemo.GaugeExtension do
   rust_crate("native/gauge")
   rust_constructor("gauge::GaugeExtension::new()")
 
-  field(:value, :number)
-  field(:min, :number, default: 0)
-  field(:max, :number, default: 100)
-  field(:color, :color, default: "#3498db")
+  field(:value, :float)
+  field(:min, :float, default: 0)
+  field(:max, :float, default: 100)
+  field(:color, Plushie.Type.Color, default: "#3498db")
   field(:label, :string, default: "")
-  field(:width, :length)
-  field(:height, :length)
+  field(:width, Plushie.Type.Length)
+  field(:height, Plushie.Type.Length)
 
-  event(:value_changed, fields: [value: :number])
+  event(:value_changed, fields: [value: :float])
 
-  command(:set_value, value: :number)
-  command(:animate_to, value: :number)
+  command(:set_value, value: :float)
+  command(:animate_to, value: :float)
 end

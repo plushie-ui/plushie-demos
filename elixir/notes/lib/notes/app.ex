@@ -229,7 +229,7 @@ defmodule Notes.App do
               else: note
           end),
         undo:
-          Plushie.Undo.apply(model.undo || Plushie.Undo.new(""), %{
+          Plushie.Undo.push(model.undo || Plushie.Undo.new(""), %{
             apply: fn _current -> content end,
             undo: fn _current -> old_content end,
             label: "edit",

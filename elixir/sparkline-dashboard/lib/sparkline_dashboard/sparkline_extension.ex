@@ -25,9 +25,9 @@ defmodule SparklineDashboard.SparklineExtension do
   rust_crate("native/sparkline")
   rust_constructor("sparkline::SparklineExtension::new()")
 
-  field(:data, {:list, :number}, default: [])
-  field(:color, :color, default: "#4CAF50")
-  field(:stroke_width, :number, default: 2.0)
+  field(:data, {:list, :float}, default: [])
+  field(:color, Plushie.Type.Color, default: "#4CAF50")
+  field(:stroke_width, :float, default: 2.0)
   field(:fill, :boolean, default: false)
-  field(:height, :number, default: 60.0)
+  field(:height, :float, default: 60.0)
 end
