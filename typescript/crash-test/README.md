@@ -1,6 +1,6 @@
 # Crash Test
 
-Demonstrates plushie's error resilience -- two layers of crash
+Demonstrates plushie's error resilience: two layers of crash
 protection that keep the app running when things go wrong.
 
 Demonstrates:
@@ -65,7 +65,7 @@ The runtime catches it:
 1. Error logged with stack trace
 2. Previous model kept (the throw had no effect)
 3. Render cycle skipped
-4. App keeps processing events -- click the counter
+4. App keeps processing events; click the counter
 
 ### TypeScript view error
 
@@ -74,25 +74,25 @@ throw on the next render. The runtime catches it:
 
 1. Error logged
 2. Previous tree stays rendered (UI frozen)
-3. Handlers still run -- the Reset button works
+3. Handlers still run; the Reset button works
 4. Click **Reset** to clear the flag and recover
 
 The key insight: even when `view()` is broken, the app isn't dead.
 Handlers process clicks on the last good tree. This is why the Reset
 button works even though the current model would cause view() to
-throw -- the handler clears the flag before the next view() call.
+throw. The handler clears the flag before the next view() call.
 
 ## Project structure
 
 ```
 src/
-  crash-box.ts          -- native widget definition (panics on command)
-  app.tsx               -- the crash test app
+  crash-box.ts          - native widget definition (panics on command)
+  app.tsx               - the crash test app
 test/
-  app.test.ts           -- handler, view, recovery, integration tests
+  app.test.ts           - handler, view, recovery, integration tests
 native/
   crash_box/
     Cargo.toml
-    src/lib.rs          -- WidgetExtension that panics
+    src/lib.rs          - WidgetExtension that panics
 plushie.extensions.json
 ```

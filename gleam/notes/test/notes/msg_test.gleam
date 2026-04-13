@@ -7,7 +7,7 @@ import notes/msg.{
 import plushie/event
 
 // ---------------------------------------------------------------------------
-// on_event -- keyboard shortcuts
+// on_event - keyboard shortcuts
 // ---------------------------------------------------------------------------
 
 pub fn ctrl_n_creates_note_test() {
@@ -36,7 +36,7 @@ pub fn escape_shows_list_test() {
 }
 
 // ---------------------------------------------------------------------------
-// on_event -- captured keys are ignored
+// on_event - captured keys are ignored
 // ---------------------------------------------------------------------------
 
 pub fn captured_slash_is_noop_test() {
@@ -55,7 +55,7 @@ pub fn captured_ctrl_n_is_noop_test() {
 }
 
 // ---------------------------------------------------------------------------
-// on_event -- button clicks
+// on_event - button clicks
 // ---------------------------------------------------------------------------
 
 pub fn click_create_test() {
@@ -87,7 +87,7 @@ pub fn click_redo_test() {
 }
 
 // ---------------------------------------------------------------------------
-// on_event -- text inputs
+// on_event - text inputs
 // ---------------------------------------------------------------------------
 
 pub fn search_input_test() {
@@ -124,7 +124,7 @@ pub fn body_input_test() {
 }
 
 // ---------------------------------------------------------------------------
-// on_event -- dynamic IDs (note rows and delete buttons)
+// on_event - dynamic IDs (note rows and delete buttons)
 // ---------------------------------------------------------------------------
 
 pub fn click_note_row_opens_note_test() {

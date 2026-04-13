@@ -15,7 +15,7 @@ Example Plushie applications written in Ruby using the
 
 Single-file apps covering individual features: Counter, Todo, Notes,
 Clock, Shortcuts, AsyncFetch, ColorPicker, Catalog, and RatePlushie.
-Good starting points for learning the API -- events, commands, canvas
+Good starting points for learning the API: events, commands, canvas
 drawing, theming, custom widgets.
 
 These live in the main plushie-ruby repo and run with `bundle exec ruby`.
@@ -25,10 +25,10 @@ These live in the main plushie-ruby repo and run with `bundle exec ruby`.
 Multi-transport collaborative scratchpad. Demonstrates 4 ways to run
 the exact same Plushie app:
 
-- **Native (Ruby spawns renderer)** -- standard desktop mode
-- **Native (renderer spawns Ruby)** -- reverse startup via `--exec`
-- **SSH** -- native renderer connecting through an SSH tunnel
-- **WebSocket** -- shared state, multiple browser tabs see the same data
+- **Native (Ruby spawns renderer)** - standard desktop mode
+- **Native (renderer spawns Ruby)** - reverse startup via `--exec`
+- **SSH** - native renderer connecting through an SSH tunnel
+- **WebSocket** - shared state, multiple browser tabs see the same data
 
 The dark-mode toggle is per-client; everything else is collaborative.
 

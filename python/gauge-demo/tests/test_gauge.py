@@ -4,7 +4,7 @@ These verify the Python side of the native widget: widget builders
 produce correct node shapes, command constructors return proper
 Command objects, and the definition passes validation.
 
-No binary needed -- pure Python logic.
+No binary needed - pure Python logic.
 """
 
 from __future__ import annotations
@@ -91,7 +91,7 @@ class TestGaugeBuilder:
         assert node["props"]["event_rate"] == 30
 
     def test_children_empty(self) -> None:
-        """Gauge is a leaf widget -- it never has children."""
+        """Gauge is a leaf widget - it never has children."""
         node = gauge("g5")
         assert node["children"] == []
 

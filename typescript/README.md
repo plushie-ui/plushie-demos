@@ -7,11 +7,11 @@ Example applications for
 
 | Demo | Description |
 |------|-------------|
-| [data-explorer](data-explorer/) | Data query pipeline + SEA standalone packaging -- browse, search, sort countries |
-| [collab](collab/) | Collaborative scratchpad -- 6 ways to run the same app (native, WebSocket, SSH, WASM) |
-| [crash-test](crash-test/) | Error resilience -- Rust panic isolation and TypeScript runtime recovery |
-| [gauge-demo](gauge-demo/) | Native Rust widget with commands -- interactive gauge |
-| [sparkline-dashboard](sparkline-dashboard/) | Render-only native Rust widget with canvas -- live system monitor |
+| [data-explorer](data-explorer/) | Data query pipeline + SEA standalone packaging: browse, search, sort countries |
+| [collab](collab/) | Collaborative scratchpad: 6 ways to run the same app (native, WebSocket, SSH, WASM) |
+| [crash-test](crash-test/) | Error resilience: Rust panic isolation and TypeScript runtime recovery |
+| [gauge-demo](gauge-demo/) | Native Rust widget with commands: interactive gauge |
+| [sparkline-dashboard](sparkline-dashboard/) | Render-only native Rust widget with canvas: live system monitor |
 | [examples](https://github.com/plushie-ui/plushie-typescript/tree/main/examples) | Single-file apps: Counter, Todo, Notes, Clock, Canvas, and more |
 
 ## Setup

@@ -36,7 +36,7 @@ PLUSHIE_BINARY_PATH=build/plushie/bin/sparkline-dashboard-plushie gleam run -m s
 
 Tests cover the native widget definition, widget builder, app logic
 (init/update/subscribe/view), metric generation, and edge cases. No
-custom binary needed -- all tests exercise pure Gleam code.
+custom binary needed; all tests exercise pure Gleam code.
 
 ```bash
 gleam test
@@ -47,7 +47,7 @@ gleam test
 ### Architecture
 
 The sparkline is a **render-only** native widget: it has no commands or
-events. Data flows in one direction -- from Gleam model to Rust canvas.
+events. Data flows in one direction, from Gleam model to Rust canvas.
 
 ```
 Gleam (app logic)                Rust (sparkline rendering)

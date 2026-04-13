@@ -2,7 +2,7 @@ defmodule Notes.Widgets.ShortcutBar do
   @moduledoc """
   Context-aware keyboard shortcut hint bar.
 
-  Pure Elixir composite widget -- no Rust, no binary rebuild.
+  Pure Elixir composite widget - no Rust, no binary rebuild.
 
   Displayed at the bottom of each view. Hints change based on what
   actions are currently available (e.g. undo only appears when the
@@ -10,7 +10,7 @@ defmodule Notes.Widgets.ShortcutBar do
 
   ## Props
 
-  - `hints` -- list of `{key, action}` tuples, e.g. `[{"Ctrl+N", "new"}]`.
+  - `hints` - list of `{key, action}` tuples, e.g. `[{"Ctrl+N", "new"}]`.
     The key is rendered in a lighter color, the action in a darker color.
   """
 

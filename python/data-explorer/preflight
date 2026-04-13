@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# preflight -- mirrors CI checks for the data-explorer project.
+# preflight - mirrors CI checks for the data-explorer project.
 set -euo pipefail
 
 cd "$(dirname "$0")"

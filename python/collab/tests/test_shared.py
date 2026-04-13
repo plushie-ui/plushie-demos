@@ -172,7 +172,7 @@ class TestDarkMode:
         received.clear()
 
         # Even if forwarded, the toggle only changes the shared model's
-        # dark_mode -- but in practice, the handlers intercept this
+        # dark_mode - but in practice, the handlers intercept this
         # before it reaches shared state.
         shared.handle_event("c1", Toggle(id="theme", value=True))
         # The shared model does get updated (it processes all events)

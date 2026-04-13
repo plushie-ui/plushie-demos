@@ -80,7 +80,7 @@ defmodule PlushiePad do
     end
   end
 
-  # Editor content changes -- tracked with undo/redo
+  # Editor content changes - tracked with undo/redo
   def update(model, %WidgetEvent{type: :input, id: "editor", value: source}) do
     old_source = model.source
 

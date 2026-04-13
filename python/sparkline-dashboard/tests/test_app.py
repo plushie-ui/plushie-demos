@@ -308,7 +308,7 @@ class TestSparklineWireProps:
     These tests inspect the normalized view tree to confirm that the
     sparkline widgets carry the correct type, data, color, and fill.
     This is the closest we get to wire-level verification without a
-    running renderer -- the same props that appear here are what gets
+    running renderer - the same props that appear here are what gets
     encoded to msgpack and sent to the Rust extension.
     """
 
@@ -451,7 +451,7 @@ class TestRapidInteractions:
 # Extension command wire path (render-only, no commands)
 # ---------------------------------------------------------------------------
 
-# The sparkline extension is render-only. It has no commands -- all
+# The sparkline extension is render-only. It has no commands - all
 # interaction happens through the view tree props. The full wire path:
 #
 #     Python timer tick -> update() adds sample to model

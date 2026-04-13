@@ -1,5 +1,5 @@
 /**
- * Data Explorer -- browse, search, sort, and paginate structured data.
+ * Data Explorer - browse, search, sort, and paginate structured data.
  *
  * Demonstrates: Data.query pipeline, Table widget with sorting,
  * PickList for page size, and SEA standalone packaging.

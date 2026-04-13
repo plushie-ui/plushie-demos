@@ -24,7 +24,7 @@ pub type SharedMsg {
 
 /// Messages sent TO individual clients.
 pub type ClientMsg {
-  /// The shared model changed -- here's the new snapshot.
+  /// The shared model changed - here's the new snapshot.
   ModelChanged(collab.Model)
 }
 

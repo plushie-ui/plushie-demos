@@ -94,7 +94,7 @@ class TemperatureMonitorTest < Plushie::Test::Case
     # Clicking a widget that has no update handler leaves the model unchanged
     click "#title"
   rescue Plushie::Error
-    # title is a text widget, not clickable -- the renderer may reject the interact.
+    # title is a text widget, not clickable - the renderer may reject the interact.
     # Either way, the model should be unchanged.
     assert_equal original, model
   end

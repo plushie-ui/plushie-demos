@@ -2,7 +2,7 @@
 
 Note-taking app demonstrating custom message types, multi-view routing,
 undo/redo, search filtering, and keyboard shortcuts. Pure Gleam widgets
-only -- no native Rust widget needed, runs with the stock plushie binary.
+only. No native Rust widget needed; runs with the stock plushie binary.
 
 ## Prerequisites
 
@@ -41,11 +41,11 @@ This is the only demo that uses `app.application()` with a custom `Msg`
 type instead of `app.simple()` with raw `Event`. The difference matters:
 
 ```gleam
-// app.simple -- matches raw events by widget ID (stringly typed)
+// app.simple - matches raw events by widget ID (stringly typed)
 case event {
   WidgetClick(id: "delete", ..) -> ...
 
-// app.application -- matches typed domain messages
+// app.application - matches typed domain messages
 case msg {
   DeleteNote(id) -> ...
 ```

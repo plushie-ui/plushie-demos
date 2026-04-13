@@ -36,7 +36,7 @@ This reads `[[tool.plushie.extensions]]` from `pyproject.toml` and
 generates a custom binary with the sparkline widget registered.
 
 > **Note:** `python -m plushie download` will refuse to download a
-> precompiled binary when native widgets are configured -- the stock
+> precompiled binary when native widgets are configured. The stock
 > binary doesn't include custom widget crates.
 
 ## Run

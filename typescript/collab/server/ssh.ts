@@ -121,7 +121,7 @@ const sshServer = new SshServer(
   { hostKeys: [ensureHostKey()] },
   (client: Connection) => {
     client.on("authentication", (ctx) => {
-      // No authentication -- demo only
+      // No authentication - demo only
       ctx.accept()
     })
 

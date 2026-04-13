@@ -7,7 +7,7 @@
 use plushie_widget_sdk::iced;
 use plushie_widget_sdk::prelude::*;
 
-/// Sparkline widget -- renders a canvas-based line chart.
+/// Sparkline widget - renders a canvas-based line chart.
 pub struct SparklineExtension;
 
 impl SparklineExtension {

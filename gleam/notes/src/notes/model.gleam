@@ -1,7 +1,7 @@
 //// Data model for the notes app.
 ////
 //// The model is a flat record with no nesting beyond the note list.
-//// This keeps `update` simple -- every field is directly accessible
+//// This keeps `update` simple - every field is directly accessible
 //// via record update syntax.
 
 import gleam/list

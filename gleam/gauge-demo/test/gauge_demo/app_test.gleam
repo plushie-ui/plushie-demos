@@ -57,7 +57,7 @@ pub fn init_gauge_color_is_blue_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- buttons
+// interactions - buttons
 // ---------------------------------------------------------------------------
 
 pub fn high_sets_temperature_to_ninety_test() {
@@ -92,7 +92,7 @@ pub fn high_appends_to_history_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- slider
+// interactions - slider
 // ---------------------------------------------------------------------------
 
 pub fn slider_updates_target_temp_test() {

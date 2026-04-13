@@ -2,7 +2,7 @@
 ////
 //// A note-taking app demonstrating custom message types, multi-view
 //// routing, undo/redo, search filtering, and keyboard shortcuts.
-//// No Rust extension needed -- runs with the stock plushie binary.
+//// No Rust extension needed - runs with the stock plushie binary.
 
 import gleam/io
 import notes/app

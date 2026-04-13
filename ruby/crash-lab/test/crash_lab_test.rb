@@ -78,7 +78,7 @@ class CrashLabTest < Plushie::Test::Case
   # -- raise in update --
 
   def test_raise_update_app_survives
-    # Click raise_update -- the runtime catches the error and preserves
+    # Click raise_update - the runtime catches the error and preserves
     # the model. Then clicking +1 proves the app is still alive.
     click "#count"
     assert_text "#clicks", "Clicks: 1"

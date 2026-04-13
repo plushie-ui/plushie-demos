@@ -146,7 +146,7 @@ export default app<Model>({
 
   update(state, event) {
     // Handle value_changed events from the Rust gauge widget.
-    // This is the only way temperature changes -- the widget is
+    // This is the only way temperature changes - the widget is
     // the source of truth. Button handlers only set targetTemp and
     // send widget commands; the Rust side processes the command and
     // echoes the confirmed value back.

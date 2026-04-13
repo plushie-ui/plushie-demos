@@ -4,7 +4,7 @@ require "plushie"
 
 class Notes
   # Toolbar widget for the top of each view.
-  # Pure Ruby composite -- no Rust, no binary rebuild.
+  # Pure Ruby composite - no Rust, no binary rebuild.
   class Toolbar
     include Plushie::Widget
     include Plushie::UI

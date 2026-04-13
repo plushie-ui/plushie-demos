@@ -5,7 +5,7 @@
  * shapes, command constructors return proper Command objects, and the
  * config matches what plushie.extensions.json expects.
  *
- * No binary needed -- pure TypeScript logic.
+ * No binary needed - pure TypeScript logic.
  */
 
 import { describe, expect, test } from "vitest"

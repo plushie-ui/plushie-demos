@@ -35,7 +35,7 @@
     const status = document.getElementById('status');
 
     // Load a font file and return its base64-encoded contents.
-    // The WASM renderer has no access to system fonts -- fonts must
+    // The WASM renderer has no access to system fonts - fonts must
     // be provided as inline base64 data in the settings JSON.
     async function loadFontBase64(url) {
       const resp = await fetch(url);

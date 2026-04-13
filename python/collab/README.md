@@ -1,7 +1,7 @@
 # collab
 
 Collaborative scratchpad showing multiple ways to run the same Plushie
-app -- native desktop, shared-state WebSocket, and SSH -- all sharing
+app: native desktop, shared-state WebSocket, and SSH, all sharing
 a single app definition in `src/collab_demo/collab.py`.
 
 ## Setup
@@ -28,7 +28,7 @@ as configured in `pyproject.toml`.
 ## Quick start
 
 ```bash
-# Native desktop -- a window appears
+# Native desktop - a window appears
 python -m plushie run collab_demo.collab:Collab
 
 # Or start the shared server and open a browser
@@ -67,11 +67,11 @@ open http://localhost:8080/websocket.html
 ```
 
 All clients share the same counter and notes in real time. The
-dark-mode toggle is per-client -- each user picks their own theme.
+dark-mode toggle is per-client; each user picks their own theme.
 
 ## The app
 
-The entire app is in `src/collab_demo/collab.py` -- a standard
+The entire app is in `src/collab_demo/collab.py`, a standard
 `plushie.App` subclass with init/update/view. The collaborative
 infrastructure (shared state, WebSocket handler, SSH adapter) lives
 alongside it in `src/collab_demo/`.
@@ -81,18 +81,18 @@ alongside it in `src/collab_demo/`.
 ```
 src/collab_demo/
   __init__.py
-  collab.py              -- the app (model, update, view)
-  shared.py              -- thread-safe shared state server
-  ws_handler.py          -- WebSocket connection handler
-  ssh_handler.py         -- SSH subsystem handler (asyncssh)
-  server.py              -- combined server entry point
+  collab.py              - the app (model, update, view)
+  shared.py              - thread-safe shared state server
+  ws_handler.py          - WebSocket connection handler
+  ssh_handler.py         - SSH subsystem handler (asyncssh)
+  server.py              - combined server entry point
 static/
-  index.html             -- landing page
-  websocket.html         -- browser renderer client (WASM)
+  index.html             - landing page
+  websocket.html         - browser renderer client (WASM)
 tests/
-  test_collab.py         -- app unit tests
-  test_shared.py         -- shared state tests
-  test_integration.py    -- integration tests
+  test_collab.py         - app unit tests
+  test_shared.py         - shared state tests
+  test_integration.py    - integration tests
 ```
 
 ## Security
@@ -111,13 +111,13 @@ Do not expose these ports to the internet.
 
 ## Troubleshooting
 
-**"plushie binary not found"** -- Run `python -m plushie download` first.
+**"plushie binary not found"**: Run `python -m plushie download` first.
 
-**Browser shows "plushie-renderer-wasm not found"** -- Run
+**Browser shows "plushie-renderer-wasm not found"**: Run
 `python -m plushie download` (downloads both bin and WASM per pyproject.toml config).
 
-**SSH connection refused** -- Start the server first
+**SSH connection refused**: Start the server first
 (`python -m collab_demo.server`).
 
-**Import errors** -- Make sure both `plushie` and `collab-demo` are
+**Import errors**: Make sure both `plushie` and `collab-demo` are
 installed in the active virtualenv (`pip install -e`).

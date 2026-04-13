@@ -45,7 +45,7 @@ pub fn def_validates_successfully_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- basic output
+// Widget builder - basic output
 // ---------------------------------------------------------------------------
 
 pub fn sparkline_creates_node_with_correct_kind_test() {
@@ -69,7 +69,7 @@ pub fn sparkline_node_has_all_five_props_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- data encoding
+// Widget builder - data encoding
 // ---------------------------------------------------------------------------
 
 pub fn sparkline_encodes_data_as_list_val_test() {
@@ -91,7 +91,7 @@ pub fn sparkline_single_point_data_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- defaults
+// Widget builder - defaults
 // ---------------------------------------------------------------------------
 
 pub fn sparkline_default_color_is_green_test() {
@@ -115,7 +115,7 @@ pub fn sparkline_default_height_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- explicit attrs
+// Widget builder - explicit attrs
 // ---------------------------------------------------------------------------
 
 pub fn sparkline_custom_color_test() {

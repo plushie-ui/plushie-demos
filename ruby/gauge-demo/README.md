@@ -63,7 +63,7 @@ updates `target_temp` immediately. The widget processes the command,
 updates its internal state, and emits a `value_changed` event back.
 Ruby's update handler receives this event and updates `temperature`
 and `history`. This means `temperature` only changes when the Rust
-widget confirms -- the slider's `animate_to` command updates the
+widget confirms. The slider's `animate_to` command updates the
 target without confirmation.
 
 ## Project structure

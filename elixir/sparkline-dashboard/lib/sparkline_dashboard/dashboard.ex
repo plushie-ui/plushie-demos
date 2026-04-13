@@ -52,7 +52,7 @@ defmodule SparklineDashboard.Dashboard do
   end
 
   # Timer tick: generate simulated samples for all three metrics.
-  # Only fires when running -- the subscription is removed when paused,
+  # Only fires when running - the subscription is removed when paused,
   # but we also guard here for safety.
   @impl true
   def update(%Model{running: true} = model, %TimerEvent{tag: :sample}) do

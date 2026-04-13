@@ -2,7 +2,7 @@
 
 Starts both an SSH server (port 2222) and a WebSocket + HTTP server
 (port 8080) sharing a single SharedState. All connected clients --
-whether native desktop over SSH or browser over WebSocket -- see the
+whether native desktop over SSH or browser over WebSocket - see the
 same counter, name, and notes in real time.
 """
 

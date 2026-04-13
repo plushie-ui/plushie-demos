@@ -10,7 +10,7 @@ import plushie/node.{type Node, StringVal}
 import plushie/subscription
 
 // ---------------------------------------------------------------------------
-// update -- navigation
+// update - navigation
 // ---------------------------------------------------------------------------
 
 pub fn show_list_navigates_to_list_view_test() {
@@ -47,7 +47,7 @@ pub fn open_note_clears_undo_redo_test() {
 }
 
 // ---------------------------------------------------------------------------
-// update -- create / delete
+// update - create / delete
 // ---------------------------------------------------------------------------
 
 pub fn create_note_adds_to_list_test() {
@@ -103,7 +103,7 @@ pub fn delete_note_preserves_other_notes_test() {
 }
 
 // ---------------------------------------------------------------------------
-// update -- editing
+// update - editing
 // ---------------------------------------------------------------------------
 
 pub fn edit_title_updates_note_test() {
@@ -148,7 +148,7 @@ pub fn edit_in_list_view_is_noop_test() {
 }
 
 // ---------------------------------------------------------------------------
-// update -- undo / redo
+// update - undo / redo
 // ---------------------------------------------------------------------------
 
 pub fn undo_restores_previous_state_test() {
@@ -208,7 +208,7 @@ pub fn new_edit_clears_redo_test() {
 }
 
 // ---------------------------------------------------------------------------
-// update -- search
+// update - search
 // ---------------------------------------------------------------------------
 
 pub fn set_search_updates_search_test() {
@@ -240,7 +240,7 @@ pub fn subscribe_returns_key_press_subscription_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- structure
+// view - structure
 // ---------------------------------------------------------------------------
 
 pub fn view_root_is_window_test() {

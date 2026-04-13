@@ -2,7 +2,7 @@
 
 These tests exercise the app's internal load path using the actual
 sample CSV, verifying that the loader, stats, and app wire up correctly.
-No renderer needed -- the async task callable is invoked directly.
+No renderer needed - the async task callable is invoked directly.
 """
 
 from __future__ import annotations

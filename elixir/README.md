@@ -15,7 +15,7 @@ Example Plushie applications written in Elixir using the
 
 Single-file apps covering individual features: Counter, Todo, Notes,
 Clock, Shortcuts, AsyncFetch, ColorPicker, Catalog, and RatePlushie.
-Good starting points for learning the API -- events, commands, canvas
+Good starting points for learning the API: events, commands, canvas
 drawing, theming, custom widgets.
 
 These live in the main plushie-elixir repo and run with `mix plushie.gui`.
@@ -25,11 +25,11 @@ These live in the main plushie-elixir repo and run with `mix plushie.gui`.
 Multi-transport collaborative scratchpad. Demonstrates 5 ways to run
 the exact same Plushie app:
 
-- **WebSocket** -- shared state, multiple browser tabs see the same data
-- **Native (Elixir spawns renderer)** -- standard desktop mode
-- **Native (renderer spawns Elixir)** -- reverse startup via `--exec`
-- **SSH server** -- shared state over SSH, interoperable with WebSocket
-- **SSH client** -- native renderer connecting to the SSH server
+- **WebSocket** - shared state, multiple browser tabs see the same data
+- **Native (Elixir spawns renderer)** - standard desktop mode
+- **Native (renderer spawns Elixir)** - reverse startup via `--exec`
+- **SSH server** - shared state over SSH, interoperable with WebSocket
+- **SSH client** - native renderer connecting to the SSH server
 
 The dark-mode toggle is per-client; everything else is collaborative.
 
@@ -55,7 +55,7 @@ setup instructions.
 
 ### [notes](notes/)
 
-Notes app with pure Elixir composite widgets and state helpers -- no
+Notes app with pure Elixir composite widgets and state helpers. No
 Rust required. Demonstrates Route (navigation), Selection (multi-select),
 Undo (editor history), Data (search and sort), and keyboard shortcuts
 with a context-aware hint bar.

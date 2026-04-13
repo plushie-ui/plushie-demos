@@ -1,7 +1,7 @@
 //// Sparkline extension widget definition.
 ////
 //// Defines a render-only native widget that draws a line chart using
-//// iced's canvas. The sparkline has no commands or events -- it purely
+//// iced's canvas. The sparkline has no commands or events - it purely
 //// visualises a data array passed as a prop.
 ////
 //// ## Usage

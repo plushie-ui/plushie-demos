@@ -10,7 +10,7 @@
 
 use plushie_widget_sdk::prelude::*;
 
-/// Crash box widget -- panics on command to demonstrate isolation.
+/// Crash box widget - panics on command to demonstrate isolation.
 pub struct CrashBoxExtension;
 
 impl CrashBoxExtension {
@@ -57,7 +57,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashBoxExtension {
     ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "panic" => {
-                panic!("intentional panic from crash_box widget -- this is expected")
+                panic!("intentional panic from crash_box widget - this is expected")
             }
             _ => None,
         }

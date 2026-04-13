@@ -144,12 +144,12 @@ fn handle_ws_message(
           }
         }
         Ok(proto_decode.Hello(..)) -> {
-          // Browser renderer sent hello -- ignore, snapshot already sent
+          // Browser renderer sent hello - ignore, snapshot already sent
           // on connect via the shared actor's ClientConnect response
           mist.continue(state)
         }
         Ok(_) -> {
-          // EffectStubAck, etc. -- ignore
+          // EffectStubAck, etc. - ignore
           mist.continue(state)
         }
         Error(_) -> {

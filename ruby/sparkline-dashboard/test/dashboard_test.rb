@@ -53,7 +53,7 @@ class DashboardTest < Plushie::Test::Case
   # -- clear --
 
   def test_click_clear_resets_sample_count
-    # Status starts at "0 samples" -- clear should keep it there
+    # Status starts at "0 samples" - clear should keep it there
     click "#clear"
     assert_text "#status", "0 samples"
   end

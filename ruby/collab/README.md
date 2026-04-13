@@ -1,8 +1,8 @@
 # Collab
 
 Collaborative scratchpad showing multiple ways to run the same
-Plushie app -- native desktop, remote via SSH, and shared-state
-WebSocket -- all using a single app definition in `lib/collab.rb`.
+Plushie app: native desktop, remote via SSH, and shared-state
+WebSocket, all using a single app definition in `lib/collab.rb`.
 
 ## Prerequisites
 
@@ -35,11 +35,11 @@ The most interesting mode connects multiple browser tabs to shared state:
     open http://localhost:8080/websocket.html
 
 All browser tabs share the same counter and notes in real time.
-The dark-mode toggle is per-client -- each user picks their own theme.
+The dark-mode toggle is per-client; each user picks their own theme.
 
 ## The app
 
-The entire app is in `lib/collab.rb` -- a standard `Plushie::App`
+The entire app is in `lib/collab.rb`, a standard `Plushie::App`
 with init/update/view. It runs identically in all modes. The shared
 state infrastructure lives in `lib/collab/`.
 

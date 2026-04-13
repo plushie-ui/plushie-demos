@@ -128,5 +128,5 @@ preview to the main window.
 
 Toggling the auto-save checkbox starts a 1-second subscription
 timer. When dirty, the timer fires and saves/compiles automatically.
-The subscription is declared reactively in `subscribe/1` -- it only
+The subscription is declared reactively in `subscribe/1` and only
 runs when both `auto_save` and `dirty` are true.

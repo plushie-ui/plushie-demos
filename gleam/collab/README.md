@@ -1,7 +1,7 @@
 # collab
 
-Collaborative scratchpad showing 6 ways to run the same Plushie app --
-native desktop, client-side WASM, shared-state WebSocket, and SSH --
+Collaborative scratchpad showing 6 ways to run the same Plushie app:
+native desktop, client-side WASM, shared-state WebSocket, and SSH,
 all sharing a single app definition in `src/demo/collab.gleam`.
 
 ## Setup
@@ -22,7 +22,7 @@ serves them.
 ## Quick start
 
 ```bash
-# Native desktop -- a window appears
+# Native desktop - a window appears
 ./bin/native_gleam.sh
 
 # Or start the shared server and open a browser
@@ -62,11 +62,11 @@ open http://localhost:8080/websocket.html
 ```
 
 All clients share the same counter and notes in real time. The
-dark-mode toggle is per-client -- each user picks their own theme.
+dark-mode toggle is per-client; each user picks their own theme.
 
 ## The app
 
-The entire app is in `src/demo/collab.gleam` -- a standard Plushie
+The entire app is in `src/demo/collab.gleam`, a standard Plushie
 Elm-architecture app with init/update/view. The collaborative
 infrastructure (shared state, WebSocket handler, SSH adapter)
 lives in `src/demo/`.
@@ -79,28 +79,28 @@ to see changes across all clients.
 
 ```
 src/demo/
-  collab.gleam              -- the app (model, update, view)
-  shared.gleam              -- shared state actor for collaborative modes
-  native_gleam.gleam        -- mode 3: Gleam spawns renderer via Port
-  connect.gleam             -- mode 4: socket transport for --listen --exec
-  stdio.gleam               -- mode 4 legacy: stdio transport for --exec
-  static_server.gleam       -- mode 1: mist static file server
-  websocket_server.gleam    -- mode 2: mist HTTP + WebSocket server
-  ssh_server.gleam          -- mode 5: SSH daemon + WebSocket server
+  collab.gleam              - the app (model, update, view)
+  shared.gleam              - shared state actor for collaborative modes
+  native_gleam.gleam        - mode 3: Gleam spawns renderer via Port
+  connect.gleam             - mode 4: socket transport for --listen --exec
+  stdio.gleam               - mode 4 legacy: stdio transport for --exec
+  static_server.gleam       - mode 1: mist static file server
+  websocket_server.gleam    - mode 2: mist HTTP + WebSocket server
+  ssh_server.gleam          - mode 5: SSH daemon + WebSocket server
 src/
-  plushie_demo_ssh_ffi.erl  -- Erlang SSH channel adapter
+  plushie_demo_ssh_ffi.erl  - Erlang SSH channel adapter
 static/
-  index.html                -- landing page with mode links
-  standalone.html           -- mode 1: client-side WASM
-  websocket.html            -- mode 2: WebSocket WASM
+  index.html                - landing page with mode links
+  standalone.html           - mode 1: client-side WASM
+  websocket.html            - mode 2: WebSocket WASM
 bin/
-  native_gleam.sh           -- mode 3 launcher
-  native_rust.sh            -- mode 4 launcher
-  client_side.sh            -- mode 1 launcher
-  websocket.sh              -- mode 2 launcher
-  ssh_server.sh             -- mode 5 launcher
-  ssh_client.sh             -- mode 6 launcher
-  preflight                 -- CI checks (format, build, test)
+  native_gleam.sh           - mode 3 launcher
+  native_rust.sh            - mode 4 launcher
+  client_side.sh            - mode 1 launcher
+  websocket.sh              - mode 2 launcher
+  ssh_server.sh             - mode 5 launcher
+  ssh_client.sh             - mode 6 launcher
+  preflight                 - CI checks (format, build, test)
 ```
 
 ## Browser modes (1 and 2)
@@ -135,17 +135,17 @@ Do not expose these ports to the internet.
 
 ## Troubleshooting
 
-**"plushie binary not found"** -- Run
+**"plushie binary not found"**: Run
 `gleam run -m plushie/download` or `gleam run -m plushie/build`.
 
-**Browser shows "plushie-wasm not found"** -- Run
+**Browser shows "plushie-wasm not found"**: Run
 `gleam run -m plushie/download` (config downloads WASM to `static/`).
 
-**SSH connection refused** -- Start the server first
+**SSH connection refused**: Start the server first
 (`./bin/ssh_server.sh`).
 
 ## Dependencies
 
-- [plushie-rust](https://github.com/plushie-ui/plushie-rust) -- the Rust renderer (native binary + WASM)
-- [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) -- the Gleam SDK
-- [mist](https://hexdocs.pm/mist/) -- HTTP/WebSocket server
+- [plushie-rust](https://github.com/plushie-ui/plushie-rust) - the Rust renderer (native binary + WASM)
+- [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) - the Gleam SDK
+- [mist](https://hexdocs.pm/mist/) - HTTP/WebSocket server

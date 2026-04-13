@@ -3,7 +3,7 @@
 These verify the Python side of the native widget: the definition
 metadata and the widget builder produce correct node shapes.
 
-No binary needed -- pure Python logic.
+No binary needed - pure Python logic.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ class TestSparklineDef:
         }
 
     def test_no_commands(self) -> None:
-        """Sparkline is a render-only extension -- no commands."""
+        """Sparkline is a render-only extension - no commands."""
         assert sparkline_def.commands == []
 
 
@@ -86,7 +86,7 @@ class TestSparklineBuilder:
         assert node["props"]["data"] == []
 
     def test_children_empty(self) -> None:
-        """Sparkline is a leaf widget -- it never has children."""
+        """Sparkline is a leaf widget - it never has children."""
         node = sparkline("s1")
         assert node["children"] == []
 

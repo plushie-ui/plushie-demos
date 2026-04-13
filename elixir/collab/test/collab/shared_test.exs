@@ -53,7 +53,7 @@ defmodule Collab.SharedTest do
       # Connect second client (same process, different ID)
       :ok = Shared.connect(shared, "c2")
 
-      # Both clients receive "2 connected" -- since both map to
+      # Both clients receive "2 connected": since both map to
       # self(), we get the message twice
       assert receive_model().status == "2 connected"
       assert receive_model().status == "2 connected"
@@ -188,7 +188,7 @@ defmodule Collab.SharedTest do
           end
         end)
 
-      # Wait for doomed to connect -- survivor sees "2 connected"
+      # Wait for doomed to connect; survivor sees "2 connected"
       assert receive_model().status == "2 connected"
       # doomed's broadcast also arrives (mapped to a different pid, so not here)
 

@@ -11,11 +11,11 @@ defmodule SparklineDashboard.SparklineExtension do
 
   ## Props
 
-  - `data` -- sample values to plot (list of numbers)
-  - `color` -- line/fill color (default `"#4CAF50"`)
-  - `stroke_width` -- line thickness in pixels (number, default 2.0)
-  - `fill` -- whether to fill the area under the line (boolean, default false)
-  - `height` -- widget height in pixels (number, default 60.0)
+  - `data` - sample values to plot (list of numbers)
+  - `color` - line/fill color (default `"#4CAF50"`)
+  - `stroke_width` - line thickness in pixels (number, default 2.0)
+  - `fill` - whether to fill the area under the line (boolean, default false)
+  - `height` - widget height in pixels (number, default 60.0)
   """
 
   use Plushie.Widget, :native_widget

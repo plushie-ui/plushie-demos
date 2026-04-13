@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# preflight -- mirrors CI checks for the crash-test project.
+# preflight - mirrors CI checks for the crash-test project.
 set -euo pipefail
 
 cd "$(dirname "$0")"

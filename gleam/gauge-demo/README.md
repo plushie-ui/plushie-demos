@@ -31,7 +31,7 @@ PLUSHIE_BINARY_PATH=build/plushie/bin/gauge-demo-plushie gleam run -m gauge_demo
 
 Tests cover the native widget definition, widget builder, commands,
 app logic (init/update/view), helpers, and edge cases. No custom
-binary needed -- all tests exercise pure Gleam code.
+binary needed; all tests exercise pure Gleam code.
 
 ```bash
 gleam test
@@ -62,7 +62,7 @@ view() builds tree with        render() displays
 
 Button and slider handlers update the Gleam model immediately, then
 send a `WidgetCommand` to sync the Rust side. The native widget
-does not echo events back -- this avoids race conditions when the user
+does not echo events back, which avoids race conditions when the user
 clicks rapidly.
 
 ### Native widget definition

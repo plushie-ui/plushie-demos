@@ -1,5 +1,5 @@
 /**
- * Crash test -- demonstrates plushie's error resilience.
+ * Crash test - demonstrates plushie's error resilience.
  *
  * Two layers of crash protection:
  *
@@ -11,7 +11,7 @@
  *    in try/catch. An exception keeps the previous model, skips the
  *    render, and logs the error. The app keeps processing events.
  *
- * After any crash, the counter still increments -- proving the app
+ * After any crash, the counter still increments - proving the app
  * is alive. Click Reset to recover from view errors.
  */
 
@@ -51,7 +51,7 @@ export const decrement = (s: Model): Model => ({
  * Everything else keeps working.
  */
 export const triggerPanic = (s: Model): [Model, unknown] => [
-  { ...s, status: "Rust panic triggered -- widget is poisoned" },
+  { ...s, status: "Rust panic triggered - widget is poisoned" },
   CrashBoxCmds.panic("crash-widget"),
 ]
 
@@ -71,12 +71,12 @@ export const triggerHandlerThrow = (_s: Model): Model => {
  *
  * The runtime catches the view error and keeps the previous tree
  * rendered. The UI freezes on the last good render, but handlers
- * still run -- clicking Reset clears the flag and view() recovers.
+ * still run - clicking Reset clears the flag and view() recovers.
  */
 export const triggerViewThrow = (s: Model): Model => ({
   ...s,
   throwInView: true,
-  status: "View will throw on next render -- click Reset to recover",
+  status: "View will throw on next render - click Reset to recover",
 })
 
 /** Clear the view error flag and reset status. */
@@ -89,7 +89,7 @@ export const reset = (s: Model): Model => ({
 // -- View -------------------------------------------------------------------
 
 export function view(model: Model) {
-  // This throw is intentional -- it demonstrates that the runtime
+  // This throw is intentional - it demonstrates that the runtime
   // catches view errors and keeps the previous tree rendered.
   if (model.throwInView) {
     throw new Error("intentional error in view")
@@ -102,7 +102,7 @@ export function view(model: Model) {
           Crash Test
         </Text>
 
-        {/* Counter -- proves the app is still alive after crashes */}
+        {/* Counter - proves the app is still alive after crashes */}
         <Row spacing={8}>
           <Button id="dec" onClick={decrement}>
             -
@@ -115,7 +115,7 @@ export function view(model: Model) {
           </Button>
         </Row>
 
-        {/* Rust native widget -- shows error placeholder after panic */}
+        {/* Rust native widget - shows error placeholder after panic */}
         {CrashBox("crash-widget", {
           label: "Extension OK",
           color: "#2ecc71",

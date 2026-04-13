@@ -33,7 +33,7 @@ pub fn init_running_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- widgets exist
+// view - widgets exist
 // ---------------------------------------------------------------------------
 
 pub fn view_has_buttons_test() {
@@ -86,7 +86,7 @@ pub fn view_initial_data_is_empty_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- toggle and clear
+// interactions - toggle and clear
 // ---------------------------------------------------------------------------
 
 pub fn toggle_pauses_test() {
@@ -117,7 +117,7 @@ pub fn toggle_label_changes_test() {
 }
 
 // ---------------------------------------------------------------------------
-// metrics -- range validation
+// metrics - range validation
 // ---------------------------------------------------------------------------
 
 pub fn cpu_sample_in_range_test() {

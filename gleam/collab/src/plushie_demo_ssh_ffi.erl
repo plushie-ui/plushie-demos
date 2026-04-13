@@ -36,9 +36,9 @@ start_daemon(Shared, Port) ->
 %%====================================================================
 
 -record(ch_state, {
-    shared,          %% Gleam Subject(SharedMsg) -- the shared state actor
-    client_id,       %% Binary -- unique client ID for this connection
-    client_subject,  %% Gleam Subject(ClientMsg) -- receives model updates
+    shared,          %% Gleam Subject(SharedMsg) - the shared state actor
+    client_id,       %% Binary - unique client ID for this connection
+    client_subject,  %% Gleam Subject(ClientMsg) - receives model updates
     conn,            %% SSH connection ref
     channel,         %% SSH channel ID
     buffer = <<>>,   %% Partial JSONL line buffer
@@ -50,7 +50,7 @@ init([Shared]) ->
     ClientId = <<"ssh-", (integer_to_binary(erlang:unique_integer([positive]))/binary)>>,
     {ok, #ch_state{shared = Shared, client_id = ClientId}}.
 
-%% SSH channel is ready -- register with shared actor
+%% SSH channel is ready - register with shared actor
 handle_msg({ssh_channel_up, Channel, Conn}, State) ->
     #ch_state{shared = Shared, client_id = ClientId} = State,
 
@@ -137,7 +137,7 @@ handle_line(Line, State) ->
     case 'plushie@protocol@decode':decode_message(LineWithNewline, json) of
         {ok, {event_message, Event}} ->
             %% Check if this is a dark_mode toggle (theme widget).
-            %% Theme is per-client, not shared -- don't forward it.
+            %% Theme is per-client, not shared - don't forward it.
             case Event of
                 {widget_toggle, <<"theme">>, _, Checked} ->
                     State#ch_state{dark_mode = Checked};
@@ -147,7 +147,7 @@ handle_line(Line, State) ->
                     State
             end;
         {ok, {hello, _, _, _, _, _, _}} ->
-            %% Renderer sent hello -- send initial settings response.
+            %% Renderer sent hello - send initial settings response.
             %% The native plushie binary sends settings first and expects
             %% hello back. But we're acting as the "host" here, so the
             %% client sends hello after receiving our settings.
@@ -196,7 +196,7 @@ model_relay(ClientSubject, ChannelPid) ->
 
 model_relay_loop(Selector, ChannelPid) ->
     Msg = 'gleam@erlang@process':selector_receive_forever(Selector),
-    %% Msg is {model_changed, Model} -- forward to channel process
+    %% Msg is {model_changed, Model} - forward to channel process
     ChannelPid ! Msg,
     model_relay_loop(Selector, ChannelPid).
 

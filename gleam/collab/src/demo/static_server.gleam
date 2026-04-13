@@ -1,7 +1,7 @@
 //// Mode 1: Static file server for the client-side WASM app.
 ////
 //// Serves static files from the static/ directory over HTTP using mist.
-//// The entire app runs in the browser -- Gleam compiles to JS and drives
+//// The entire app runs in the browser - Gleam compiles to JS and drives
 //// plushie-wasm (iced in WebAssembly) for rendering. No server-side
 //// state; each browser tab is independent.
 ////

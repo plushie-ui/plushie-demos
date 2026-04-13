@@ -46,7 +46,7 @@ pub fn def_validates_successfully_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- basic output
+// Widget builder - basic output
 // ---------------------------------------------------------------------------
 
 pub fn gauge_creates_node_with_correct_kind_test() {
@@ -70,7 +70,7 @@ pub fn gauge_node_has_all_seven_props_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- explicit props
+// Widget builder - explicit props
 // ---------------------------------------------------------------------------
 
 pub fn gauge_node_has_value_prop_test() {
@@ -109,7 +109,7 @@ pub fn gauge_node_has_height_prop_test() {
 }
 
 // ---------------------------------------------------------------------------
-// Widget builder -- defaults
+// Widget builder - defaults
 // ---------------------------------------------------------------------------
 
 pub fn gauge_default_min_is_zero_test() {

@@ -1,12 +1,12 @@
 /**
- * Crash box native widget -- a simple widget that panics on command.
+ * Crash box native widget - a simple widget that panics on command.
  *
  * Normally renders a colored container with a label. When the
  * "panic" command is sent, the Rust side calls panic!(), which
  * the renderer catches via catch_unwind. The widget is marked
  * poisoned and subsequent renders show an error placeholder.
  *
- * The rest of the app keeps working -- panic isolation means one
+ * The rest of the app keeps working - panic isolation means one
  * broken widget can't take down the process.
  */
 

@@ -49,7 +49,7 @@ pnpm test
 Unit tests cover the native widget definition, builder functions, app
 update logic (with simulated widget events), view tree structure,
 gauge wire props, settings, and a stateful journey test. No renderer
-binary needed -- these are pure TypeScript tests.
+binary needed; these are pure TypeScript tests.
 
 Integration tests (when the custom binary is built) verify the
 wire-level interaction: gauge type on the wire, prop encoding, button

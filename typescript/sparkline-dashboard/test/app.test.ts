@@ -28,7 +28,7 @@ const binaryPath = resolve(
 const hasBinary = existsSync(binaryPath)
 const integration = hasBinary ? describe : describe.skip
 
-// Tests are sequential within the describe block -- each test builds
+// Tests are sequential within the describe block - each test builds
 // on the state left by the previous one (shared session, no reset).
 integration("sparkline dashboard", () => {
   let session: TestSession<Model>

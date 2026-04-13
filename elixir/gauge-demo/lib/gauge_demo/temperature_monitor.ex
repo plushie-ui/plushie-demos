@@ -43,7 +43,7 @@ defmodule GaugeDemo.TemperatureMonitor do
   end
 
   # Widget event: Rust gauge confirms the value change.
-  # This is the only path that updates `temperature` -- button handlers
+  # This is the only path that updates `temperature`; button handlers
   # only update `target_temp` optimistically.
   @impl true
   def update(

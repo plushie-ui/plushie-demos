@@ -8,7 +8,7 @@ use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 
-/// Gauge widget -- renders a numeric gauge with label and color.
+/// Gauge widget - renders a numeric gauge with label and color.
 pub struct GaugeExtension {
     states: HashMap<String, GaugeState>,
 }
@@ -109,7 +109,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
 
                         // Echo the confirmed value back to TypeScript.
                         // The TypeScript update() handles this event and
-                        // sets model.temperature -- the widget is the
+                        // sets model.temperature - the widget is the
                         // source of truth for the actual value.
                         return Some(vec![
                             OutgoingEvent::widget_event(

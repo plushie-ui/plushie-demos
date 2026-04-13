@@ -261,7 +261,7 @@ fn editor_view(model: Model, note_id: String) -> Node {
       )
     }
     Error(_) ->
-      // Note was deleted -- show fallback (shouldn't happen in normal flow)
+      // Note was deleted - show fallback (shouldn't happen in normal flow)
       ui.text_("editor-missing", "Note not found.")
   }
 }

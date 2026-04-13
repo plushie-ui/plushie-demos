@@ -9,7 +9,7 @@ use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 
-/// Gauge widget -- renders a numeric gauge with label and color.
+/// Gauge widget - renders a numeric gauge with label and color.
 pub struct GaugeExtension {
     states: HashMap<String, GaugeState>,
 }
@@ -144,7 +144,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
                         state.generation.bump();
                     }
                 }
-                // No event emitted -- animate_to only updates the target
+                // No event emitted - animate_to only updates the target
                 Some(vec![])
             }
             _ => None,

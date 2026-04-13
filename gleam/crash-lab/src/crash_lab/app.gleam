@@ -1,4 +1,4 @@
-//// Crash lab app -- error resilience demonstration.
+//// Crash lab app - error resilience demonstration.
 ////
 //// Shows how plushie isolates failures at three different levels:
 ////

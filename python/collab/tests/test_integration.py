@@ -19,7 +19,7 @@ from plushie.tree import find, normalize, text_of
 
 
 def _skip_without_pool(plushie_pool: object) -> None:  # noqa: ARG001
-    """Marker -- the fixture itself handles skipping."""
+    """Marker - the fixture itself handles skipping."""
 
 
 # ---------------------------------------------------------------------------

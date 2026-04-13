@@ -1,5 +1,5 @@
 /**
- * Sparkline native widget -- renders a line chart from sample data.
+ * Sparkline native widget - renders a line chart from sample data.
  *
  * The TypeScript side declares the widget type and props. The Rust
  * side (in native/sparkline/) handles the canvas rendering using

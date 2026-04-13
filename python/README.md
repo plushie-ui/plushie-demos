@@ -18,7 +18,7 @@ timer subscriptions, and simulated live data.
 
 ### [collab](collab/)
 
-Collaborative scratchpad showing 4 ways to run the same app -- native
+Collaborative scratchpad showing 4 ways to run the same app: native
 desktop, exec mode, shared-state WebSocket, and SSH. Multiple clients
 share a single counter and notes in real time. Demonstrates
 `IoStreamAdapter`, `StdioConnection`, WebSocket transport, SSH
@@ -51,5 +51,5 @@ The same demos exist in other languages:
 | Sparkline | [sparkline-dashboard](sparkline-dashboard/) | [sparkline-dashboard](../typescript/sparkline-dashboard/) | [sparkline-dashboard](../ruby/sparkline-dashboard/) | [sparkline-dashboard](../elixir/sparkline-dashboard/) | [sparkline-dashboard](../gleam/sparkline-dashboard/) |
 | Collab | [collab](collab/) | -- | -- | [collab](../elixir/collab/) | [collab](../gleam/collab/) |
 
-The Rust widget code is identical across languages -- only the host
+The Rust widget code is identical across languages; only the host
 SDK code differs.

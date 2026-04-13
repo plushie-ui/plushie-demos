@@ -1,1 +1,1 @@
-"""Collaborative scratchpad demo -- shared state across WebSocket and SSH clients."""
+"""Collaborative scratchpad demo - shared state across WebSocket and SSH clients."""

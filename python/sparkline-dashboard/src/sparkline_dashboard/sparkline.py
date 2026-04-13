@@ -3,7 +3,7 @@
 Defines the native sparkline widget: a line chart rendered by Rust/iced.
 The Python side declares the props; the Rust side handles canvas rendering.
 
-This is a render-only native widget -- no commands or events.
+This is a render-only native widget - no commands or events.
 """
 
 from __future__ import annotations

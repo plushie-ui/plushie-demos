@@ -60,7 +60,7 @@ logs the error, preserves the model, and discards the event.
 
 Click **Break View**. The `update` succeeds (sets a flag), but the
 next `view` call panics. The runtime catches it and keeps displaying
-the previous rendered tree -- which still contains the **Recover**
+the previous rendered tree, which still contains the **Recover**
 button. Click it to clear the flag; the next view render succeeds.
 
 **The counter keeps its value.** Even though the view crashed, the

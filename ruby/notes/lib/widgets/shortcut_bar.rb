@@ -4,7 +4,7 @@ require "plushie"
 
 class Notes
   # Context-aware keyboard shortcut hint bar.
-  # Pure Ruby composite -- no Rust, no binary rebuild.
+  # Pure Ruby composite - no Rust, no binary rebuild.
   class ShortcutBar
     include Plushie::Widget
     include Plushie::UI

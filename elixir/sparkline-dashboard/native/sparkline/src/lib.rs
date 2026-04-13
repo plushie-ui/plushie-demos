@@ -6,12 +6,12 @@
 //!
 //! This is a render-only widget: it implements only type_names,
 //! namespace, clone_for_session, and render. No commands, no events,
-//! no state -- just props in, pixels out.
+//! no state - just props in, pixels out.
 
 use plushie_widget_sdk::iced;
 use plushie_widget_sdk::prelude::*;
 
-/// Sparkline widget -- renders a canvas-based line chart.
+/// Sparkline widget - renders a canvas-based line chart.
 pub struct SparklineExtension;
 
 impl SparklineExtension {

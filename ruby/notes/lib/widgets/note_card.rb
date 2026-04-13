@@ -4,7 +4,7 @@ require "plushie"
 
 class Notes
   # Card widget for displaying a note in the list view.
-  # Pure Ruby composite -- no Rust, no binary rebuild.
+  # Pure Ruby composite - no Rust, no binary rebuild.
   class NoteCard
     include Plushie::Widget
     include Plushie::UI

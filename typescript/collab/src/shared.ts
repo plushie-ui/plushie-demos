@@ -3,7 +3,7 @@
  *
  * Holds the authoritative model and a registry of connected clients.
  * When any client sends an event, runs update() and broadcasts the
- * new model to all clients. Dark mode is per-client -- each client
+ * new model to all clients. Dark mode is per-client - each client
  * stores its own preference and merges it before rendering.
  */
 

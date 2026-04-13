@@ -149,7 +149,7 @@ defmodule PlushiePad.PadTest do
 
   describe "escape key" do
     test "escape clears nil error gracefully" do
-      # No error set -- escape is a no-op
+      # No error set - escape is a no-op
       type_key("escape")
       assert model().error == nil
     end
@@ -272,7 +272,7 @@ defmodule PlushiePad.PadTest do
     test "submitting an invalid name keeps the input" do
       type_text("#new-name", "bad-name")
       submit("#new-name")
-      # Model doesn't change -- new_name stays as-is since the handler
+      # Model doesn't change - new_name stays as-is since the handler
       # returns the model unmodified for invalid names.
       assert model().new_name == "bad-name"
     end

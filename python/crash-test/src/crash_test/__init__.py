@@ -1,1 +1,1 @@
-"""Crash test demo -- exercises plushie's crash resilience at both layers."""
+"""Crash test demo - exercises plushie's crash resilience at both layers."""

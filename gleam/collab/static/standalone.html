@@ -34,13 +34,13 @@
     // embedded directly in this page (the full Gleam-compiled JS
     // version would replace this).
     //
-    // Each browser tab has its own independent state -- no server
+    // Each browser tab has its own independent state - no server
     // communication, no shared state.
 
     const loading = document.getElementById('loading');
 
     // Load a font file and return its base64-encoded contents.
-    // The WASM renderer has no access to system fonts -- fonts must
+    // The WASM renderer has no access to system fonts - fonts must
     // be provided as inline base64 data in the settings JSON.
     async function loadFontBase64(url) {
       const resp = await fetch(url);

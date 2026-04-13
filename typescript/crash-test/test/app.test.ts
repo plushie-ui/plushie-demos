@@ -175,11 +175,11 @@ describe("view", () => {
 
 describe("recovery sequence", () => {
   test("counter works after handler throw", () => {
-    // triggerHandlerThrow throws -- the runtime catches it and
+    // triggerHandlerThrow throws - the runtime catches it and
     // keeps the previous model. We simulate this by just not
     // calling the handler, then verifying increment still works.
     const before = init()
-    // Handler throws -- model stays at `before`
+    // Handler throws - model stays at `before`
     expect(() => triggerHandlerThrow(before)).toThrow()
     // Counter still works
     const after = increment(before)
@@ -229,7 +229,7 @@ const binaryPath = resolve(
 const hasBinary = existsSync(binaryPath)
 const integration = hasBinary ? describe : describe.skip
 
-// Tests are sequential -- shared session.
+// Tests are sequential - shared session.
 integration("crash test (integration)", () => {
   let session: TestSession<Model>
 

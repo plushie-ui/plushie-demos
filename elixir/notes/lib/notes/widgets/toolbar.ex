@@ -2,13 +2,13 @@ defmodule Notes.Widgets.Toolbar do
   @moduledoc """
   Top bar with a title, optional back button, and action buttons.
 
-  Pure Elixir composite widget -- no Rust, no binary rebuild.
+  Pure Elixir composite widget - no Rust, no binary rebuild.
 
   ## Props
 
-  - `title` -- heading text (string)
-  - `show_back` -- whether to show the back button (boolean, default false)
-  - `actions` -- list of `{id, label}` tuples for action buttons
+  - `title` - heading text (string)
+  - `show_back` - whether to show the back button (boolean, default false)
+  - `actions` - list of `{id, label}` tuples for action buttons
   """
 
   use Plushie.Widget

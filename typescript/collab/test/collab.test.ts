@@ -13,7 +13,7 @@ import type { Model } from "../src/collab.js"
 
 // -- Integration tests (real binary) -----------------------------------------
 
-// Tests are sequential -- shared session, no reset between tests.
+// Tests are sequential - shared session, no reset between tests.
 describe("collab (integration)", () => {
   let session: TestSession<Model>
 

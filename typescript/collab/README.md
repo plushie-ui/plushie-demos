@@ -1,7 +1,7 @@
 # collab
 
 Collaborative scratchpad showing 6 different ways to run the same
-Plushie app -- from native desktop to shared-state WebSocket and SSH.
+Plushie app, from native desktop to shared-state WebSocket and SSH.
 
 All modes share a single app definition (`src/collab.tsx`) with a
 name input, shared notes, a counter, a dark-mode toggle, and a
@@ -62,7 +62,7 @@ All clients see the same counter and notes. Click "+" in the browser
 and the SSH client's counter updates. Type in the notes field from
 SSH and the browser tabs update.
 
-The dark-mode toggle is per-client -- each user picks their own
+The dark-mode toggle is per-client; each user picks their own
 theme without affecting others.
 
 ### OpenSSH variant
@@ -105,26 +105,26 @@ Do not expose these ports to the internet.
 
 ```
 src/
-  collab.tsx              -- the app (model, update, view)
-  shared.ts               -- shared state manager for collaborative modes
-  browser.ts              -- browser entry point (mode 1, bundled by esbuild)
+  collab.tsx              - the app (model, update, view)
+  shared.ts               - shared state manager for collaborative modes
+  browser.ts              - browser entry point (mode 1, bundled by esbuild)
 server/
-  static.ts               -- mode 1: static file server
-  websocket.ts            -- mode 2: WebSocket server + shared state
-  ssh.ts                  -- mode 5: SSH daemon + WebSocket server
-  static-files.ts         -- shared static file serving
+  static.ts               - mode 1: static file server
+  websocket.ts            - mode 2: WebSocket server + shared state
+  ssh.ts                  - mode 5: SSH daemon + WebSocket server
+  static-files.ts         - shared static file serving
 static/
-  index.html              -- landing page with mode links
-  standalone.html         -- mode 1: client-side WASM
-  websocket.html          -- modes 2/5: WebSocket browser client
+  index.html              - landing page with mode links
+  standalone.html         - mode 1: client-side WASM
+  websocket.html          - modes 2/5: WebSocket browser client
 test/
-  collab.test.ts          -- app logic unit tests
-  shared.test.ts          -- shared state unit tests
+  collab.test.ts          - app logic unit tests
+  shared.test.ts          - shared state unit tests
 bin/
-  client-side.sh          -- mode 1 launcher
-  websocket.sh            -- mode 2 launcher
-  native.sh               -- mode 3 launcher
-  stdio.sh                -- mode 4 launcher
-  ssh-server.sh           -- mode 5 launcher
-  ssh-client.sh           -- mode 6 launcher
+  client-side.sh          - mode 1 launcher
+  websocket.sh            - mode 2 launcher
+  native.sh               - mode 3 launcher
+  stdio.sh                - mode 4 launcher
+  ssh-server.sh           - mode 5 launcher
+  ssh-client.sh           - mode 6 launcher
 ```

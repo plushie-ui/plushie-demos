@@ -2,7 +2,7 @@
  * Mode 1: Static file server for client-side WASM.
  *
  * Serves the bundled app and WASM files. Each browser tab runs
- * independently -- no shared state, no server-side app logic.
+ * independently - no shared state, no server-side app logic.
  *
  * Prerequisites:
  *   pnpm build:browser     (bundles app for the browser)

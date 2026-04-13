@@ -2,7 +2,7 @@
 
 require "plushie"
 
-# Gauge custom widget -- renders a numeric gauge with label and color.
+# Gauge custom widget - renders a numeric gauge with label and color.
 #
 # Demonstrates widget commands and Rust-side state management via
 # ExtensionCaches. The Ruby side sends set_value and animate_to commands;

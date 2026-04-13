@@ -6,7 +6,7 @@ as a standalone executable via Node.js SEA.
 
 Demonstrates:
 
-- `Data.query` pipeline (search, sort, paginate -- all composable)
+- `Data.query` pipeline (search, sort, paginate, all composable)
 - `Table` widget with sortable columns
 - `PickList` for page size selection
 - `TextInput` for live search filtering
@@ -55,18 +55,18 @@ Run it:
 ./dist/data-explorer
 ```
 
-Copy it to another machine -- no installation needed.
+Copy it to another machine; no installation needed.
 
 ### How SEA packaging works
 
-1. **Bundle** -- esbuild compiles the TSX app + dependencies into
+1. **Bundle** - esbuild compiles the TSX app + dependencies into
    a single CJS file
-2. **SEA config** -- declares the JS blob and plushie binary as
+2. **SEA config** - declares the JS blob and plushie binary as
    embedded assets
-3. **Prepare** -- `node --experimental-sea-config` creates the blob
-4. **Inject** -- `postject` embeds the blob into a copy of the node
+3. **Prepare** - `node --experimental-sea-config` creates the blob
+4. **Inject** - `postject` embeds the blob into a copy of the node
    binary
-5. **Result** -- a single executable that, at runtime, extracts the
+5. **Result** - a single executable that, at runtime, extracts the
    plushie binary to a temp file and spawns it normally
 
 ### Size breakdown
@@ -85,14 +85,14 @@ webview-dependent).
 
 ```
 src/
-  app.tsx               -- the data explorer app
-  countries.ts          -- bundled 50-country dataset
+  app.tsx               - the data explorer app
+  countries.ts          - bundled 50-country dataset
 test/
-  app.test.ts           -- unit tests (Data.query, view, dataset)
+  app.test.ts           - unit tests (Data.query, view, dataset)
 scripts/
-  bundle.mjs            -- esbuild config for SEA bundling
-  package.sh            -- full SEA packaging pipeline
-dist/                   -- build output (gitignored)
+  bundle.mjs            - esbuild config for SEA bundling
+  package.sh            - full SEA packaging pipeline
+dist/                   - build output (gitignored)
 ```
 
 ## The Data.query pipeline

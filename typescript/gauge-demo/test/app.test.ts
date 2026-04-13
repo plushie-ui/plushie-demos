@@ -104,7 +104,7 @@ describe("update", () => {
     const model: Model = { temperature: 50, targetTemp: 50, history: [20, 50] }
     const [newModel, cmd] = unwrap(resetTemp(model))
     expect(newModel.targetTemp).toBe(20)
-    // temperature unchanged -- waits for Rust value_changed
+    // temperature unchanged - waits for Rust value_changed
     expect(newModel.temperature).toBe(50)
     expect(cmd).not.toBeNull()
     expect((cmd as Record<string, unknown>)["type"]).toBe("extension_command")
@@ -113,7 +113,7 @@ describe("update", () => {
   test("high sets targetTemp and returns set_value command", () => {
     const [newModel, cmd] = unwrap(setHigh(init()))
     expect(newModel.targetTemp).toBe(90)
-    // temperature unchanged -- waits for Rust value_changed
+    // temperature unchanged - waits for Rust value_changed
     expect(newModel.temperature).toBe(20)
     expect(cmd).not.toBeNull()
   })
@@ -237,7 +237,7 @@ describe("stateful journey", () => {
     expect(model.temperature).toBe(20)
     expect(model.targetTemp).toBe(20)
 
-    // Click high -- sets targetTemp, returns command
+    // Click high - sets targetTemp, returns command
     const [afterHigh, highCmd] = unwrap(setHigh(model))
     expect(afterHigh.targetTemp).toBe(90)
     expect(afterHigh.temperature).toBe(20) // not yet changed
@@ -349,7 +349,7 @@ const binaryPath = resolve(
 const hasBinary = existsSync(binaryPath)
 const integration = hasBinary ? describe : describe.skip
 
-// Tests are sequential -- shared session, no reset between tests.
+// Tests are sequential - shared session, no reset between tests.
 integration("gauge app (integration)", () => {
   let session: TestSession<Model>
 

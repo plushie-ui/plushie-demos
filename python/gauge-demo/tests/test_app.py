@@ -273,7 +273,7 @@ class TestGaugeWireProps:
     These tests inspect the normalized view tree to confirm that the
     gauge widget carries the correct type, value, color, and label.
     This is the closest we get to wire-level verification without a
-    running renderer -- the same props that appear here are what gets
+    running renderer - the same props that appear here are what gets
     encoded to msgpack and sent to the Rust extension.
     """
 
@@ -287,7 +287,7 @@ class TestGaugeWireProps:
         assert props["label"] == "20\u00b0C"
 
     def test_gauge_type_is_extension(self) -> None:
-        """'gauge' is NOT a built-in widget type -- it only exists because
+        """'gauge' is NOT a built-in widget type - it only exists because
         the Rust extension registered it via WidgetExtension::type_names."""
         tree = normalize(_app().view(_app().init()))
         node = find(tree, "temp")

@@ -17,8 +17,8 @@ model, and keeps processing events. The counter still increments.
 
 **Ruby view error**: Clicking "Raise in View" sets a flag that causes
 the view method to raise. The runtime preserves the previous rendered
-tree -- including the "Recover" button. Click it to clear the flag
-and restore normal rendering.
+tree, which still includes the "Recover" button. Click it to clear the
+flag and restore normal rendering.
 
 ## Prerequisites
 
@@ -47,7 +47,7 @@ and restore normal rendering.
 ### Widget panic recovery
 
 The renderer wraps all widget calls in `catch_unwind`. When a panic
-happens, the widget is "poisoned" -- `render()` returns a red error
+happens, the widget is "poisoned": `render()` returns a red error
 placeholder, and `handle_event`/`handle_command` calls are skipped.
 Poisoned state is keyed by node ID. Removing the widget from the tree
 (toggling `widget_alive`) and re-adding it creates a fresh node

@@ -4,7 +4,7 @@ defmodule PlushiePad.SharedTest do
   @moduletag capture_log: true
 
   # A harmless event that exercises the update pipeline.
-  # Escape clears the error field -- a safe no-op on a fresh model.
+  # Escape clears the error field - a safe no-op on a fresh model.
   defp escape_event do
     %Plushie.Event.KeyEvent{
       type: :press,

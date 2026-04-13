@@ -6,7 +6,7 @@
 ////
 //// In collaborative modes (WebSocket, SSH), `name`, `notes`, and
 //// `count` are shared across all connected clients. The `dark_mode`
-//// toggle is per-client -- each user picks their own theme. The
+//// toggle is per-client - each user picks their own theme. The
 //// `status` field is set externally by the server adapter to show
 //// the current connection count.
 

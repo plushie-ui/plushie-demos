@@ -29,7 +29,7 @@ pub fn init_view_not_broken_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- widgets exist
+// view - widgets exist
 // ---------------------------------------------------------------------------
 
 pub fn view_has_counter_test() {
@@ -58,7 +58,7 @@ pub fn view_has_crash_widget_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- counter
+// interactions - counter
 // ---------------------------------------------------------------------------
 
 pub fn inc_increments_count_test() {
@@ -87,7 +87,7 @@ pub fn count_text_updates_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- toggle widget
+// interactions - toggle widget
 // ---------------------------------------------------------------------------
 
 pub fn toggle_removes_widget_test() {
@@ -119,7 +119,7 @@ pub fn toggle_label_changes_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- break/recover view
+// interactions - break/recover view
 // ---------------------------------------------------------------------------
 // Note: break-view tests require the real runtime's try_call to catch
 // the view panic. They pass on pooled_mock/headless but crash on mock.

@@ -7,17 +7,17 @@ Demonstrates plushie's crash resilience at both the Python and Rust layers.
 The app provides buttons that deliberately crash in various ways:
 
 **Python-side crashes:**
-- **Crash update** -- `update()` raises `RuntimeError`. The runtime
+- **Crash update** - `update()` raises `RuntimeError`. The runtime
   catches it and preserves the previous model.
-- **Crash view** -- Arms a flag so the next `view()` call raises. The
+- **Crash view** - arms a flag so the next `view()` call raises. The
   runtime catches it and falls back to the last valid tree.
-- **Return None** -- Exercises the edge case where `update()` returns
+- **Return None** - exercises the edge case where `update()` returns
   an unexpected value.
 
 **Rust-side crashes** (require the custom binary):
-- **Panic render** -- Sets `panic_on_render=True` on the crasher
+- **Panic render** - sets `panic_on_render=True` on the crasher
   widget. The renderer catches the panic and shows fallback content.
-- **Panic command** -- Sends a command that panics inside
+- **Panic command** - sends a command that panics inside
   `handle_command`. The renderer catches it and continues.
 
 A working counter stays functional through all crashes, proving

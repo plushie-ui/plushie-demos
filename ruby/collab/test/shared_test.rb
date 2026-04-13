@@ -137,7 +137,7 @@ class SharedTest < Minitest::Test
     @shared.event("c1", inc)
     @shared.disconnect("c1")
 
-    # Reconnect -- should see the accumulated state
+    # Reconnect - should see the accumulated state
     model = @shared.connect("c1") { |_| }
     assert_equal 1, model.count
     assert_equal "1 connected", model.status

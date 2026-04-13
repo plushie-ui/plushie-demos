@@ -1,4 +1,4 @@
-"""Data explorer app -- tabular data viewer with search, sort, and stats.
+"""Data explorer app - tabular data viewer with search, sort, and stats.
 
 Demonstrates:
 - File dialog effects (open CSV/JSON/Parquet/Excel)

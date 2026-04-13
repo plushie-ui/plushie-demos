@@ -2,7 +2,7 @@
 
 require "plushie"
 
-# Crash widget -- deliberately panics on command.
+# Crash widget - deliberately panics on command.
 #
 # Renders a status label normally. When the "panic" command is sent,
 # the Rust side calls panic!(), which the renderer catches via

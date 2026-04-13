@@ -1,6 +1,6 @@
 defmodule Notes.App do
   @moduledoc """
-  Notes app -- demonstrates pure Elixir widgets and state helpers.
+  Notes app - demonstrates pure Elixir widgets and state helpers.
 
   Uses Route for navigation, Selection for multi-select, Undo for
   editor history, and Data for search and sort. All custom widgets
@@ -342,7 +342,7 @@ defmodule Notes.App do
     selected = Plushie.Selection.selected(model.selection)
     selected_count = MapSet.size(selected)
 
-    # Build toolbar actions -- delete button appears when items are selected
+    # Build toolbar actions - delete button appears when items are selected
     actions =
       if selected_count > 0,
         do: [{"delete_selected", "Delete (#{selected_count})"}, {"new_note", "+ New"}],
@@ -407,7 +407,7 @@ defmodule Notes.App do
         ShortcutBar.new("shortcuts", hints: editor_hints(model))
       ]
     else
-      # Missing note -- fallback widgets
+      # Missing note - fallback widgets
       [
         Toolbar.new("toolbar", title: "Not Found", show_back: true),
         text("missing", "This note no longer exists.", size: 14, color: "#888888"),

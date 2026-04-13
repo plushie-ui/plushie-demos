@@ -2,17 +2,17 @@ defmodule Notes.Widgets.NoteCard do
   @moduledoc """
   Note list item with a selection checkbox, clickable title, and preview.
 
-  Pure Elixir composite widget -- no Rust, no binary rebuild.
+  Pure Elixir composite widget - no Rust, no binary rebuild.
 
   The checkbox ID is `"select_<note_id>"` (for selection toggling).
   The title button ID is `"note_<note_id>"` (for opening the note).
 
   ## Props
 
-  - `title` -- note title (string)
-  - `preview` -- content preview, first ~80 chars (string)
-  - `timestamp` -- formatted date string (string)
-  - `selected` -- whether the checkbox is checked (boolean, default false)
+  - `title` - note title (string)
+  - `preview` - content preview, first ~80 chars (string)
+  - `timestamp` - formatted date string (string)
+  - `selected` - whether the checkbox is checked (boolean, default false)
   """
 
   use Plushie.Widget

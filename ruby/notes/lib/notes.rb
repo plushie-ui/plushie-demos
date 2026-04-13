@@ -7,7 +7,7 @@ require_relative "widgets/note_card"
 require_relative "widgets/toolbar"
 require_relative "widgets/shortcut_bar"
 
-# Notes app -- demonstrates pure Ruby widgets and state helpers.
+# Notes app - demonstrates pure Ruby widgets and state helpers.
 #
 # Uses Route for navigation, Selection for multi-select, Undo for
 # editor history, and DataQuery for search and sort. All custom

@@ -2,13 +2,13 @@
 //!
 //! Minimal widget that renders a green box and can be deliberately
 //! panicked via the `panic` command. Demonstrates the renderer's
-//! `catch_unwind` panic isolation -- after the panic, this widget is
+//! `catch_unwind` panic isolation: after the panic, this widget is
 //! replaced with a red placeholder while the rest of the app continues.
 
 use plushie_widget_sdk::iced;
 use plushie_widget_sdk::prelude::*;
 
-/// Crash widget -- renders a green status box.
+/// Crash widget: renders a green status box.
 pub struct CrashExtension;
 
 impl CrashExtension {
@@ -67,7 +67,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
     ) -> Option<Vec<OutgoingEvent>> {
         match op {
             "panic" => {
-                panic!("Deliberate panic in handle_widget_op -- catch_unwind isolates this")
+                panic!("Deliberate panic in handle_widget_op (catch_unwind isolates this)")
             }
             _ => None,
         }

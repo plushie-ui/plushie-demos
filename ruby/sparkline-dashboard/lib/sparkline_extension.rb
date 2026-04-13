@@ -2,7 +2,7 @@
 
 require "plushie"
 
-# Sparkline custom widget -- renders a line chart from sample data.
+# Sparkline custom widget - renders a line chart from sample data.
 #
 # Follows the Plushie widget guide worked example. The Ruby side
 # declares the widget type, props, and commands. The Rust side (in

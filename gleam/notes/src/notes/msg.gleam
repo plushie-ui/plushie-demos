@@ -1,6 +1,6 @@
 //// Message type and event mapping for the notes app.
 ////
-//// The `Msg` type is the app's vocabulary -- every action the user can
+//// The `Msg` type is the app's vocabulary - every action the user can
 //// take is represented as a variant. The `on_event` function is the
 //// single point where raw UI events (button clicks, keyboard shortcuts,
 //// text input) are translated into typed domain messages.

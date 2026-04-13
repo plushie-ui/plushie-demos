@@ -10,7 +10,7 @@ import plushie/testing
 import plushie/testing/element
 
 // ---------------------------------------------------------------------------
-// init -- verify initial state
+// init - verify initial state
 // ---------------------------------------------------------------------------
 
 pub fn init_count_is_zero_test() {
@@ -33,7 +33,7 @@ pub fn init_dark_mode_is_false_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- widgets exist
+// view - widgets exist
 // ---------------------------------------------------------------------------
 
 pub fn view_has_header_test() {
@@ -69,7 +69,7 @@ pub fn view_has_notes_input_test() {
 }
 
 // ---------------------------------------------------------------------------
-// view -- initial content
+// view - initial content
 // ---------------------------------------------------------------------------
 
 pub fn view_count_starts_at_zero_test() {
@@ -80,7 +80,7 @@ pub fn view_count_starts_at_zero_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- counter
+// interactions - counter
 // ---------------------------------------------------------------------------
 
 pub fn inc_increments_count_test() {
@@ -116,7 +116,7 @@ pub fn count_text_updates_after_click_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- text inputs
+// interactions - text inputs
 // ---------------------------------------------------------------------------
 
 pub fn name_input_updates_model_test() {
@@ -134,7 +134,7 @@ pub fn notes_input_updates_model_test() {
 }
 
 // ---------------------------------------------------------------------------
-// interactions -- theme toggle
+// interactions - theme toggle
 // ---------------------------------------------------------------------------
 
 pub fn theme_toggle_enables_dark_mode_test() {

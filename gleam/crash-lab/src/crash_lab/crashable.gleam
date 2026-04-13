@@ -42,7 +42,7 @@ pub fn crash_widget(id: String, attrs: List(CrashAttr)) -> Node {
 /// Send the panic command to a crash widget instance.
 ///
 /// This will cause the Rust extension's `handle_command` to panic.
-/// The renderer catches the panic and poisons the extension -- the
+/// The renderer catches the panic and poisons the extension - the
 /// widget is replaced with an error placeholder, but the rest of
 /// the app keeps running.
 pub fn panic_command(node_id: String) -> Command(msg) {

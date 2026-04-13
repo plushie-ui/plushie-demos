@@ -3,16 +3,16 @@
 A notes app built with [Plushie](https://github.com/plushie-ui/plushie-ruby)
 demonstrating pure Ruby widgets and state helpers.
 
-No Rust required -- every custom widget is a pure Ruby composite.
+No Rust required; every custom widget is a pure Ruby composite.
 
 ## Features
 
-- **Route** -- list and editor views with navigation stack
-- **Selection** -- multi-select notes with checkboxes
-- **DataQuery** -- search and sort notes
-- **Undo** -- undo/redo content changes in the editor
-- **Keyboard shortcuts** -- Ctrl+N, Ctrl+Z, Ctrl+Y, Escape
-- **Pure Ruby widgets** -- NoteCard, Toolbar, ShortcutBar
+- **Route** - list and editor views with navigation stack
+- **Selection** - multi-select notes with checkboxes
+- **DataQuery** - search and sort notes
+- **Undo** - undo/redo content changes in the editor
+- **Keyboard shortcuts** - Ctrl+N, Ctrl+Z, Ctrl+Y, Escape
+- **Pure Ruby widgets** - NoteCard, Toolbar, ShortcutBar
 
 ## Prerequisites
 
