@@ -34,7 +34,7 @@ mix deps.get
 ## Build the native widget binary
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 ```
 
@@ -47,7 +47,7 @@ mix plushie.gui CrashTest.App
 ## Test
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 mix test
 ```

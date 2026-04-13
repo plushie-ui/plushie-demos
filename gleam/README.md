@@ -7,7 +7,7 @@ Example Plushie applications written in Gleam using the
 
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie](https://github.com/plushie-ui/plushie) renderer binary
+- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
 - [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) SDK (path dependency at `../../plushie-gleam`)
 
 ## Demos

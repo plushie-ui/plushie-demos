@@ -8,7 +8,7 @@ only -- no native Rust widget needed, runs with the stock plushie binary.
 
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie](https://github.com/plushie-ui/plushie) renderer binary
+- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
 
 ## Setup
 

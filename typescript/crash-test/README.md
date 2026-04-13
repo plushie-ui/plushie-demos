@@ -19,7 +19,7 @@ npx plushie download
 
 ## Build the custom binary
 
-Requires the [plushie source](https://github.com/plushie-ui/plushie-renderer)
+Requires the [plushie source](https://github.com/plushie-ui/plushie-rust)
 checked out locally (the `source_path` in `plushie.extensions.json`
 points to its expected location):
 

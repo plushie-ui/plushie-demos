@@ -7,7 +7,7 @@ Example Plushie applications written in Ruby using the
 
 - [Ruby](https://www.ruby-lang.org/) (3.2+)
 - [Rust](https://rustup.rs/) (for native widget demos only)
-- [plushie](https://github.com/plushie-ui/plushie) renderer binary
+- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
 
 ## Demos
 

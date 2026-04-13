@@ -1,6 +1,6 @@
 # plushie-demos
 
-Example applications for [Plushie](https://github.com/plushie-ui/plushie),
+Example applications for [Plushie](https://github.com/plushie-ui/plushie-rust),
 organized by language.
 
 ## Elixir

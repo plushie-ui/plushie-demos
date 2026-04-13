@@ -23,7 +23,7 @@ compiled in and installs it to
 and renderer are fetched from crates.io automatically.
 
 ```bash
-PLUSHIE_SOURCE_PATH=/path/to/plushie-renderer bin/build
+PLUSHIE_SOURCE_PATH=/path/to/plushie-rust bin/build
 ```
 
 ## Run

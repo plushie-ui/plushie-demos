@@ -33,11 +33,11 @@ mix deps.get
 
 ## Build the native widget binary
 
-Requires the [plushie renderer source](https://github.com/plushie-ui/plushie-renderer)
+Requires the [plushie renderer source](https://github.com/plushie-ui/plushie-rust)
 checked out locally:
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 ```
 
@@ -58,7 +58,7 @@ mix plushie.gui SparklineDashboard.Dashboard
 ## Test
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-renderer
+export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 mix test
 ```

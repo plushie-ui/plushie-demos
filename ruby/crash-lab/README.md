@@ -73,7 +73,7 @@ lib/
   crash_lab.rb             # App with intentional error triggers
 native/
   crash_widget/
-    Cargo.toml             # Rust crate depending on plushie-ext
+    Cargo.toml             # Rust crate depending on plushie-widget-sdk
     src/lib.rs             # WidgetExtension with panic in handle_command
 test/
   crash_extension_test.rb  # Widget metadata tests

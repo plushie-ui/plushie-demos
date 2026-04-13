@@ -7,7 +7,7 @@ Example Plushie applications written in Elixir using the
 
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie](https://github.com/plushie-ui/plushie) renderer binary
+- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
 
 ## Demos
 

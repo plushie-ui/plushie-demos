@@ -74,7 +74,7 @@ lib/
   temperature_monitor.rb   # Elm architecture app (init/update/view)
 native/
   gauge/
-    Cargo.toml             # Rust crate depending on plushie-ext
+    Cargo.toml             # Rust crate depending on plushie-widget-sdk
     src/lib.rs             # WidgetExtension: init, prepare, render, handle_command, cleanup
 test/
   gauge_extension_test.rb  # Widget metadata and build output tests

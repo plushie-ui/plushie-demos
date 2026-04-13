@@ -115,8 +115,8 @@ gleam run -m plushie/download -- --wasm --wasm-dir static
 Or copy from a source build:
 
 ```bash
-cp ~/projects/plushie-renderer/plushie-renderer-wasm/pkg/plushie_renderer_wasm.js static/
-cp ~/projects/plushie-renderer/plushie-renderer-wasm/pkg/plushie_renderer_wasm_bg.wasm static/
+cp ~/projects/plushie-rust/crates/plushie-renderer-wasm/pkg/plushie_renderer_wasm.js static/
+cp ~/projects/plushie-rust/crates/plushie-renderer-wasm/pkg/plushie_renderer_wasm_bg.wasm static/
 ```
 
 ## Security
@@ -146,6 +146,6 @@ Do not expose these ports to the internet.
 
 ## Dependencies
 
-- [plushie-renderer](https://github.com/plushie-ui/plushie-renderer) -- the Rust renderer (native binary + WASM)
+- [plushie-rust](https://github.com/plushie-ui/plushie-rust) -- the Rust renderer (native binary + WASM)
 - [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) -- the Gleam SDK
 - [mist](https://hexdocs.pm/mist/) -- HTTP/WebSocket server
