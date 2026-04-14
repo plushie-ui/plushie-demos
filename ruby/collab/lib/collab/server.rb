@@ -99,7 +99,7 @@ class Collab
         if msg["type"] == "event"
           event = Plushie::Protocol::Decode.dispatch_message(msg)
           if event.is_a?(Plushie::Event::Widget) && event.id == "theme" && event.type == :toggle
-            dark_mode = event.data["value"]
+            dark_mode = event.value
           elsif event
             @shared.event(client_id, event)
           end

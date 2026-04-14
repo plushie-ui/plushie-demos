@@ -85,7 +85,7 @@ class Notes
   end
 
   def subscribe(_model)
-    [Subscription.on_key_press(:keys)]
+    [Subscription.on_key_press]
   end
 
   def view(model)
@@ -172,7 +172,7 @@ class Notes
         }
       )
       .with(
-        undo: Plushie::Undo.apply(model.undo, {
+        undo: Plushie::Undo.push(model.undo, {
           apply: ->(_) { content },
           undo: ->(_) { old_content },
           label: "edit",

@@ -37,8 +37,8 @@ class TemperatureMonitor
   def update(model, event)
     case event
     # Widget event: Rust confirms value change
-    in Event::Widget[type: :value_changed, id: "temp", data:]
-      new_temp = data["value"].to_f
+    in Event::Widget[type: :value_changed, id: "temp", value:]
+      new_temp = value.is_a?(Hash) ? value[:value].to_f : value.to_f
       model.with(
         temperature: new_temp,
         history: append_history(model.history, new_temp)

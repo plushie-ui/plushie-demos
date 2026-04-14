@@ -16,9 +16,9 @@ class Notes
     prop :timestamp, :string, default: ""
     prop :selected, :boolean, default: false
 
-    def render(id, props)
+    def view(id, props)
       Plushie::UI::Context.push([])
-      node = mouse_area("#{id}_card", on_press: true, cursor: :pointer) do
+      node = pointer_area("#{id}_card", on_press: true, cursor: :pointer) do
         container("#{id}_inner", padding: 12) do
           row("#{id}_row", spacing: 12, width: "fill") do
             checkbox("select_#{id}", props[:selected])

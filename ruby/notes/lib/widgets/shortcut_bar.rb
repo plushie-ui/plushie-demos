@@ -13,7 +13,7 @@ class Notes
 
     prop :hints, :any, default: []
 
-    def render(id, props)
+    def view(id, props)
       Plushie::UI::Context.push([])
       node = container("#{id}_bar", padding: [6, 16]) do
         row("#{id}_row", spacing: 20) do

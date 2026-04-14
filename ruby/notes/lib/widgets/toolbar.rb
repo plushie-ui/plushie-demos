@@ -15,7 +15,7 @@ class Notes
     prop :show_back, :boolean, default: false
     prop :actions, :any, default: []
 
-    def render(id, props)
+    def view(id, props)
       Plushie::UI::Context.push([])
       node = container("#{id}_bar", padding: [8, 16]) do
         row("#{id}_row", spacing: 12, width: "fill") do
