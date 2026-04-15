@@ -1,15 +1,13 @@
 //! Gauge native widget for plushie.
 //!
 //! Renders a temperature gauge using iced container and text widgets.
-//! Demonstrates the PlushieWidget trait with init, prepare, render,
-//! handle_widget_op, cleanup, and clone_for_session.
 
 use plushie_widget_sdk::iced;
 use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
 
-/// Gauge widget - renders a numeric gauge with label and color.
+/// Gauge widget: renders a numeric gauge with label and color.
 pub struct GaugeExtension {
     states: HashMap<String, GaugeState>,
 }
@@ -22,12 +20,6 @@ impl GaugeExtension {
     }
 }
 
-/// Per-node state owned by the widget.
-///
-/// Tracks current and target values independently. The current_value
-/// is synced from Ruby props each frame via prepare(). The
-/// target_value is updated by animate_to commands. The generation
-/// counter signals when state changes (for future canvas caching).
 struct GaugeState {
     current_value: f32,
     target_value: f32,
@@ -57,9 +49,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         Box::new(GaugeExtension::new())
     }
 
-    fn init(&mut self, _ctx: &InitCtx<'_>) {
-        // Read extension_config if needed (arc_width, tick_count, etc.)
-    }
+    fn init(&mut self, _ctx: &InitCtx<'_>) {}
 
     fn prepare(
         &mut self,
@@ -67,12 +57,11 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         _window_id: &str,
         _theme: &Theme,
     ) {
-        let props = node.props();
+        let props = &node.props;
         let value = prop_f32(props, "value").unwrap_or(0.0);
         let state = self.states
             .entry(node.id.clone())
             .or_insert_with(|| GaugeState::new(value));
-        // Sync from Ruby props each frame
         state.current_value = value;
     }
 
@@ -81,15 +70,22 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         node: &'a TreeNode,
         _ctx: &RenderCtx<'a, R>,
     ) -> Element<'a, Message, Theme, R> {
-        let props = node.props();
+        let props = &node.props;
         let value = prop_f32(props, "value").unwrap_or(0.0);
         let min = prop_f32(props, "min").unwrap_or(0.0);
         let max = prop_f32(props, "max").unwrap_or(100.0);
-        let color = prop_color(props, "color")
-            .unwrap_or(Color::from_rgb(0.2, 0.5, 0.8));
         let label = prop_str(props, "label").unwrap_or_default();
-        let w = prop_length(props, "width", Length::Fixed(200.0));
-        let h = prop_length(props, "height", Length::Fixed(200.0));
+
+        let color = prop_str(props, "color")
+            .and_then(|s| parse_hex_color(&s))
+            .unwrap_or(Color::from_rgb(0.2, 0.5, 0.8));
+
+        let w = prop_f32(props, "width")
+            .map(iced::Length::Fixed)
+            .unwrap_or(iced::Length::Fixed(200.0));
+        let h = prop_f32(props, "height")
+            .map(iced::Length::Fixed)
+            .unwrap_or(iced::Length::Fixed(200.0));
 
         let pct = ((value - min) / (max - min)).clamp(0.0, 1.0);
         let display = format!("{:.0}%", pct * 100.0);
@@ -122,14 +118,12 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
                         state.current_value = v as f32;
                         state.generation.bump();
 
-                        // Notify Ruby of the confirmed value change
                         return Some(vec![
                             OutgoingEvent::widget_event(
-                                "value_changed".to_string(),
-                                node_id.to_string(),
+                                "value_changed",
+                                node_id,
                                 Some(json!({"value": v})),
-                            )
-                            .with_window_id("main"),
+                            ),
                         ]);
                     }
                 }
@@ -144,14 +138,30 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
                         state.generation.bump();
                     }
                 }
-                // No event emitted - animate_to only updates the target
                 Some(vec![])
             }
             _ => None,
         }
     }
 
-    fn cleanup(&mut self, node_id: &str) {
+    fn cleanup(&mut self, node_id: &str, _window_id: &str) {
         self.states.remove(node_id);
     }
+}
+
+/// Parse a hex color string (#RRGGBB or #RRGGBBAA) to an iced Color.
+fn parse_hex_color(hex: &str) -> Option<Color> {
+    let hex = hex.strip_prefix('#')?;
+    if hex.len() < 6 {
+        return None;
+    }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
+    let a = if hex.len() >= 8 {
+        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
+    } else {
+        1.0
+    };
+    Some(Color::from_rgba(r, g, b, a))
 }

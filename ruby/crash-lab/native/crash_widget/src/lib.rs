@@ -34,7 +34,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
         node: &'a TreeNode,
         _ctx: &RenderCtx<'a, R>,
     ) -> Element<'a, Message, Theme, R> {
-        let label = prop_str(node.props(), "label")
+        let label = prop_str(&node.props, "label")
             .unwrap_or_else(|| "CrashWidget".to_string());
 
         container(
@@ -46,6 +46,8 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
         .padding(16)
         .into()
     }
+
+    fn cleanup(&mut self, _node_id: &str, _window_id: &str) {}
 
     fn handle_widget_op(
         &mut self,
