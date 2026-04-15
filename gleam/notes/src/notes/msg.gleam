@@ -11,7 +11,10 @@
 //// only handles it once.
 
 import gleam/string
-import plushie/event.{type Event, KeyPress, Modifiers, WidgetClick, WidgetInput}
+import plushie/event.{
+  type Event, Click, EventTarget, Input, Key, KeyEvent, KeyPressed, Modifiers,
+  Widget,
+}
 
 /// Every action the notes app can perform.
 ///
@@ -63,45 +66,53 @@ pub type Msg {
 pub fn on_event(event: Event) -> Msg {
   case event {
     // -- Keyboard shortcuts (only when not captured by a text field) --
-    KeyPress(
+    Key(KeyEvent(
+      event_type: KeyPressed,
       key: "n",
       modifiers: Modifiers(command: True, ..),
       captured: False,
       ..,
-    ) -> CreateNote
-    KeyPress(
+    )) -> CreateNote
+    Key(KeyEvent(
+      event_type: KeyPressed,
       key: "z",
       modifiers: Modifiers(command: True, shift: False, ..),
       captured: False,
       ..,
-    ) -> Undo
-    KeyPress(
+    )) -> Undo
+    Key(KeyEvent(
+      event_type: KeyPressed,
       key: "z",
       modifiers: Modifiers(command: True, shift: True, ..),
       captured: False,
       ..,
-    ) -> Redo
-    KeyPress(
+    )) -> Redo
+    Key(KeyEvent(
+      event_type: KeyPressed,
       key: "/",
       captured: False,
       modifiers: Modifiers(command: False, ctrl: False, ..),
       ..,
-    ) -> FocusSearch
-    KeyPress(key: "Escape", captured: False, ..) -> ShowList
+    )) -> FocusSearch
+    Key(KeyEvent(event_type: KeyPressed, key: "Escape", captured: False, ..)) ->
+      ShowList
 
     // -- Button clicks --
-    WidgetClick(id: "create", ..) -> CreateNote
-    WidgetClick(id: "back", ..) -> ShowList
-    WidgetClick(id: "undo", ..) -> Undo
-    WidgetClick(id: "redo", ..) -> Redo
+    Widget(Click(target: EventTarget(id: "create", ..))) -> CreateNote
+    Widget(Click(target: EventTarget(id: "back", ..))) -> ShowList
+    Widget(Click(target: EventTarget(id: "undo", ..))) -> Undo
+    Widget(Click(target: EventTarget(id: "redo", ..))) -> Redo
 
     // -- Text inputs --
-    WidgetInput(id: "search", value:, ..) -> SetSearch(value)
-    WidgetInput(id: "title", value:, ..) -> EditTitle(value)
-    WidgetInput(id: "body", value:, ..) -> EditBody(value)
+    Widget(Input(target: EventTarget(id: "search", ..), value:)) ->
+      SetSearch(value)
+    Widget(Input(target: EventTarget(id: "title", ..), value:)) ->
+      EditTitle(value)
+    Widget(Input(target: EventTarget(id: "body", ..), value:)) ->
+      EditBody(value)
 
     // -- Dynamic widget IDs (note rows and delete buttons) --
-    WidgetClick(id:, ..) -> parse_dynamic_click(id)
+    Widget(Click(target: EventTarget(id:, ..))) -> parse_dynamic_click(id)
 
     _ -> NoOp
   }

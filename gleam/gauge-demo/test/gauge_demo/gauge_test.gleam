@@ -154,7 +154,7 @@ pub fn gauge_minimal_still_has_all_props_test() {
 pub fn set_value_creates_extension_command_test() {
   let cmd = gauge.set_value("temp", 90.0)
   case cmd {
-    command.WidgetCommand(node_id:, op:, payload:) -> {
+    command.Renderer(command.NativeCommand(node_id:, op:, payload:)) -> {
       should.equal(node_id, "temp")
       should.equal(op, "set_value")
       should.equal(dict.get(payload, "value"), Ok(FloatVal(90.0)))
@@ -166,7 +166,7 @@ pub fn set_value_creates_extension_command_test() {
 pub fn animate_to_creates_extension_command_test() {
   let cmd = gauge.animate_to("temp", 75.0)
   case cmd {
-    command.WidgetCommand(node_id:, op:, payload:) -> {
+    command.Renderer(command.NativeCommand(node_id:, op:, payload:)) -> {
       should.equal(node_id, "temp")
       should.equal(op, "animate_to")
       should.equal(dict.get(payload, "value"), Ok(FloatVal(75.0)))
@@ -178,7 +178,7 @@ pub fn animate_to_creates_extension_command_test() {
 pub fn set_value_payload_has_single_entry_test() {
   let cmd = gauge.set_value("temp", 50.0)
   case cmd {
-    command.WidgetCommand(payload:, ..) ->
+    command.Renderer(command.NativeCommand(payload:, ..)) ->
       should.equal(dict.size(payload), 1)
     _ -> should.fail()
   }
@@ -187,7 +187,7 @@ pub fn set_value_payload_has_single_entry_test() {
 pub fn animate_to_payload_has_single_entry_test() {
   let cmd = gauge.animate_to("temp", 50.0)
   case cmd {
-    command.WidgetCommand(payload:, ..) ->
+    command.Renderer(command.NativeCommand(payload:, ..)) ->
       should.equal(dict.size(payload), 1)
     _ -> should.fail()
   }

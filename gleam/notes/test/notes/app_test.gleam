@@ -220,7 +220,7 @@ pub fn set_search_updates_search_test() {
 pub fn focus_search_returns_focus_command_test() {
   let #(m, _) = model.init()
   let #(_, cmd) = app.update(m, msg.FocusSearch)
-  should.equal(cmd, command.Focus("search"))
+  should.equal(cmd, command.focus("search"))
 }
 
 pub fn noop_returns_model_unchanged_test() {
@@ -236,7 +236,7 @@ pub fn noop_returns_model_unchanged_test() {
 pub fn subscribe_returns_key_press_subscription_test() {
   let #(m, _) = model.init()
   let subs = app.subscribe(m)
-  should.equal(subs, [subscription.on_key_press("shortcuts")])
+  should.equal(subs, [subscription.on_key_press()])
 }
 
 // ---------------------------------------------------------------------------

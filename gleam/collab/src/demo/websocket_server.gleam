@@ -27,7 +27,7 @@ import gleam/io
 import gleam/option.{Some}
 import gleam/result
 import mist.{type WebsocketConnection, type WebsocketMessage}
-import plushie/event.{WidgetToggle}
+import plushie/event.{EventTarget, Toggle, Widget}
 import plushie/node
 import plushie/protocol
 import plushie/protocol/decode as proto_decode
@@ -128,7 +128,7 @@ fn handle_ws_message(
         Ok(proto_decode.EventMessage(event)) -> {
           // Handle dark_mode toggle locally (per-client, not shared)
           case event {
-            WidgetToggle(id: "theme", value: checked, ..) -> {
+            Widget(Toggle(target: EventTarget(id: "theme", ..), value: checked)) -> {
               let new_state = WsState(..state, dark_mode: checked)
               // Re-render with new dark_mode
               let client_model =

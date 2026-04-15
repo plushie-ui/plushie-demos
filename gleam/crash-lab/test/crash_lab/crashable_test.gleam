@@ -71,7 +71,7 @@ pub fn crash_widget_is_leaf_test() {
 pub fn panic_command_creates_extension_command_test() {
   let cmd = crashable.panic_command("crasher")
   case cmd {
-    command.WidgetCommand(node_id:, op:, payload:) -> {
+    command.Renderer(command.NativeCommand(node_id:, op:, payload:)) -> {
       should.equal(node_id, "crasher")
       should.equal(op, "panic")
       should.equal(dict.size(payload), 0)

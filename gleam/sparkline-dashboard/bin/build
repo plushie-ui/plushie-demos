@@ -8,6 +8,12 @@
 # Usage:
 #   bin/build            # debug build
 #   bin/build --release  # optimised build
+#
+# Environment:
+#   PLUSHIE_SOURCE_PATH  Path to local plushie-rust checkout.
+#                        Uses path deps and [patch.crates-io] for
+#                        local development. Falls back to published
+#                        crates when unset.
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -26,24 +32,45 @@ mkdir -p "$BUILD_DIR/src"
 
 SPARKLINE_CRATE="$(pwd)/native/sparkline"
 
-# Generate Cargo.toml using published crates
-cat > "$BUILD_DIR/Cargo.toml" <<EOF
+if [ -n "${PLUSHIE_SOURCE_PATH:-}" ]; then
+  cat > "$BUILD_DIR/Cargo.toml" <<EOF
 [package]
 name = "sparkline-dashboard-plushie"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-plushie-ext = "0.5.0"
-plushie-renderer = "0.5.0"
+plushie-widget-sdk = { path = "${PLUSHIE_SOURCE_PATH}/crates/plushie-widget-sdk" }
+plushie-renderer = { path = "${PLUSHIE_SOURCE_PATH}/crates/plushie-renderer" }
 sparkline = { path = "$SPARKLINE_CRATE" }
 EOF
 
+  # Add [patch.crates-io] if the source workspace defines one
+  if grep -q '^\[patch.crates-io\]' "${PLUSHIE_SOURCE_PATH}/Cargo.toml" 2>/dev/null; then
+    echo "" >> "$BUILD_DIR/Cargo.toml"
+    echo "[patch.crates-io]" >> "$BUILD_DIR/Cargo.toml"
+    sed -n '/^\[patch.crates-io\]/,/^\[/{/^\[patch.crates-io\]/d;/^\[/d;p}' \
+      "${PLUSHIE_SOURCE_PATH}/Cargo.toml" >> "$BUILD_DIR/Cargo.toml"
+  fi
+else
+  cat > "$BUILD_DIR/Cargo.toml" <<EOF
+[package]
+name = "sparkline-dashboard-plushie"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plushie-widget-sdk = "0.6"
+plushie-renderer = "0.6"
+sparkline = { path = "$SPARKLINE_CRATE" }
+EOF
+fi
+
 # Generate main.rs
 cat > "$BUILD_DIR/src/main.rs" <<'EOF'
-fn main() -> plushie_ext::iced::Result {
-    let builder = plushie_ext::app::PlushieAppBuilder::new()
-        .extension(sparkline::SparklineExtension::new());
+fn main() -> plushie_widget_sdk::iced::Result {
+    let builder = plushie_widget_sdk::app::PlushieAppBuilder::new()
+        .widget(sparkline::SparklineExtension::new());
     plushie_renderer::run(builder)
 }
 EOF

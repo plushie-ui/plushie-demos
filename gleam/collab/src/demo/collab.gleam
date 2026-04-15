@@ -14,7 +14,7 @@ import gleam/int
 import gleam/option
 import plushie/app
 import plushie/command
-import plushie/event.{type Event, WidgetClick, WidgetInput, WidgetToggle}
+import plushie/event.{type Event, Click, EventTarget, Input, Toggle, Widget}
 import plushie/node.{type Node}
 import plushie/prop/length
 import plushie/prop/padding
@@ -53,23 +53,23 @@ pub fn init() -> #(Model, command.Command(Event)) {
 /// widget by its ID and extracts the relevant event data.
 pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
   case event {
-    WidgetClick(id: "inc", ..) -> #(
+    Widget(Click(target: EventTarget(id: "inc", ..))) -> #(
       Model(..model, count: model.count + 1),
       command.none(),
     )
-    WidgetClick(id: "dec", ..) -> #(
+    Widget(Click(target: EventTarget(id: "dec", ..))) -> #(
       Model(..model, count: model.count - 1),
       command.none(),
     )
-    WidgetInput(id: "name", value:, ..) -> #(
+    Widget(Input(target: EventTarget(id: "name", ..), value:)) -> #(
       Model(..model, name: value),
       command.none(),
     )
-    WidgetInput(id: "notes", value:, ..) -> #(
+    Widget(Input(target: EventTarget(id: "notes", ..), value:)) -> #(
       Model(..model, notes: value),
       command.none(),
     )
-    WidgetToggle(id: "theme", value: checked, ..) -> #(
+    Widget(Toggle(target: EventTarget(id: "theme", ..), value: checked)) -> #(
       Model(..model, dark_mode: checked),
       command.none(),
     )

@@ -115,7 +115,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Command(Msg)) {
 
     SetSearch(term) -> #(Model(..model, search: term), command.none())
 
-    FocusSearch -> #(model, command.Focus("search"))
+    FocusSearch -> #(model, command.focus("search"))
 
     NoOp -> #(model, command.none())
   }
@@ -123,7 +123,7 @@ pub fn update(model: Model, msg: Msg) -> #(Model, Command(Msg)) {
 
 /// Subscribe to key press events for keyboard shortcuts.
 pub fn subscribe(_model: Model) -> List(Subscription) {
-  [subscription.on_key_press("shortcuts")]
+  [subscription.on_key_press()]
 }
 
 /// Build the app with custom message types and key subscriptions.

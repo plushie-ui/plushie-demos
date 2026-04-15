@@ -8,7 +8,7 @@ import gleam/float
 import gleam/int
 import gleam/list
 import plushie/command
-import plushie/event.{type Event, TimerTick, WidgetClick}
+import plushie/event.{type Event, Click, EventTarget, Timer, TimerEvent, Widget}
 import plushie/node.{type Node}
 import plushie/platform
 import plushie/prop/alignment
@@ -54,7 +54,7 @@ pub fn init() -> #(Model, command.Command(Event)) {
 
 pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
   case event {
-    TimerTick(tag: "sample", ..) ->
+    Timer(TimerEvent(tag: "sample", ..)) ->
       case model.running {
         True -> {
           let tick = model.tick + 1
@@ -71,11 +71,11 @@ pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
         }
         False -> #(model, command.none())
       }
-    WidgetClick(id: "toggle_running", ..) -> #(
+    Widget(Click(target: EventTarget(id: "toggle_running", ..))) -> #(
       Model(..model, running: !model.running),
       command.none(),
     )
-    WidgetClick(id: "clear", ..) -> #(
+    Widget(Click(target: EventTarget(id: "clear", ..))) -> #(
       Model(..model, cpu_samples: [], mem_samples: [], net_samples: [], tick: 0),
       command.none(),
     )

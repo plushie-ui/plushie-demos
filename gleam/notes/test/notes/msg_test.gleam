@@ -4,7 +4,10 @@ import notes/msg.{
   CreateNote, DeleteNote, EditBody, EditTitle, FocusSearch, NoOp, OpenNote, Redo,
   SetSearch, ShowList, Undo,
 }
-import plushie/event
+import plushie/event.{
+  Click, EventTarget, Input, Key, KeyEvent, KeyPressed, Modifiers, Toggle,
+  Widget,
+}
 
 // ---------------------------------------------------------------------------
 // on_event - keyboard shortcuts
@@ -60,28 +63,36 @@ pub fn captured_ctrl_n_is_noop_test() {
 
 pub fn click_create_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "create", window_id: "main", scope: [])),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "create", window_id: "main", scope: [], full: "main#create"),
+    ))),
     CreateNote,
   )
 }
 
 pub fn click_back_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "back", window_id: "main", scope: [])),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "back", window_id: "main", scope: [], full: "main#back"),
+    ))),
     ShowList,
   )
 }
 
 pub fn click_undo_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "undo", window_id: "main", scope: [])),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "undo", window_id: "main", scope: [], full: "main#undo"),
+    ))),
     Undo,
   )
 }
 
 pub fn click_redo_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "redo", window_id: "main", scope: [])),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "redo", window_id: "main", scope: [], full: "main#redo"),
+    ))),
     Redo,
   )
 }
@@ -92,34 +103,28 @@ pub fn click_redo_test() {
 
 pub fn search_input_test() {
   let e =
-    event.WidgetInput(
-      id: "search",
-      window_id: "main",
-      scope: [],
+    Widget(Input(
+      target: EventTarget(id: "search", window_id: "main", scope: [], full: "main#search"),
       value: "hello",
-    )
+    ))
   should.equal(msg.on_event(e), SetSearch("hello"))
 }
 
 pub fn title_input_test() {
   let e =
-    event.WidgetInput(
-      id: "title",
-      window_id: "main",
-      scope: [],
+    Widget(Input(
+      target: EventTarget(id: "title", window_id: "main", scope: [], full: "main#title"),
       value: "My Note",
-    )
+    ))
   should.equal(msg.on_event(e), EditTitle("My Note"))
 }
 
 pub fn body_input_test() {
   let e =
-    event.WidgetInput(
-      id: "body",
-      window_id: "main",
-      scope: [],
+    Widget(Input(
+      target: EventTarget(id: "body", window_id: "main", scope: [], full: "main#body"),
       value: "some text",
-    )
+    ))
   should.equal(msg.on_event(e), EditBody("some text"))
 }
 
@@ -129,37 +134,37 @@ pub fn body_input_test() {
 
 pub fn click_note_row_opens_note_test() {
   should.equal(
-    msg.on_event(event.WidgetClick(id: "note-42", window_id: "main", scope: [])),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "note-42", window_id: "main", scope: [], full: "main#note-42"),
+    ))),
     OpenNote("42"),
   )
 }
 
 pub fn click_delete_button_deletes_note_test() {
   should.equal(
-    msg.on_event(
-      event.WidgetClick(id: "delete-42", window_id: "main", scope: []),
-    ),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "delete-42", window_id: "main", scope: [], full: "main#delete-42"),
+    ))),
     DeleteNote("42"),
   )
 }
 
 pub fn unknown_click_is_noop_test() {
   should.equal(
-    msg.on_event(
-      event.WidgetClick(id: "something-else", window_id: "main", scope: []),
-    ),
+    msg.on_event(Widget(Click(
+      target: EventTarget(id: "something-else", window_id: "main", scope: [], full: "main#something-else"),
+    ))),
     NoOp,
   )
 }
 
 pub fn unknown_event_is_noop_test() {
   should.equal(
-    msg.on_event(event.WidgetToggle(
-      id: "x",
-      window_id: "main",
-      scope: [],
+    msg.on_event(Widget(Toggle(
+      target: EventTarget(id: "x", window_id: "main", scope: [], full: "main#x"),
       value: True,
-    )),
+    ))),
     NoOp,
   )
 }
@@ -174,11 +179,12 @@ fn key_press(
   shift shift: Bool,
   captured captured: Bool,
 ) -> event.Event {
-  event.KeyPress(
+  Key(KeyEvent(
+    event_type: KeyPressed,
     window_id: "",
     key:,
     modified_key: key,
-    modifiers: event.Modifiers(
+    modifiers: Modifiers(
       shift:,
       ctrl: False,
       alt: False,
@@ -190,5 +196,5 @@ fn key_press(
     text: option.None,
     repeat: False,
     captured:,
-  )
+  ))
 }

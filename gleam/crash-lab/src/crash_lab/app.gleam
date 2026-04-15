@@ -21,7 +21,7 @@ import gleam/int
 import gleam/list
 import plushie/app
 import plushie/command.{type Command}
-import plushie/event.{type Event, WidgetClick}
+import plushie/event.{type Event, Click, EventTarget, Widget}
 import plushie/node.{type Node}
 import plushie/prop/alignment
 import plushie/prop/color
@@ -57,35 +57,35 @@ pub fn init() -> #(Model, Command(Event)) {
 /// failure modes. The runtime catches all of them.
 pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
   case event {
-    WidgetClick(id: "inc", ..) -> #(
+    Widget(Click(target: EventTarget(id: "inc", ..))) -> #(
       Model(..model, count: model.count + 1),
       command.none(),
     )
 
-    WidgetClick(id: "dec", ..) -> #(
+    Widget(Click(target: EventTarget(id: "dec", ..))) -> #(
       Model(..model, count: model.count - 1),
       command.none(),
     )
 
-    WidgetClick(id: "panic-extension", ..) -> #(
+    Widget(Click(target: EventTarget(id: "panic-extension", ..))) -> #(
       model,
       crashable.panic_command("crasher"),
     )
 
-    WidgetClick(id: "toggle-widget", ..) -> #(
+    Widget(Click(target: EventTarget(id: "toggle-widget", ..))) -> #(
       Model(..model, widget_alive: !model.widget_alive),
       command.none(),
     )
 
     // Deliberately panic in update. The runtime catches this via
     // try_call, preserves the model, and discards the event.
-    WidgetClick(id: "panic-update", ..) ->
+    Widget(Click(target: EventTarget(id: "panic-update", ..))) ->
       panic as "intentional panic in update"
 
     // Set the flag that causes view to panic on next render. The
     // update succeeds (flag is set), but the subsequent view call
     // will fail. The runtime preserves the previous tree.
-    WidgetClick(id: "break-view", ..) -> #(
+    Widget(Click(target: EventTarget(id: "break-view", ..))) -> #(
       Model(..model, view_broken: True),
       command.none(),
     )
@@ -93,7 +93,7 @@ pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
     // Clear the broken-view flag. This handler runs even while the
     // view is broken because the previous rendered tree (which
     // contains the Recover button) is still displayed.
-    WidgetClick(id: "recover-view", ..) -> #(
+    Widget(Click(target: EventTarget(id: "recover-view", ..))) -> #(
       Model(..model, view_broken: False),
       command.none(),
     )

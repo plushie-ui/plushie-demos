@@ -11,7 +11,7 @@ import gleam/int
 import gleam/list
 import gleam/string
 import plushie/command.{type Command}
-import plushie/event.{type Event, WidgetClick, WidgetSlide}
+import plushie/event.{type Event, Click, EventTarget, Slide, Widget}
 import plushie/node.{type Node}
 import plushie/prop/alignment
 import plushie/prop/color.{type Color}
@@ -55,12 +55,12 @@ pub fn init() -> #(Model, Command(Event)) {
 /// - Anything else: model unchanged, no command
 pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
   case event {
-    WidgetSlide(id: "target", value: target, ..) -> {
+    Widget(Slide(target: EventTarget(id: "target", ..), value: target)) -> {
       let new_model = Model(..model, target_temp: target)
       #(new_model, gauge.animate_to("temp", target))
     }
 
-    WidgetClick(id: "reset", ..) -> {
+    Widget(Click(target: EventTarget(id: "reset", ..))) -> {
       let new_model =
         Model(
           temperature: 20.0,
@@ -70,7 +70,7 @@ pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
       #(new_model, gauge.set_value("temp", 20.0))
     }
 
-    WidgetClick(id: "high", ..) -> {
+    Widget(Click(target: EventTarget(id: "high", ..))) -> {
       let new_model =
         Model(
           temperature: 90.0,
