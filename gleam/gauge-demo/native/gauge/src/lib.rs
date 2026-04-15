@@ -32,6 +32,27 @@ impl GaugeState {
 }
 
 // ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/// Parse a "#rrggbb" or "#rrggbbaa" hex string into an iced Color.
+fn hex_to_color(hex: &str) -> Option<Color> {
+    let hex = hex.strip_prefix('#').unwrap_or(hex);
+    if hex.len() != 6 && hex.len() != 8 {
+        return None;
+    }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
+    let a = if hex.len() == 8 {
+        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
+    } else {
+        1.0
+    };
+    Some(Color::from_rgba(r, g, b, a))
+}
+
+// ---------------------------------------------------------------------------
 // PlushieWidget trait
 // ---------------------------------------------------------------------------
 
@@ -49,8 +70,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
     }
 
     fn prepare(&mut self, node: &TreeNode, _window_id: &str, _theme: &Theme) {
-        let props = node.props.as_object();
-        let value = prop_f32(props, "value").unwrap_or(0.0);
+        let value = prop_f32(&node.props, "value").unwrap_or(0.0);
         let state = self.states
             .entry(node.id.clone())
             .or_insert_with(|| GaugeState::new(value));
@@ -60,19 +80,20 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
     fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
         use plushie_widget_sdk::iced;
 
-        let props = node.props.as_object();
-
-        let value = prop_f32(props, "value").unwrap_or(0.0);
-        let min = prop_f32(props, "min").unwrap_or(0.0);
-        let max = prop_f32(props, "max").unwrap_or(100.0);
-        let color = prop_color(props, "color").unwrap_or(Color::from_rgb(
-            0x33 as f32 / 255.0,
-            0x66 as f32 / 255.0,
-            0xcc as f32 / 255.0,
-        ));
-        let label = prop_str(props, "label").unwrap_or_default();
-        let width = prop_length(props, "width", Length::Fixed(200.0));
-        let height = prop_length(props, "height", Length::Fixed(200.0));
+        let value = prop_f32(&node.props, "value").unwrap_or(0.0);
+        let min = prop_f32(&node.props, "min").unwrap_or(0.0);
+        let max = prop_f32(&node.props, "max").unwrap_or(100.0);
+        let color = prop_str(&node.props, "color")
+            .as_deref()
+            .and_then(hex_to_color)
+            .unwrap_or(Color::from_rgb(
+                0x33 as f32 / 255.0,
+                0x66 as f32 / 255.0,
+                0xcc as f32 / 255.0,
+            ));
+        let label = prop_str(&node.props, "label").unwrap_or_default();
+        let width = prop_f32(&node.props, "width").map(Length::Fixed).unwrap_or(Length::Fixed(200.0));
+        let height = prop_f32(&node.props, "height").map(Length::Fixed).unwrap_or(Length::Fixed(200.0));
 
         let range = max - min;
         let pct = if range > 0.0 {

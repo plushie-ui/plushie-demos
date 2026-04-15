@@ -26,8 +26,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashExtension {
     }
 
     fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
-        let props = node.props.as_object();
-        let label = prop_str(props, "label").unwrap_or_default();
+        let label = prop_str(&node.props, "label").unwrap_or_default();
         let color = Color::from_rgb(0.298, 0.686, 0.314); // green
 
         container(text(label).size(16).color(color))

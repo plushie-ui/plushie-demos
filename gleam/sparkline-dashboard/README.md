@@ -14,22 +14,17 @@ timer subscriptions, and simulated live data.
 
 ```bash
 gleam deps download
-bin/build
+PLUSHIE_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
 ```
 
-This builds a custom plushie binary with the sparkline native widget
-compiled in and installs it to
-`build/plushie/bin/sparkline-dashboard-plushie`. The widget crate
-and renderer are fetched from crates.io automatically.
-
-```bash
-PLUSHIE_SOURCE_PATH=/path/to/plushie-rust bin/build
-```
+The build pipeline reads native widget configuration from `gleam.toml`,
+generates a Cargo workspace, and builds a custom renderer binary with
+the sparkline widget compiled in.
 
 ## Run
 
 ```bash
-PLUSHIE_BINARY_PATH=build/plushie/bin/sparkline-dashboard-plushie gleam run -m sparkline_dashboard
+gleam run -m sparkline_dashboard
 ```
 
 ## Test
@@ -109,7 +104,6 @@ native/sparkline/
   Cargo.toml                     # Rust crate manifest
   src/lib.rs                     # Canvas-based WidgetExtension
 bin/
-  build                          # Custom binary build script
   preflight                      # CI checks (format, build, test)
 ```
 

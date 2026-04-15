@@ -14,17 +14,17 @@ the optimistic update pattern, and the custom binary build workflow.
 
 ```bash
 gleam deps download
-bin/build
+PLUSHIE_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
 ```
 
-This builds a custom plushie binary with the gauge native widget compiled
-in and installs it to `build/plushie/bin/gauge-demo-plushie`. The
-widget crate and renderer are fetched from crates.io automatically.
+The build pipeline reads native widget configuration from `gleam.toml`,
+generates a Cargo workspace, and builds a custom renderer binary with
+the gauge widget compiled in.
 
 ## Run
 
 ```bash
-PLUSHIE_BINARY_PATH=build/plushie/bin/gauge-demo-plushie gleam run -m gauge_demo
+gleam run -m gauge_demo
 ```
 
 ## Test
@@ -101,7 +101,6 @@ native/gauge/
   Cargo.toml                  # Rust crate manifest
   src/lib.rs                  # WidgetExtension implementation
 bin/
-  build                       # Custom binary build script
   preflight                   # CI checks (format, build, test)
 ```
 

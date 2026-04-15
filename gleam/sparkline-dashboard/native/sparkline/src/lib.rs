@@ -13,6 +13,27 @@ impl SparklineExtension {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/// Parse a "#rrggbb" or "#rrggbbaa" hex string into an iced Color.
+fn hex_to_color(hex: &str) -> Option<Color> {
+    let hex = hex.strip_prefix('#').unwrap_or(hex);
+    if hex.len() != 6 && hex.len() != 8 {
+        return None;
+    }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
+    let a = if hex.len() == 8 {
+        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
+    } else {
+        1.0
+    };
+    Some(Color::from_rgba(r, g, b, a))
+}
+
 impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
     fn type_names(&self) -> &[&str] {
         &["sparkline"]
@@ -27,19 +48,15 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
     }
 
     fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
-        let props = node.props.as_object();
+        let data = prop_f64_array(&node.props, "data").unwrap_or_default();
 
-        let data: Vec<f64> = props
-            .and_then(|p| p.get("data"))
-            .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|v| v.as_f64()).collect())
-            .unwrap_or_default();
-
-        let stroke_width = prop_f32(props, "stroke_width").unwrap_or(2.0);
-        let fill = prop_bool_default(props, "fill", false);
-        let height = prop_f32(props, "height").unwrap_or(60.0);
-        let color =
-            prop_color(props, "color").unwrap_or(Color::from_rgb(0.298, 0.686, 0.314));
+        let stroke_width = prop_f32(&node.props, "stroke_width").unwrap_or(2.0);
+        let fill = prop_bool_default(&node.props, "fill", false);
+        let height = prop_f32(&node.props, "height").unwrap_or(60.0);
+        let color = prop_str(&node.props, "color")
+            .as_deref()
+            .and_then(hex_to_color)
+            .unwrap_or(Color::from_rgb(0.298, 0.686, 0.314));
 
         canvas(SparklineDraw { data, color, stroke_width, fill })
             .width(Length::Fill)
@@ -59,17 +76,17 @@ struct SparklineDraw {
     fill: bool,
 }
 
-impl<Message> iced::widget::canvas::Program<Message> for SparklineDraw {
+impl<R: PlushieRenderer> iced::widget::canvas::Program<Message, iced::Theme, R> for SparklineDraw {
     type State = ();
 
     fn draw(
         &self,
         _state: &Self::State,
-        renderer: &iced::Renderer,
-        _theme: &Theme,
+        renderer: &R,
+        _theme: &iced::Theme,
         bounds: iced::Rectangle,
         _cursor: iced::mouse::Cursor,
-    ) -> Vec<iced::widget::canvas::Geometry> {
+    ) -> Vec<iced::widget::canvas::Geometry<R>> {
         if self.data.len() < 2 {
             return vec![];
         }

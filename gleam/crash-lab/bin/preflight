@@ -5,6 +5,9 @@ cd "$(dirname "$0")/.."
 echo "--- format --check"
 gleam format --check
 
+echo "--- build renderer"
+gleam run -m plushie/build
+
 echo "--- build"
 gleam build
 

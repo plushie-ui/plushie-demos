@@ -14,15 +14,17 @@ view panics. The counter survives all three.
 
 ```bash
 gleam deps download
-bin/build
+PLUSHIE_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
 ```
 
-The build script fetches the renderer and native widget SDK from crates.io.
+The build pipeline reads native widget configuration from `gleam.toml`,
+generates a Cargo workspace, and builds a custom renderer binary with
+the crash widget compiled in.
 
 ## Run
 
 ```bash
-PLUSHIE_BINARY_PATH=build/plushie/bin/crash-lab-plushie gleam run -m crash_lab
+gleam run -m crash_lab
 ```
 
 ## Test
@@ -93,7 +95,6 @@ native/crash_widget/
   Cargo.toml                  # Rust crate manifest
   src/lib.rs                  # Native widget that panics on command
 bin/
-  build                       # Custom binary build script
   preflight                   # CI checks
 ```
 
