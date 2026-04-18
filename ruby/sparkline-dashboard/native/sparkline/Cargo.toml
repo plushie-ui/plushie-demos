@@ -3,6 +3,9 @@ name = "sparkline"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+impl = []
+
 [package.metadata.plushie.widget]
 type_name = "sparkline"
 constructor = "sparkline::SparklineExtension::new()"
