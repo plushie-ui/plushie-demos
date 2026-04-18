@@ -66,6 +66,7 @@ class DataExplorer(plushie.App[Model]):
         match event:
             case Click(id="open_file"):
                 return model, effects.file_open(
+                    "file_open",
                     title="Open Data File",
                     filters=[
                         ("CSV", "*.csv"),

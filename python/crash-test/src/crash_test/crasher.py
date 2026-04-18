@@ -9,13 +9,13 @@ from __future__ import annotations
 from plushie.commands import Command
 from plushie.native_widget import (
     CommandDef,
-    NativeWidgetDef,
+    NativeWidget,
     PropDef,
     build_command,
     build_node,
 )
 
-crasher_def = NativeWidgetDef(
+crasher_def = NativeWidget(
     kind="crasher",
     rust_crate="native/crasher",
     rust_constructor="crasher::CrasherExtension::new()",

@@ -8,9 +8,9 @@ This is a render-only native widget - no commands or events.
 
 from __future__ import annotations
 
-from plushie.native_widget import NativeWidgetDef, PropDef, build_node
+from plushie.native_widget import NativeWidget, PropDef, build_node
 
-sparkline_def = NativeWidgetDef(
+sparkline_def = NativeWidget(
     kind="sparkline",
     rust_crate="native/sparkline",
     rust_constructor="sparkline::SparklineExtension::new()",

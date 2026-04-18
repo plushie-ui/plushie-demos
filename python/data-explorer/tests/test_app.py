@@ -80,7 +80,7 @@ class TestUpdateEffectResult:
         app = _app()
         model = app.init()
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": "/tmp/test.csv"}
+            tag="file_open", status="ok", result={"path": "/tmp/test.csv"}
         )
         new_model, cmd = _unwrap(app.update(model, event))
         assert new_model.loading is True
@@ -92,7 +92,7 @@ class TestUpdateEffectResult:
     def test_cancelled_returns_model_unchanged(self) -> None:
         app = _app()
         model = app.init()
-        event = EffectResult(request_id="ef_1", status="cancelled")
+        event = EffectResult(tag="file_open", status="cancelled")
         result = app.update(model, event)
         assert result is model
 

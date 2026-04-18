@@ -121,28 +121,28 @@ class TestGaugeCommands:
     def test_set_gauge_value(self) -> None:
         cmd = set_gauge_value("temp", 42.0)
         assert isinstance(cmd, Command)
-        assert cmd.type == "extension_command"
-        assert cmd.payload["node_id"] == "temp"
-        assert cmd.payload["op"] == "set_value"
-        assert cmd.payload["payload"] == {"value": 42.0}
+        assert cmd.type == "command"
+        assert cmd.payload["id"] == "temp"
+        assert cmd.payload["family"] == "set_value"
+        assert cmd.payload["value"] == {"value": 42.0}
 
     def test_animate_gauge_to(self) -> None:
         cmd = animate_gauge_to("temp", 75.5)
         assert isinstance(cmd, Command)
-        assert cmd.type == "extension_command"
-        assert cmd.payload["node_id"] == "temp"
-        assert cmd.payload["op"] == "animate_to"
-        assert cmd.payload["payload"] == {"value": 75.5}
+        assert cmd.type == "command"
+        assert cmd.payload["id"] == "temp"
+        assert cmd.payload["family"] == "animate_to"
+        assert cmd.payload["value"] == {"value": 75.5}
 
     def test_command_payload_structure(self) -> None:
-        """Extension commands have the standard three-key payload shape."""
+        """Widget commands have the standard three-key payload shape."""
         cmd = set_gauge_value("g1", 0.0)
         payload = cmd.payload
-        assert set(payload.keys()) == {"node_id", "op", "payload"}
+        assert set(payload.keys()) == {"id", "family", "value"}
 
     def test_different_node_ids(self) -> None:
-        """Commands target the correct node_id, not a hardcoded value."""
+        """Commands target the correct widget id, not a hardcoded value."""
         cmd_a = set_gauge_value("gauge-a", 10.0)
         cmd_b = set_gauge_value("gauge-b", 20.0)
-        assert cmd_a.payload["node_id"] == "gauge-a"
-        assert cmd_b.payload["node_id"] == "gauge-b"
+        assert cmd_a.payload["id"] == "gauge-a"
+        assert cmd_b.payload["id"] == "gauge-b"

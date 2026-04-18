@@ -42,13 +42,13 @@ class TestCrasherBuilder:
 
 
 class TestTriggerPanic:
-    """Command builder produces extension commands."""
+    """Command builder produces widget commands."""
 
     def test_command_type(self) -> None:
         cmd = trigger_panic("my-widget")
-        assert cmd.type == "extension_command"
+        assert cmd.type == "command"
 
     def test_command_payload(self) -> None:
         cmd = trigger_panic("my-widget")
-        assert cmd.payload["node_id"] == "my-widget"
-        assert cmd.payload["op"] == "panic"
+        assert cmd.payload["id"] == "my-widget"
+        assert cmd.payload["family"] == "panic"

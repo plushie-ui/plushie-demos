@@ -22,3 +22,6 @@ build/
 
 # SSH keys
 ssh_host_*
+
+# uv lockfile (not tracked in this monorepo)
+uv.lock

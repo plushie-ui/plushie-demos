@@ -2,10 +2,13 @@
 name = "sparkline-dashboard"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["plushie==0.5.0"]
+dependencies = ["plushie"]
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pyright"]
+
+[tool.uv.sources]
+plushie = { path = "../../../plushie-python", editable = true }
 
 [tool.plushie]
 

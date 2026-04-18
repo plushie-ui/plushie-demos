@@ -1,4 +1,4 @@
-use plushie_widget_sdk::iced;
+use plushie_widget_sdk::iced::{self, Element, Theme};
 use plushie_widget_sdk::prelude::*;
 
 pub struct SparklineExtension;
@@ -9,7 +9,13 @@ impl SparklineExtension {
     }
 }
 
-impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
+impl Default for SparklineExtension {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl PlushieWidget<iced::Renderer> for SparklineExtension {
     fn type_names(&self) -> &[&str] {
         &["sparkline"]
     }
@@ -18,19 +24,19 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
         "sparkline"
     }
 
-    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
+    fn fresh_for_session(&self) -> Box<dyn PlushieWidget<iced::Renderer>> {
         Box::new(SparklineExtension::new())
     }
 
     fn render<'a>(
         &'a self,
         node: &'a TreeNode,
-        _ctx: &RenderCtx<'a, R>,
-    ) -> Element<'a, Message, Theme, R> {
-        let props = node.props();
+        _ctx: &RenderCtx<'a, iced::Renderer>,
+    ) -> Element<'a, Message, Theme, iced::Renderer> {
+        let props = &node.props;
 
         let data: Vec<f64> = props
-            .and_then(|p| p.get("data"))
+            .get("data")
             .and_then(|v| v.as_array())
             .map(|arr| arr.iter().filter_map(|v| v.as_f64()).collect())
             .unwrap_or_default();
@@ -39,9 +45,9 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
         let fill = prop_bool(props, "fill").unwrap_or(false);
         let height = prop_f32(props, "height").unwrap_or(60.0);
 
-        let color = prop_color(props, "color").unwrap_or(Color::from_rgb(
-            0.298, 0.686, 0.314,
-        ));
+        let color = prop_str(props, "color")
+            .and_then(|s| parse_hex_color(&s))
+            .unwrap_or(iced::Color::from_rgb(0.298, 0.686, 0.314));
 
         canvas::Canvas::new(SparklineDraw {
             data,
@@ -49,15 +55,15 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
             stroke_width,
             fill,
         })
-        .width(Length::Fill)
-        .height(Length::Fixed(height))
+        .width(iced::Length::Fill)
+        .height(iced::Length::Fixed(height))
         .into()
     }
 }
 
 struct SparklineDraw {
     data: Vec<f64>,
-    color: Color,
+    color: iced::Color,
     stroke_width: f32,
     fill: bool,
 }
@@ -132,4 +138,21 @@ impl<Message> canvas::Program<Message> for SparklineDraw {
 
         vec![frame.into_geometry()]
     }
+}
+
+/// Parse a hex color string (#RRGGBB or #RRGGBBAA) to an iced Color.
+fn parse_hex_color(hex: &str) -> Option<iced::Color> {
+    let hex = hex.strip_prefix('#')?;
+    if hex.len() < 6 {
+        return None;
+    }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
+    let a = if hex.len() >= 8 {
+        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
+    } else {
+        1.0
+    };
+    Some(iced::Color::from_rgba(r, g, b, a))
 }

@@ -25,7 +25,7 @@ from gauge_demo.app import (
     temperature_status,
 )
 from plushie.commands import Command
-from plushie.events import Click, Slide, WidgetEvent
+from plushie.events import Click, RawEvent, Slide
 from plushie.tree import find, normalize, text_of
 
 
@@ -118,9 +118,9 @@ class TestUpdate:
         new_model, cmd = _unwrap(app.update(model, Click(id="reset")))
         assert new_model.target_temp == 20.0
         assert cmd is not None
-        assert cmd.type == "extension_command"
-        assert cmd.payload["op"] == "set_value"
-        assert cmd.payload["payload"]["value"] == 20.0
+        assert cmd.type == "command"
+        assert cmd.payload["family"] == "set_value"
+        assert cmd.payload["value"]["value"] == 20.0
 
     def test_high_button(self) -> None:
         app = _app()
@@ -128,9 +128,9 @@ class TestUpdate:
         new_model, cmd = _unwrap(app.update(model, Click(id="high")))
         assert new_model.target_temp == 90.0
         assert cmd is not None
-        assert cmd.type == "extension_command"
-        assert cmd.payload["op"] == "set_value"
-        assert cmd.payload["payload"]["value"] == 90.0
+        assert cmd.type == "command"
+        assert cmd.payload["family"] == "set_value"
+        assert cmd.payload["value"]["value"] == 90.0
 
     def test_slider_updates_target(self) -> None:
         app = _app()
@@ -138,8 +138,8 @@ class TestUpdate:
         new_model, cmd = _unwrap(app.update(model, Slide(id="target", value=65.0)))
         assert new_model.target_temp == 65.0
         assert cmd is not None
-        assert cmd.payload["op"] == "animate_to"
-        assert cmd.payload["payload"]["value"] == 65.0
+        assert cmd.payload["family"] == "animate_to"
+        assert cmd.payload["value"]["value"] == 65.0
 
     def test_slider_does_not_change_current_temperature(self) -> None:
         """animate_to updates the Rust-side target only, not the Python model's temperature.
@@ -158,7 +158,7 @@ class TestUpdate:
     def test_value_changed_event(self) -> None:
         app = _app()
         model = Model()
-        event = WidgetEvent(
+        event = RawEvent(
             kind="value_changed",
             id="temp",
             value=None,
@@ -172,7 +172,7 @@ class TestUpdate:
         app = _app()
         model = Model()
         for temp in [30.0, 50.0, 70.0]:
-            event = WidgetEvent(
+            event = RawEvent(
                 kind="value_changed",
                 id="temp",
                 value=None,
@@ -305,7 +305,7 @@ class TestGaugeWireProps:
         # to Rust in parallel.
         app = _app()
         model = app.init()
-        event = WidgetEvent(
+        event = RawEvent(
             kind="value_changed", id="temp", value=None, data={"value": 90.0}
         )
         model, _ = _unwrap(app.update(model, event))
@@ -318,7 +318,7 @@ class TestGaugeWireProps:
     def test_gauge_props_after_reset(self) -> None:
         app = _app()
         model = replace(Model(), temperature=90.0, history=(20.0, 90.0))
-        event = WidgetEvent(
+        event = RawEvent(
             kind="value_changed", id="temp", value=None, data={"value": 20.0}
         )
         model, _ = _unwrap(app.update(model, event))
@@ -357,11 +357,11 @@ class TestStatefulJourney:
         # -- Click high --
         model, cmd = _unwrap(app.update(model, Click(id="high")))
         assert cmd is not None
-        assert cmd.type == "extension_command"
+        assert cmd.type == "command"
         assert model.target_temp == 90.0
 
         # Simulate the Rust extension responding with value_changed
-        event = WidgetEvent(
+        event = RawEvent(
             kind="value_changed", id="temp", value=None, data={"value": 90.0}
         )
         model, _ = _unwrap(app.update(model, event))
@@ -377,7 +377,7 @@ class TestStatefulJourney:
         assert cmd is not None
         assert model.target_temp == 20.0
 
-        event = WidgetEvent(
+        event = RawEvent(
             kind="value_changed", id="temp", value=None, data={"value": 20.0}
         )
         model, _ = _unwrap(app.update(model, event))
@@ -392,18 +392,18 @@ class TestStatefulJourney:
         assert model.target_temp == 75.0
         assert model.temperature == 20.0  # slider doesn't change current temp
         assert cmd is not None
-        assert cmd.payload["op"] == "animate_to"
+        assert cmd.payload["family"] == "animate_to"
 
         # -- Rapid high/reset clicks --
         for _ in range(3):
             model, _ = _unwrap(app.update(model, Click(id="high")))
-            event = WidgetEvent(
+            event = RawEvent(
                 kind="value_changed", id="temp", value=None, data={"value": 90.0}
             )
             model, _ = _unwrap(app.update(model, event))
 
             model, _ = _unwrap(app.update(model, Click(id="reset")))
-            event = WidgetEvent(
+            event = RawEvent(
                 kind="value_changed", id="temp", value=None, data={"value": 20.0}
             )
             model, _ = _unwrap(app.update(model, event))
@@ -430,14 +430,14 @@ class TestRapidClicks:
         for _ in range(5):
             # High
             model, _ = _unwrap(app.update(model, Click(id="high")))
-            event = WidgetEvent(
+            event = RawEvent(
                 kind="value_changed", id="temp", value=None, data={"value": 90.0}
             )
             model, _ = _unwrap(app.update(model, event))
 
             # Reset
             model, _ = _unwrap(app.update(model, Click(id="reset")))
-            event = WidgetEvent(
+            event = RawEvent(
                 kind="value_changed", id="temp", value=None, data={"value": 20.0}
             )
             model, _ = _unwrap(app.update(model, event))
@@ -471,13 +471,13 @@ class TestRapidClicks:
 
         # All commands should be extension_commands with alternating ops
         for i, cmd in enumerate(commands):
-            assert cmd.type == "extension_command"
+            assert cmd.type == "command"
             if i % 2 == 0:
-                assert cmd.payload["op"] == "set_value"
-                assert cmd.payload["payload"]["value"] == 90.0
+                assert cmd.payload["family"] == "set_value"
+                assert cmd.payload["value"]["value"] == 90.0
             else:
-                assert cmd.payload["op"] == "set_value"
-                assert cmd.payload["payload"]["value"] == 20.0
+                assert cmd.payload["family"] == "set_value"
+                assert cmd.payload["value"]["value"] == 20.0
 
 
 # ---------------------------------------------------------------------------

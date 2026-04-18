@@ -10,14 +10,14 @@ from __future__ import annotations
 from plushie.commands import Command
 from plushie.native_widget import (
     CommandDef,
-    NativeWidgetDef,
+    NativeWidget,
     ParamDef,
     PropDef,
     build_command,
     build_node,
 )
 
-gauge_def = NativeWidgetDef(
+gauge_def = NativeWidget(
     kind="gauge",
     rust_crate="native/gauge",
     rust_constructor="gauge::GaugeExtension::new()",

@@ -1,4 +1,4 @@
-use plushie_widget_sdk::iced::widget::Column;
+use plushie_widget_sdk::iced::{self, Element, Theme};
 use plushie_widget_sdk::prelude::*;
 use serde_json::json;
 use std::collections::HashMap;
@@ -12,6 +12,12 @@ impl GaugeExtension {
         Self {
             states: HashMap::new(),
         }
+    }
+}
+
+impl Default for GaugeExtension {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -41,7 +47,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         "gauge"
     }
 
-    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
+    fn fresh_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(GaugeExtension::new())
     }
 
@@ -55,12 +61,12 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         _window_id: &str,
         _theme: &Theme,
     ) {
-        let props = node.props();
+        let props = &node.props;
         let value = prop_f32(props, "value").unwrap_or(0.0);
-        let state = self.states
+        let state = self
+            .states
             .entry(node.id.clone())
             .or_insert_with(|| GaugeState::new(value));
-        // Sync from Python props
         state.current_value = value;
     }
 
@@ -69,29 +75,36 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         node: &'a TreeNode,
         _ctx: &RenderCtx<'a, R>,
     ) -> Element<'a, Message, Theme, R> {
-        let props = node.props();
+        let props = &node.props;
         let value = prop_f32(props, "value").unwrap_or(0.0);
         let min = prop_f32(props, "min").unwrap_or(0.0);
         let max = prop_f32(props, "max").unwrap_or(100.0);
-        let color = prop_color(props, "color")
-            .unwrap_or(Color::from_rgb(0.2, 0.5, 0.8));
         let label = prop_str(props, "label").unwrap_or_default();
-        let w = prop_length(props, "width", Length::Fixed(200.0));
-        let h = prop_length(props, "height", Length::Fixed(200.0));
 
-        // Build gauge display using iced widgets
+        let color = prop_str(props, "color")
+            .and_then(|s| parse_hex_color(&s))
+            .unwrap_or(iced::Color::from_rgb(0.2, 0.5, 0.8));
+
+        let w = prop_f32(props, "width")
+            .map(iced::Length::Fixed)
+            .unwrap_or(iced::Length::Fixed(200.0));
+        let h = prop_f32(props, "height")
+            .map(iced::Length::Fixed)
+            .unwrap_or(iced::Length::Fixed(200.0));
+
         let pct = ((value - min) / (max - min)).clamp(0.0, 1.0);
         let display = format!("{:.0}%", pct * 100.0);
 
         container(
-            Column::new()
-                .push(text(label).size(16))
-                .push(text(display).size(32).color(color))
-                .align_x(alignment::Horizontal::Center),
+            iced::widget::column![
+                text(label).size(16),
+                text(display).size(32).color(color),
+            ]
+            .align_x(iced::alignment::Horizontal::Center),
         )
         .width(w)
         .height(h)
-        .center(Length::Fill)
+        .center(iced::Length::Fill)
         .into()
     }
 
@@ -104,30 +117,22 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         match op {
             "set_value" => {
                 if let Some(state) = self.states.get_mut(node_id) {
-                    if let Some(v) =
-                        payload.get("value").and_then(|v| v.as_f64())
-                    {
+                    if let Some(v) = payload.get("value").and_then(|v| v.as_f64()) {
                         state.current_value = v as f32;
                         state.generation.bump();
 
-                        // Notify Python of the change
-                        return Some(vec![
-                            OutgoingEvent::widget_event(
-                                "value_changed".to_string(),
-                                node_id.to_string(),
-                                Some(json!({"value": v})),
-                            )
-                            .with_window_id("main"),
-                        ]);
+                        return Some(vec![OutgoingEvent::widget_event(
+                            "value_changed",
+                            node_id,
+                            Some(json!({"value": v})),
+                        )]);
                     }
                 }
                 Some(vec![])
             }
             "animate_to" => {
                 if let Some(state) = self.states.get_mut(node_id) {
-                    if let Some(v) =
-                        payload.get("value").and_then(|v| v.as_f64())
-                    {
+                    if let Some(v) = payload.get("value").and_then(|v| v.as_f64()) {
                         state.target_value = v as f32;
                         state.generation.bump();
                     }
@@ -137,8 +142,21 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
             _ => None,
         }
     }
+}
 
-    fn cleanup(&mut self, node_id: &str) {
-        self.states.remove(node_id);
+/// Parse a hex color string (#RRGGBB or #RRGGBBAA) to an iced Color.
+fn parse_hex_color(hex: &str) -> Option<iced::Color> {
+    let hex = hex.strip_prefix('#')?;
+    if hex.len() < 6 {
+        return None;
     }
+    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
+    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
+    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
+    let a = if hex.len() >= 8 {
+        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
+    } else {
+        1.0
+    };
+    Some(iced::Color::from_rgba(r, g, b, a))
 }

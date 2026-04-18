@@ -19,7 +19,7 @@ from typing import Any
 import plushie
 from plushie import ui
 from plushie.commands import Command
-from plushie.events import Click, Slide, WidgetEvent
+from plushie.events import Click, RawEvent, Slide
 
 from gauge_demo.gauge import animate_gauge_to, gauge, set_gauge_value
 
@@ -63,7 +63,7 @@ class TemperatureMonitor(plushie.App[Model]):
 
     def update(self, model: Model, event: object) -> Model | tuple[Model, Command]:
         match event:
-            case WidgetEvent(kind="value_changed", id="temp", data=data):
+            case RawEvent(kind="value_changed", id="temp", data=data):
                 new_temp = float(data["value"])
                 return replace(
                     model,

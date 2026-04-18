@@ -35,7 +35,7 @@ class TestOpenFileFlow:
 
         # Simulate EffectResult with the sample CSV path
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         assert model.loading is True
@@ -64,7 +64,7 @@ class TestOpenFileFlow:
         model = app.init()
 
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
@@ -86,7 +86,7 @@ class TestSearchAfterLoad:
         app = DataExplorer()
         model = app.init()
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
@@ -111,7 +111,7 @@ class TestPaginationAfterLoad:
         app = DataExplorer()
         model = app.init()
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
@@ -142,7 +142,7 @@ class TestSearchEdgeCases:
         app = DataExplorer()
         model = app.init()
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
@@ -167,7 +167,7 @@ class TestSortAfterLoad:
         app = DataExplorer()
         model = app.init()
         event = EffectResult(
-            request_id="ef_1", status="ok", result={"path": SAMPLE_CSV}
+            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
         )
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]

@@ -127,8 +127,8 @@ class TestRustCrashButtons:
         assert isinstance(result, tuple)
         m, cmd = result
         assert isinstance(m, Model)
-        assert cmd.type == "extension_command"
-        assert cmd.payload["op"] == "panic"
+        assert cmd.type == "command"
+        assert cmd.payload["family"] == "panic"
 
 
 class TestViewStructure:

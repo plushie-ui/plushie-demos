@@ -19,3 +19,6 @@ build/
 .pytest_cache/
 .coverage
 .ruff_cache/
+
+# uv lockfile (not tracked in this monorepo)
+uv.lock
