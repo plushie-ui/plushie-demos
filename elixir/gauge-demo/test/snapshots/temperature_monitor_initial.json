@@ -4,8 +4,12 @@
       "children": [
         {
           "children": [],
-          "id": "title",
+          "id": "main#title",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "content": "Temperature Monitor",
             "size": 24
           },
@@ -13,7 +17,7 @@
         },
         {
           "children": [],
-          "id": "temp",
+          "id": "main#temp",
           "props": {
             "color": "#3498db",
             "event_rate": 30,
@@ -28,8 +32,12 @@
         },
         {
           "children": [],
-          "id": "status",
+          "id": "main#status",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "color": "#3498db",
             "content": "Status: Cool"
           },
@@ -37,16 +45,23 @@
         },
         {
           "children": [],
-          "id": "reading",
+          "id": "main#reading",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "content": "Current: 20°C | Target: 20°C"
           },
           "type": "text"
         },
         {
           "children": [],
-          "id": "target",
+          "id": "main#target",
           "props": {
+            "a11y": {
+              "role": "slider"
+            },
             "range": [
               0,
               100
@@ -59,16 +74,24 @@
           "children": [
             {
               "children": [],
-              "id": "reset",
+              "id": "main#reset",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Reset (20°C)"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "high",
+              "id": "main#high",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "High (90°C)"
               },
               "type": "button"
@@ -76,14 +99,21 @@
           ],
           "id": "auto:GaugeDemo.TemperatureMonitor:105",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 8
           },
           "type": "row"
         },
         {
           "children": [],
-          "id": "history",
+          "id": "main#history",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "color": "#999999",
             "content": "History: 20°",
             "size": 12
@@ -93,6 +123,9 @@
       ],
       "id": "auto:GaugeDemo.TemperatureMonitor:81",
       "props": {
+        "a11y": {
+          "role": "generic_container"
+        },
         "align_x": "center",
         "padding": 24,
         "spacing": 16
@@ -102,6 +135,9 @@
   ],
   "id": "main",
   "props": {
+    "a11y": {
+      "role": "window"
+    },
     "title": "Temperature Gauge"
   },
   "type": "window"

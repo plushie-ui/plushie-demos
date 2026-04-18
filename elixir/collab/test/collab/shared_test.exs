@@ -10,14 +10,14 @@ defmodule Collab.SharedTest do
   defp input(id, value), do: %WidgetEvent{type: :input, id: id, value: value}
 
   defp receive_model do
-    assert_receive {:model_changed, model}, 500
+    assert_receive {:renderer_event, %Collab.Broadcast{model: model}}, 500
     model
   end
 
-  # Drain any pending model_changed messages from the mailbox.
+  # Drain any pending broadcast messages from the mailbox.
   defp flush_models do
     receive do
-      {:model_changed, _} -> flush_models()
+      {:renderer_event, %Collab.Broadcast{}} -> flush_models()
     after
       50 -> :ok
     end
@@ -28,7 +28,7 @@ defmodule Collab.SharedTest do
   describe "connect/2" do
     test "registers client and receives initial model" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
 
       model = receive_model()
       assert model.name == ""
@@ -37,7 +37,7 @@ defmodule Collab.SharedTest do
 
     test "status reflects connection count" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
 
       model = receive_model()
       assert model.status == "1 connected"
@@ -47,11 +47,11 @@ defmodule Collab.SharedTest do
       {:ok, shared} = Shared.start_link()
 
       # Connect first client (this process receives for both IDs)
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
       assert receive_model().status == "1 connected"
 
       # Connect second client (same process, different ID)
-      :ok = Shared.connect(shared, "c2")
+      :ok = Shared.connect(shared, "c2", self())
 
       # Both clients receive "2 connected": since both map to
       # self(), we get the message twice
@@ -63,8 +63,8 @@ defmodule Collab.SharedTest do
   describe "disconnect/2" do
     test "removes client and updates status" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
-      :ok = Shared.connect(shared, "c2")
+      :ok = Shared.connect(shared, "c1", self())
+      :ok = Shared.connect(shared, "c2", self())
       flush_models()
 
       Shared.disconnect(shared, "c2")
@@ -80,7 +80,7 @@ defmodule Collab.SharedTest do
   describe "event/3" do
     test "updates model and broadcasts to client" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
       flush_models()
 
       Shared.event(shared, "c1", click("inc"))
@@ -91,7 +91,7 @@ defmodule Collab.SharedTest do
 
     test "multiple events accumulate" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
       flush_models()
 
       Shared.event(shared, "c1", click("inc"))
@@ -103,14 +103,14 @@ defmodule Collab.SharedTest do
 
       model =
         receive do
-          {:model_changed, m} -> m
+          {:renderer_event, %Collab.Broadcast{model: m}} -> m
         after
           100 -> model
         end
 
       model =
         receive do
-          {:model_changed, m} -> m
+          {:renderer_event, %Collab.Broadcast{model: m}} -> m
         after
           100 -> model
         end
@@ -120,8 +120,8 @@ defmodule Collab.SharedTest do
 
     test "text input updates broadcast to all clients" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
-      :ok = Shared.connect(shared, "c2")
+      :ok = Shared.connect(shared, "c1", self())
+      :ok = Shared.connect(shared, "c2", self())
       flush_models()
 
       Shared.event(shared, "c1", input("name", "Alice"))
@@ -139,7 +139,7 @@ defmodule Collab.SharedTest do
   describe "status preservation" do
     test "status is preserved across app events" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
+      :ok = Shared.connect(shared, "c1", self())
       flush_models()
 
       # The app's update/2 doesn't touch status. The shared server
@@ -153,8 +153,8 @@ defmodule Collab.SharedTest do
 
     test "status updates after disconnect even with active events" do
       {:ok, shared} = Shared.start_link()
-      :ok = Shared.connect(shared, "c1")
-      :ok = Shared.connect(shared, "c2")
+      :ok = Shared.connect(shared, "c1", self())
+      :ok = Shared.connect(shared, "c2", self())
       flush_models()
 
       Shared.event(shared, "c1", click("inc"))
@@ -175,13 +175,13 @@ defmodule Collab.SharedTest do
       {:ok, shared} = Shared.start_link()
 
       # This process is the "survivor" client
-      :ok = Shared.connect(shared, "survivor")
+      :ok = Shared.connect(shared, "survivor", self())
       assert receive_model().status == "1 connected"
 
       # Spawn a doomed client in a separate process
       doomed =
         spawn(fn ->
-          :ok = Shared.connect(shared, "doomed")
+          :ok = Shared.connect(shared, "doomed", self())
 
           receive do
             :stop -> :ok

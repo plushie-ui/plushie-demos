@@ -71,7 +71,7 @@ defmodule PlushiePad do
   end
 
   def subscribe(model) do
-    subs = [Plushie.Subscription.on_key_press(:keys)]
+    subs = [Plushie.Subscription.on_key_press()]
 
     if model.auto_save and model.dirty do
       [Plushie.Subscription.every(1000, :auto_save) | subs]
@@ -85,7 +85,7 @@ defmodule PlushiePad do
     old_source = model.source
 
     undo =
-      Undo.apply(model.undo, %{
+      Undo.push(model.undo, %{
         apply: fn _old -> source end,
         undo: fn _new -> old_source end,
         coalesce: :typing,
@@ -461,7 +461,7 @@ defmodule PlushiePad do
   defp save_button do
     canvas "save-canvas", width: 100, height: 36 do
       layer "button" do
-        group "save",
+        interactive "save",
           on_click: true,
           cursor: :pointer,
           focusable: true,

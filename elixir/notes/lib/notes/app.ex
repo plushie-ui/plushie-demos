@@ -110,7 +110,7 @@ defmodule Notes.App do
 
   @impl true
   def subscribe(_model) do
-    [Plushie.Subscription.on_key_press(:keys)]
+    [Plushie.Subscription.on_key_press()]
   end
 
   @impl true

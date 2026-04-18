@@ -8,8 +8,12 @@
               "children": [
                 {
                   "children": [],
-                  "id": "theme-root/bg/header",
+                  "id": "main#theme-root/bg/header",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "content": "Plushie Demo",
                     "size": 24
                   },
@@ -17,16 +21,25 @@
                 },
                 {
                   "children": [],
-                  "id": "theme-root/bg/status",
+                  "id": "main#theme-root/bg/status",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "content": ""
                   },
                   "type": "text"
                 },
                 {
                   "children": [],
-                  "id": "theme-root/bg/name",
+                  "id": "main#theme-root/bg/name",
                   "props": {
+                    "a11y": {
+                      "description": "Your name",
+                      "label_from": "placeholder",
+                      "role": "text_input"
+                    },
                     "placeholder": "Your name",
                     "value": ""
                   },
@@ -36,39 +49,58 @@
                   "children": [
                     {
                       "children": [],
-                      "id": "theme-root/bg/counter-row/dec",
+                      "id": "main#theme-root/bg/counter-row/dec",
                       "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "button"
+                        },
                         "label": "-"
                       },
                       "type": "button"
                     },
                     {
                       "children": [],
-                      "id": "theme-root/bg/counter-row/count",
+                      "id": "main#theme-root/bg/counter-row/count",
                       "props": {
+                        "a11y": {
+                          "label_from": "content",
+                          "role": "label"
+                        },
                         "content": "Count: 0"
                       },
                       "type": "text"
                     },
                     {
                       "children": [],
-                      "id": "theme-root/bg/counter-row/inc",
+                      "id": "main#theme-root/bg/counter-row/inc",
                       "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "button"
+                        },
                         "label": "+"
                       },
                       "type": "button"
                     }
                   ],
-                  "id": "theme-root/bg/counter-row",
+                  "id": "main#theme-root/bg/counter-row",
                   "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
                     "spacing": 8
                   },
                   "type": "row"
                 },
                 {
                   "children": [],
-                  "id": "theme-root/bg/theme",
+                  "id": "main#theme-root/bg/theme",
                   "props": {
+                    "a11y": {
+                      "label_from": "label",
+                      "role": "check_box"
+                    },
                     "checked": false,
                     "label": "Dark mode"
                   },
@@ -76,8 +108,13 @@
                 },
                 {
                   "children": [],
-                  "id": "theme-root/bg/notes",
+                  "id": "main#theme-root/bg/notes",
                   "props": {
+                    "a11y": {
+                      "description": "Shared notes...",
+                      "label_from": "placeholder",
+                      "role": "text_input"
+                    },
                     "placeholder": "Shared notes...",
                     "value": "",
                     "width": "fill"
@@ -85,8 +122,11 @@
                   "type": "text_input"
                 }
               ],
-              "id": "auto:Collab:73",
+              "id": "auto:Collab:113",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "padding": 20,
                 "spacing": 16,
                 "width": "fill"
@@ -94,15 +134,18 @@
               "type": "column"
             }
           ],
-          "id": "theme-root/bg",
+          "id": "main#theme-root/bg",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "height": "fill",
             "width": "fill"
           },
           "type": "container"
         }
       ],
-      "id": "theme-root",
+      "id": "main#theme-root",
       "props": {
         "theme": "light"
       },
@@ -111,6 +154,9 @@
   ],
   "id": "main",
   "props": {
+    "a11y": {
+      "role": "window"
+    },
     "size": [
       500,
       450

@@ -35,14 +35,14 @@ defmodule SparklineDashboard.DashboardTest do
   end
 
   test "has sparkline card labels" do
-    assert_exists("#cpu_card/cpu_header/cpu_label")
-    assert_exists("#mem_card/mem_header/mem_label")
-    assert_exists("#net_card/net_header/net_label")
+    assert_exists("#main#cpu_card/cpu_header/cpu_label")
+    assert_exists("#main#mem_card/mem_header/mem_label")
+    assert_exists("#main#net_card/net_header/net_label")
   end
 
   test "sparkline widgets have extension type" do
     for metric <- ~w(cpu mem net) do
-      element = find!("##{metric}_card/#{metric}_spark")
+      element = find!("#main##{metric}_card/#{metric}_spark")
       assert element.type == "sparkline"
     end
   end

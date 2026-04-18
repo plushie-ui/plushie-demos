@@ -60,25 +60,25 @@ defmodule CollabTest do
   # -- View structure ---------------------------------------------------------
 
   test "has header text" do
-    assert_text("#theme-root/bg/header", "Plushie Demo")
+    assert_text("#header", "Plushie Demo")
   end
 
   test "has name input" do
-    assert_exists("#theme-root/bg/name")
+    assert_exists("#name")
   end
 
   test "has counter widgets" do
-    assert_exists("#theme-root/bg/counter-row/inc")
-    assert_exists("#theme-root/bg/counter-row/dec")
-    assert_exists("#theme-root/bg/counter-row/count")
+    assert_exists("#inc")
+    assert_exists("#dec")
+    assert_exists("#count")
   end
 
   test "has theme checkbox" do
-    assert_exists("#theme-root/bg/theme")
+    assert_exists("#theme")
   end
 
   test "has notes input" do
-    assert_exists("#theme-root/bg/notes")
+    assert_exists("#notes")
   end
 
   test "initial tree matches snapshot" do
@@ -92,7 +92,7 @@ defmodule CollabTest do
   test "count text reflects model" do
     click("#inc")
     click("#inc")
-    assert_text("#theme-root/bg/counter-row/count", "Count: 2")
+    assert_text("#count", "Count: 2")
   end
 
   # -- Settings ---------------------------------------------------------------

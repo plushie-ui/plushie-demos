@@ -27,9 +27,9 @@ defmodule PlushiePad.PadTest do
     end
 
     test "preview shows the starter code output" do
-      assert_exists("#preview/greeting")
-      assert_text("#preview/greeting", "Hello, Plushie!")
-      assert_exists("#preview/btn")
+      assert_exists("#main#preview/greeting")
+      assert_text("#main#preview/greeting", "Hello, Plushie!")
+      assert_exists("#main#preview/btn")
     end
 
     test "event log starts empty" do
@@ -96,7 +96,7 @@ defmodule PlushiePad.PadTest do
       submit("#new-name")
       assert model().active_file == "beta.ex"
 
-      click("#sidebar-wrap/sidebar/file-scroll/alpha.ex/select")
+      click("#main#sidebar-wrap/sidebar/file-scroll/alpha.ex/select")
       assert model().active_file == "alpha.ex"
     end
 
@@ -105,7 +105,7 @@ defmodule PlushiePad.PadTest do
       submit("#new-name")
       assert "doomed.ex" in model().files
 
-      click("#sidebar-wrap/sidebar/file-scroll/doomed.ex/delete")
+      click("#main#sidebar-wrap/sidebar/file-scroll/doomed.ex/delete")
       refute "doomed.ex" in model().files
     end
 
@@ -115,10 +115,10 @@ defmodule PlushiePad.PadTest do
       type_text("#new-name", "second.ex")
       submit("#new-name")
 
-      click("#sidebar-wrap/sidebar/file-scroll/second.ex/select")
+      click("#main#sidebar-wrap/sidebar/file-scroll/second.ex/select")
       assert model().active_file == "second.ex"
 
-      click("#sidebar-wrap/sidebar/file-scroll/second.ex/delete")
+      click("#main#sidebar-wrap/sidebar/file-scroll/second.ex/delete")
       assert model().active_file == "first.ex"
     end
 
@@ -126,7 +126,7 @@ defmodule PlushiePad.PadTest do
       type_text("#new-name", "only.ex")
       submit("#new-name")
 
-      click("#sidebar-wrap/sidebar/file-scroll/only.ex/delete")
+      click("#main#sidebar-wrap/sidebar/file-scroll/only.ex/delete")
       m = model()
       assert m.active_file == nil
       assert m.files == []
@@ -169,13 +169,13 @@ defmodule PlushiePad.PadTest do
     test "unhandled events appear in the log" do
       # Clicking the preview button generates a WidgetEvent that
       # falls through to the catch-all update clause.
-      click("#preview/btn")
+      click("#main#preview/btn")
       assert length(model().event_log) > 0
     end
 
     test "log caps at 20 entries" do
       for _ <- 1..25 do
-        click("#preview/btn")
+        click("#main#preview/btn")
       end
 
       assert length(model().event_log) == 20
@@ -208,7 +208,7 @@ defmodule PlushiePad.PadTest do
       type_text("#new-name", "banana.ex")
       submit("#new-name")
 
-      type_text("#sidebar-wrap/sidebar/search", "apple")
+      type_text("#main#sidebar-wrap/sidebar/search", "apple")
       assert model().search_query == "apple"
     end
   end
@@ -218,7 +218,7 @@ defmodule PlushiePad.PadTest do
       type_text("#new-name", "sel.ex")
       submit("#new-name")
 
-      toggle("#sidebar-wrap/sidebar/file-scroll/sel.ex/file-select")
+      toggle("#main#sidebar-wrap/sidebar/file-scroll/sel.ex/file-select")
       assert Plushie.Selection.selected?(model().selection, "sel.ex")
     end
 
@@ -228,7 +228,7 @@ defmodule PlushiePad.PadTest do
       type_text("#new-name", "remove.ex")
       submit("#new-name")
 
-      toggle("#sidebar-wrap/sidebar/file-scroll/remove.ex/file-select")
+      toggle("#main#sidebar-wrap/sidebar/file-scroll/remove.ex/file-select")
       click("#delete-selected")
 
       m = model()

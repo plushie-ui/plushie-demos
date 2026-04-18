@@ -92,7 +92,8 @@ defmodule GaugeDemo.GaugeExtensionTest do
 
     test "color setter casts named atoms" do
       widget = Gauge.new("g1") |> Gauge.color(:red)
-      assert widget.color == Plushie.Type.Color.cast(:red)
+      {:ok, cast} = Plushie.Type.Color.cast(:red)
+      assert widget.color == cast
     end
 
     test "color setter normalizes hex strings" do
@@ -131,7 +132,8 @@ defmodule GaugeDemo.GaugeExtensionTest do
       node = Gauge.new("g1", value: 0) |> Gauge.build()
       assert node.props[:min] == 0
       assert node.props[:max] == 100
-      assert node.props[:color] == Plushie.Type.Color.cast("#3498db")
+      {:ok, cast_color} = Plushie.Type.Color.cast("#3498db")
+      assert node.props[:color] == cast_color
     end
 
     test "omits nil props (no default, not set)" do
@@ -147,37 +149,38 @@ defmodule GaugeDemo.GaugeExtensionTest do
 
     test "color default is cast in output" do
       node = Gauge.new("g1") |> Gauge.build()
-      assert node.props[:color] == Plushie.Type.Color.cast("#3498db")
+      {:ok, cast_color} = Plushie.Type.Color.cast("#3498db")
+      assert node.props[:color] == cast_color
     end
   end
 
   describe "command generation" do
     test "set_value produces a widget_command" do
       cmd = Gauge.set_value("temp", 42)
-      assert cmd.type == :widget_command
-      assert cmd.payload.node_id == "temp"
-      assert cmd.payload.op == "set_value"
-      assert cmd.payload.payload == %{value: 42}
+      assert cmd.type == :command
+      assert cmd.payload.id == "temp"
+      assert cmd.payload.family == "set_value"
+      assert cmd.payload.value == 42
     end
 
     test "animate_to produces a widget_command" do
       cmd = Gauge.animate_to("temp", 90.0)
-      assert cmd.type == :widget_command
-      assert cmd.payload.node_id == "temp"
-      assert cmd.payload.op == "animate_to"
-      assert cmd.payload.payload == %{value: 90.0}
+      assert cmd.type == :command
+      assert cmd.payload.id == "temp"
+      assert cmd.payload.family == "animate_to"
+      assert cmd.payload.value == 90.0
     end
 
     test "commands target the correct node_id" do
       cmd_a = Gauge.set_value("gauge-a", 10)
       cmd_b = Gauge.set_value("gauge-b", 20)
-      assert cmd_a.payload.node_id == "gauge-a"
-      assert cmd_b.payload.node_id == "gauge-b"
+      assert cmd_a.payload.id == "gauge-a"
+      assert cmd_b.payload.id == "gauge-b"
     end
 
     test "command payload has the standard three-key shape" do
       cmd = Gauge.set_value("g1", 0)
-      assert Map.keys(cmd.payload) |> Enum.sort() == [:node_id, :op, :payload]
+      assert Map.keys(cmd.payload) |> Enum.sort() == [:family, :id, :value]
     end
 
     test "commands enforce widget_id is binary" do

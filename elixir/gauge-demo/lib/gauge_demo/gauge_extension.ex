@@ -36,6 +36,8 @@ defmodule GaugeDemo.GaugeExtension do
   field(:label, :string, default: "")
   field(:width, Plushie.Type.Length)
   field(:height, Plushie.Type.Length)
+  field(:event_rate, :integer, doc: "Max events per second for coalescable events.")
+  field(:a11y, Plushie.Type.A11y, doc: "Accessibility annotations.")
 
   event(:value_changed, fields: [value: :float])
 

@@ -4,8 +4,12 @@
       "children": [
         {
           "children": [],
-          "id": "title",
+          "id": "main#title",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "content": "Crash Test",
             "size": 24
           },
@@ -15,8 +19,12 @@
           "children": [
             {
               "children": [],
-              "id": "count",
+              "id": "main#count",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "content": "Count: 0",
                 "size": 18
               },
@@ -24,16 +32,24 @@
             },
             {
               "children": [],
-              "id": "inc",
+              "id": "main#inc",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "+"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "dec",
+              "id": "main#dec",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "-"
               },
               "type": "button"
@@ -41,14 +57,21 @@
           ],
           "id": "auto:CrashTest.App:85",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 12
           },
           "type": "row"
         },
         {
           "children": [],
-          "id": "counter_hint",
+          "id": "main#counter_hint",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "color": "#888888",
             "content": "This counter keeps working through every crash below.",
             "size": 12
@@ -58,23 +81,35 @@
         {
           "children": [],
           "id": "auto:CrashTest.App:96",
-          "props": {},
+          "props": {
+            "a11y": {
+              "role": "splitter"
+            }
+          },
           "type": "rule"
         },
         {
           "children": [
             {
               "children": [],
-              "id": "crash_update",
+              "id": "main#crash_update",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Crash update/2"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "crash_update_desc",
+              "id": "main#crash_update_desc",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "color": "#888888",
                 "content": "Raises RuntimeError in update/2. The runtime catches it and rolls back the model to its pre-exception state.",
                 "size": 12
@@ -84,6 +119,9 @@
           ],
           "id": "auto:CrashTest.App:99",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 4
           },
           "type": "column"
@@ -92,16 +130,24 @@
           "children": [
             {
               "children": [],
-              "id": "crash_view",
+              "id": "main#crash_view",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Crash view/1"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "crash_view_desc",
+              "id": "main#crash_view_desc",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "color": "#888888",
                 "content": "Sets a flag that raises on the next render. The runtime catches it, shows the previous tree, and rolls back the model (clearing the flag). One-shot crash.",
                 "size": 12
@@ -111,6 +157,9 @@
           ],
           "id": "auto:CrashTest.App:112",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 4
           },
           "type": "column"
@@ -118,23 +167,35 @@
         {
           "children": [],
           "id": "auto:CrashTest.App:125",
-          "props": {},
+          "props": {
+            "a11y": {
+              "role": "splitter"
+            }
+          },
           "type": "rule"
         },
         {
           "children": [
             {
               "children": [],
-              "id": "panic_widget",
+              "id": "main#panic_widget",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Panic widget"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "panic_desc",
+              "id": "main#panic_desc",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "color": "#888888",
                 "content": "Sends a command that panics the Rust widget's handle_command. The renderer isolates it via catch_unwind and replaces the widget with a red placeholder.",
                 "size": 12
@@ -144,13 +205,16 @@
           ],
           "id": "auto:CrashTest.App:128",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 4
           },
           "type": "column"
         },
         {
           "children": [],
-          "id": "crash_ext",
+          "id": "main#crash_ext",
           "props": {
             "label": "Widget OK"
           },
@@ -159,6 +223,9 @@
       ],
       "id": "auto:CrashTest.App:81",
       "props": {
+        "a11y": {
+          "role": "generic_container"
+        },
         "padding": 20,
         "spacing": 20,
         "width": "fill"
@@ -168,6 +235,9 @@
   ],
   "id": "main",
   "props": {
+    "a11y": {
+      "role": "window"
+    },
     "size": [
       520,
       560

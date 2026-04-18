@@ -40,7 +40,7 @@ defmodule PlushiePad.FileList do
                         :secondary
 
                       true ->
-                        :text
+                        :default
                     end
                 )
 

@@ -34,7 +34,7 @@ defmodule Notes.AppTest do
   end
 
   test "has shortcut bar" do
-    assert_exists("#shortcuts_h0/shortcuts_key_0")
+    assert_exists("#main#shortcuts_h0/shortcuts_key_0")
   end
 
   test "initial tree matches snapshot" do

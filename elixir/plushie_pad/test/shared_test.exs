@@ -13,38 +13,40 @@ defmodule PlushiePad.SharedTest do
     }
   end
 
-  describe "connect" do
-    test "broadcasts the current model to the connecting client" do
-      {:ok, server} = PlushiePad.Shared.start_link()
-      PlushiePad.Shared.connect(server, "client-1")
+  # Shared.connect does not broadcast on connect; the ssh_channel /
+  # websocket callers seed a fresh Plushie.Runtime from
+  # Shared.get_model/1. These tests exercise the event + disconnect
+  # paths by driving the server directly and using self() (or a
+  # spawned process) as the client "runtime". Broadcasts land as
+  # {:renderer_event, %PlushiePad.Broadcast{...}} via
+  # Plushie.Runtime.dispatch/2.
 
-      assert_receive {:model_changed, model}
+  describe "connect" do
+    test "registers the client without broadcasting" do
+      {:ok, server} = PlushiePad.Shared.start_link()
+      assert :ok = PlushiePad.Shared.connect(server, "client-1", self())
+
+      refute_receive {:renderer_event, %PlushiePad.Broadcast{}}, 50
+    end
+
+    test "get_model returns the authoritative model" do
+      {:ok, server} = PlushiePad.Shared.start_link()
+      :ok = PlushiePad.Shared.connect(server, "client-1", self())
+
+      model = PlushiePad.Shared.get_model(server)
       assert is_map(model)
       assert Map.has_key?(model, :source)
       assert Map.has_key?(model, :event_log)
-    end
-
-    test "multiple connects each receive the model" do
-      {:ok, server} = PlushiePad.Shared.start_link()
-
-      PlushiePad.Shared.connect(server, "a")
-      assert_receive {:model_changed, _}
-
-      PlushiePad.Shared.connect(server, "b")
-      # Both clients receive the broadcast
-      assert_receive {:model_changed, _}
-      assert_receive {:model_changed, _}
     end
   end
 
   describe "event" do
     test "updates model and broadcasts to all clients" do
       {:ok, server} = PlushiePad.Shared.start_link()
-      PlushiePad.Shared.connect(server, "client-1")
-      assert_receive {:model_changed, _initial}
+      :ok = PlushiePad.Shared.connect(server, "client-1", self())
 
       PlushiePad.Shared.event(server, escape_event())
-      assert_receive {:model_changed, updated}
+      assert_receive {:renderer_event, %PlushiePad.Broadcast{model: updated}}
       assert updated.error == nil
     end
 
@@ -52,28 +54,20 @@ defmodule PlushiePad.SharedTest do
       {:ok, server} = PlushiePad.Shared.start_link()
       test_pid = self()
 
-      PlushiePad.Shared.connect(server, "client-1")
-      assert_receive {:model_changed, _}
+      :ok = PlushiePad.Shared.connect(server, "client-1", self())
 
-      {:ok, client2} =
-        Task.start_link(fn ->
-          PlushiePad.Shared.connect(server, "client-2")
-
+      client2 =
+        spawn_link(fn ->
           receive do
-            {:model_changed, _} -> send(test_pid, :c2_connected)
-          end
-
-          receive do
-            {:model_changed, _m} -> send(test_pid, :c2_got_update)
+            {:renderer_event, %PlushiePad.Broadcast{}} ->
+              send(test_pid, :c2_got_update)
           end
         end)
 
-      # Wait for client2's connect broadcast (sent to both clients)
-      assert_receive {:model_changed, _}
-      assert_receive :c2_connected
+      :ok = PlushiePad.Shared.connect(server, "client-2", client2)
 
       PlushiePad.Shared.event(server, escape_event())
-      assert_receive {:model_changed, _}
+      assert_receive {:renderer_event, %PlushiePad.Broadcast{}}
       assert_receive :c2_got_update
 
       Process.exit(client2, :normal)
@@ -83,13 +77,15 @@ defmodule PlushiePad.SharedTest do
   describe "disconnect" do
     test "removes the client from the broadcast list" do
       {:ok, server} = PlushiePad.Shared.start_link()
-      PlushiePad.Shared.connect(server, "client-1")
-      assert_receive {:model_changed, _}
+      :ok = PlushiePad.Shared.connect(server, "client-1", self())
 
       PlushiePad.Shared.disconnect(server, "client-1")
+      # disconnect is a cast; give it a moment to be processed before
+      # emitting the event so the client is actually gone.
+      _ = PlushiePad.Shared.get_model(server)
 
       PlushiePad.Shared.event(server, escape_event())
-      refute_receive {:model_changed, _}, 100
+      refute_receive {:renderer_event, %PlushiePad.Broadcast{}}, 100
     end
   end
 
@@ -99,12 +95,10 @@ defmodule PlushiePad.SharedTest do
 
       {pid, ref} =
         spawn_monitor(fn ->
-          PlushiePad.Shared.connect(server, "ephemeral")
           receive do: (:stop -> :ok)
         end)
 
-      # Give the connect call time to complete
-      Process.sleep(50)
+      :ok = PlushiePad.Shared.connect(server, "ephemeral", pid)
 
       Process.exit(pid, :kill)
       assert_receive {:DOWN, ^ref, :process, ^pid, :killed}
@@ -113,14 +107,13 @@ defmodule PlushiePad.SharedTest do
       Process.sleep(50)
 
       # Connect ourselves and verify we're the only client
-      PlushiePad.Shared.connect(server, "survivor")
-      assert_receive {:model_changed, _}
+      :ok = PlushiePad.Shared.connect(server, "survivor", self())
 
       PlushiePad.Shared.event(server, escape_event())
-      assert_receive {:model_changed, _}
+      assert_receive {:renderer_event, %PlushiePad.Broadcast{}}
 
       # Only one broadcast (ours), not two
-      refute_receive {:model_changed, _}, 100
+      refute_receive {:renderer_event, %PlushiePad.Broadcast{}}, 100
     end
   end
 end

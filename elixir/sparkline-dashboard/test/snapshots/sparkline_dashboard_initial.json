@@ -4,8 +4,12 @@
       "children": [
         {
           "children": [],
-          "id": "title",
+          "id": "main#title",
           "props": {
+            "a11y": {
+              "label_from": "content",
+              "role": "label"
+            },
             "content": "System Monitor",
             "size": 24
           },
@@ -15,24 +19,36 @@
           "children": [
             {
               "children": [],
-              "id": "toggle_running",
+              "id": "main#toggle_running",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Pause"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "clear",
+              "id": "main#clear",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "Clear"
               },
               "type": "button"
             },
             {
               "children": [],
-              "id": "status",
+              "id": "main#status",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "color": "#888888",
                 "content": "0 samples",
                 "size": 14
@@ -42,6 +58,9 @@
           ],
           "id": "auto:SparklineDashboard.Dashboard:93",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "spacing": 12
           },
           "type": "row"
@@ -52,8 +71,12 @@
               "children": [
                 {
                   "children": [],
-                  "id": "cpu_card/cpu_header/cpu_label",
+                  "id": "main#cpu_card/cpu_header/cpu_label",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "color": "#666666",
                     "content": "CPU Usage",
                     "size": 14
@@ -61,15 +84,18 @@
                   "type": "text"
                 }
               ],
-              "id": "cpu_card/cpu_header",
+              "id": "main#cpu_card/cpu_header",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "spacing": 8
               },
               "type": "row"
             },
             {
               "children": [],
-              "id": "cpu_card/cpu_spark",
+              "id": "main#cpu_card/cpu_spark",
               "props": {
                 "color": "#4caf50",
                 "data": [],
@@ -80,8 +106,11 @@
               "type": "sparkline"
             }
           ],
-          "id": "cpu_card",
+          "id": "main#cpu_card",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": 12,
             "spacing": 4
           },
@@ -93,8 +122,12 @@
               "children": [
                 {
                   "children": [],
-                  "id": "mem_card/mem_header/mem_label",
+                  "id": "main#mem_card/mem_header/mem_label",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "color": "#666666",
                     "content": "Memory",
                     "size": 14
@@ -102,15 +135,18 @@
                   "type": "text"
                 }
               ],
-              "id": "mem_card/mem_header",
+              "id": "main#mem_card/mem_header",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "spacing": 8
               },
               "type": "row"
             },
             {
               "children": [],
-              "id": "mem_card/mem_spark",
+              "id": "main#mem_card/mem_spark",
               "props": {
                 "color": "#2196f3",
                 "data": [],
@@ -121,8 +157,11 @@
               "type": "sparkline"
             }
           ],
-          "id": "mem_card",
+          "id": "main#mem_card",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": 12,
             "spacing": 4
           },
@@ -134,8 +173,12 @@
               "children": [
                 {
                   "children": [],
-                  "id": "net_card/net_header/net_label",
+                  "id": "main#net_card/net_header/net_label",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "color": "#666666",
                     "content": "Network I/O",
                     "size": 14
@@ -143,15 +186,18 @@
                   "type": "text"
                 }
               ],
-              "id": "net_card/net_header",
+              "id": "main#net_card/net_header",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "spacing": 8
               },
               "type": "row"
             },
             {
               "children": [],
-              "id": "net_card/net_spark",
+              "id": "main#net_card/net_spark",
               "props": {
                 "color": "#ff9800",
                 "data": [],
@@ -162,8 +208,11 @@
               "type": "sparkline"
             }
           ],
-          "id": "net_card",
+          "id": "main#net_card",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": 12,
             "spacing": 4
           },
@@ -172,6 +221,9 @@
       ],
       "id": "auto:SparklineDashboard.Dashboard:90",
       "props": {
+        "a11y": {
+          "role": "generic_container"
+        },
         "padding": 20,
         "spacing": 16
       },
@@ -180,6 +232,9 @@
   ],
   "id": "main",
   "props": {
+    "a11y": {
+      "role": "window"
+    },
     "title": "Sparkline Dashboard"
   },
   "type": "window"

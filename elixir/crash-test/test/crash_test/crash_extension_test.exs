@@ -40,10 +40,10 @@ defmodule CrashTest.CrashExtensionTest do
   describe "panic command" do
     test "produces a widget command" do
       cmd = CrashExtension.panic("w1")
-      assert cmd.type == :widget_command
-      assert cmd.payload.node_id == "w1"
-      assert cmd.payload.op == "panic"
-      assert cmd.payload.payload == %{}
+      assert cmd.type == :command
+      assert cmd.payload.id == "w1"
+      assert cmd.payload.family == "panic"
+      assert cmd.payload.value == nil
     end
 
     test "enforces widget_id is binary" do

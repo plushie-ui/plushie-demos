@@ -6,8 +6,12 @@
           "children": [
             {
               "children": [],
-              "id": "toolbar_title",
+              "id": "main#toolbar_title",
               "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
                 "content": "Plushie Notes",
                 "size": 20
               },
@@ -15,7 +19,7 @@
             },
             {
               "children": [],
-              "id": "auto:Notes.Widgets.Toolbar:32",
+              "id": "auto:Notes.Widgets.Toolbar:34",
               "props": {
                 "width": "fill"
               },
@@ -23,15 +27,22 @@
             },
             {
               "children": [],
-              "id": "new_note",
+              "id": "main#new_note",
               "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
                 "label": "+ New"
               },
               "type": "button"
             }
           ],
-          "id": "auto:Notes.Widgets.Toolbar:25",
+          "id": "auto:Notes.Widgets.Toolbar:27",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": [
               12,
               0
@@ -45,8 +56,13 @@
           "children": [
             {
               "children": [],
-              "id": "search",
+              "id": "main#search",
               "props": {
+                "a11y": {
+                  "description": "Search notes...",
+                  "label_from": "placeholder",
+                  "role": "text_input"
+                },
                 "placeholder": "Search notes...",
                 "value": "",
                 "width": "fill"
@@ -55,8 +71,13 @@
             },
             {
               "children": [],
-              "id": "sort",
+              "id": "main#sort",
               "props": {
+                "a11y": {
+                  "has_popup": "listbox",
+                  "label_from": "placeholder",
+                  "role": "combo_box"
+                },
                 "options": [
                   "Recent",
                   "A-Z",
@@ -69,6 +90,9 @@
           ],
           "id": "auto:Notes.App:357",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": [
               12,
               0
@@ -86,8 +110,12 @@
                   "children": [
                     {
                       "children": [],
-                      "id": "note_list/note_welcome_row/select_welcome",
+                      "id": "main#note_list/note_welcome_row/select_welcome",
                       "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "check_box"
+                        },
                         "checked": false,
                         "label": ""
                       },
@@ -97,16 +125,24 @@
                       "children": [
                         {
                           "children": [],
-                          "id": "note_list/note_welcome_row/note_welcome_body/note_welcome",
+                          "id": "main#note_list/note_welcome_row/note_welcome_body/note_welcome",
                           "props": {
+                            "a11y": {
+                              "label_from": "label",
+                              "role": "button"
+                            },
                             "label": "Welcome to Plushie Notes"
                           },
                           "type": "button"
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_welcome_row/note_welcome_body/note_welcome_preview",
+                          "id": "main#note_list/note_welcome_row/note_welcome_body/note_welcome_preview",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#888888",
                             "content": "This app demonstrates pure Elixir widgets and state helpers.",
                             "size": 13
@@ -115,8 +151,12 @@
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_welcome_row/note_welcome_body/note_welcome_time",
+                          "id": "main#note_list/note_welcome_row/note_welcome_body/note_welcome_time",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#aaaaaa",
                             "content": "Mar 27, 18:31",
                             "size": 11
@@ -124,16 +164,22 @@
                           "type": "text"
                         }
                       ],
-                      "id": "note_list/note_welcome_row/note_welcome_body",
+                      "id": "main#note_list/note_welcome_row/note_welcome_body",
                       "props": {
+                        "a11y": {
+                          "role": "generic_container"
+                        },
                         "spacing": 4,
                         "width": "fill"
                       },
                       "type": "column"
                     }
                   ],
-                  "id": "note_list/note_welcome_row",
+                  "id": "main#note_list/note_welcome_row",
                   "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
                     "align_y": "center",
                     "padding": [
                       10,
@@ -148,8 +194,12 @@
                   "children": [
                     {
                       "children": [],
-                      "id": "note_list/note_shortcuts_row/select_shortcuts",
+                      "id": "main#note_list/note_shortcuts_row/select_shortcuts",
                       "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "check_box"
+                        },
                         "checked": false,
                         "label": ""
                       },
@@ -159,16 +209,24 @@
                       "children": [
                         {
                           "children": [],
-                          "id": "note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts",
+                          "id": "main#note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts",
                           "props": {
+                            "a11y": {
+                              "label_from": "label",
+                              "role": "button"
+                            },
                             "label": "Keyboard shortcuts"
                           },
                           "type": "button"
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts_preview",
+                          "id": "main#note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts_preview",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#888888",
                             "content": "Ctrl+N new note, Ctrl+Z undo, Ctrl+Y redo, Esc go back.",
                             "size": 13
@@ -177,8 +235,12 @@
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts_time",
+                          "id": "main#note_list/note_shortcuts_row/note_shortcuts_body/note_shortcuts_time",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#aaaaaa",
                             "content": "Mar 27, 17:31",
                             "size": 11
@@ -186,16 +248,22 @@
                           "type": "text"
                         }
                       ],
-                      "id": "note_list/note_shortcuts_row/note_shortcuts_body",
+                      "id": "main#note_list/note_shortcuts_row/note_shortcuts_body",
                       "props": {
+                        "a11y": {
+                          "role": "generic_container"
+                        },
                         "spacing": 4,
                         "width": "fill"
                       },
                       "type": "column"
                     }
                   ],
-                  "id": "note_list/note_shortcuts_row",
+                  "id": "main#note_list/note_shortcuts_row",
                   "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
                     "align_y": "center",
                     "padding": [
                       10,
@@ -210,8 +278,12 @@
                   "children": [
                     {
                       "children": [],
-                      "id": "note_list/note_widgets_row/select_widgets",
+                      "id": "main#note_list/note_widgets_row/select_widgets",
                       "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "check_box"
+                        },
                         "checked": false,
                         "label": ""
                       },
@@ -221,16 +293,24 @@
                       "children": [
                         {
                           "children": [],
-                          "id": "note_list/note_widgets_row/note_widgets_body/note_widgets",
+                          "id": "main#note_list/note_widgets_row/note_widgets_body/note_widgets",
                           "props": {
+                            "a11y": {
+                              "label_from": "label",
+                              "role": "button"
+                            },
                             "label": "Custom widgets"
                           },
                           "type": "button"
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_widgets_row/note_widgets_body/note_widgets_preview",
+                          "id": "main#note_list/note_widgets_row/note_widgets_body/note_widgets_preview",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#888888",
                             "content": "NoteCard, Toolbar, and ShortcutBar are pure Elixir composites.",
                             "size": 13
@@ -239,8 +319,12 @@
                         },
                         {
                           "children": [],
-                          "id": "note_list/note_widgets_row/note_widgets_body/note_widgets_time",
+                          "id": "main#note_list/note_widgets_row/note_widgets_body/note_widgets_time",
                           "props": {
+                            "a11y": {
+                              "label_from": "content",
+                              "role": "label"
+                            },
                             "color": "#aaaaaa",
                             "content": "Mar 27, 16:31",
                             "size": 11
@@ -248,16 +332,22 @@
                           "type": "text"
                         }
                       ],
-                      "id": "note_list/note_widgets_row/note_widgets_body",
+                      "id": "main#note_list/note_widgets_row/note_widgets_body",
                       "props": {
+                        "a11y": {
+                          "role": "generic_container"
+                        },
                         "spacing": 4,
                         "width": "fill"
                       },
                       "type": "column"
                     }
                   ],
-                  "id": "note_list/note_widgets_row",
+                  "id": "main#note_list/note_widgets_row",
                   "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
                     "align_y": "center",
                     "padding": [
                       10,
@@ -271,6 +361,9 @@
               ],
               "id": "auto:Notes.App:362",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "padding": [
                   8,
                   0
@@ -281,8 +374,11 @@
               "type": "column"
             }
           ],
-          "id": "note_list",
+          "id": "main#note_list",
           "props": {
+            "a11y": {
+              "role": "scroll_view"
+            },
             "height": "fill",
             "width": "fill"
           },
@@ -294,8 +390,12 @@
               "children": [
                 {
                   "children": [],
-                  "id": "shortcuts_h0/shortcuts_key_0",
+                  "id": "main#shortcuts_h0/shortcuts_key_0",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "color": "#999999",
                     "content": "Ctrl+N",
                     "size": 11
@@ -304,8 +404,12 @@
                 },
                 {
                   "children": [],
-                  "id": "shortcuts_h0/shortcuts_act_0",
+                  "id": "main#shortcuts_h0/shortcuts_act_0",
                   "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
                     "color": "#666666",
                     "content": "new",
                     "size": 11
@@ -313,15 +417,21 @@
                   "type": "text"
                 }
               ],
-              "id": "shortcuts_h0",
+              "id": "main#shortcuts_h0",
               "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
                 "spacing": 4
               },
               "type": "row"
             }
           ],
-          "id": "auto:Notes.Widgets.ShortcutBar:26",
+          "id": "auto:Notes.Widgets.ShortcutBar:28",
           "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
             "padding": [
               8,
               0
@@ -333,6 +443,9 @@
       ],
       "id": "auto:Notes.App:121",
       "props": {
+        "a11y": {
+          "role": "generic_container"
+        },
         "height": "fill",
         "padding": 20,
         "spacing": 8,
@@ -343,6 +456,9 @@
   ],
   "id": "main",
   "props": {
+    "a11y": {
+      "role": "window"
+    },
     "size": [
       600,
       500

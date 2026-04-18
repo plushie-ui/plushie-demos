@@ -5,10 +5,12 @@
 //! configurable height.
 //!
 //! This is a render-only widget: it implements only type_names,
-//! namespace, clone_for_session, and render. No commands, no events,
+//! namespace, fresh_for_session, and render. No commands, no events,
 //! no state - just props in, pixels out.
 
 use plushie_widget_sdk::iced;
+use plushie_widget_sdk::iced::widget::canvas as iced_canvas;
+use plushie_widget_sdk::iced::{Color as IcedColor, Length as IcedLength, Theme as IcedTheme};
 use plushie_widget_sdk::prelude::*;
 
 /// Sparkline widget - renders a canvas-based line chart.
@@ -17,6 +19,12 @@ pub struct SparklineExtension;
 impl SparklineExtension {
     pub fn new() -> Self {
         Self
+    }
+}
+
+impl Default for SparklineExtension {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -29,7 +37,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
         "sparkline"
     }
 
-    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
+    fn fresh_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(SparklineExtension::new())
     }
 
@@ -37,30 +45,27 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
         &'a self,
         node: &'a TreeNode,
         _ctx: &RenderCtx<'a, R>,
-    ) -> Element<'a, Message, Theme, R> {
-        let props = node.props();
+    ) -> Element<'a, Message, IcedTheme, R> {
+        let props = &node.props;
 
-        let data: Vec<f64> = props
-            .and_then(|p| p.get("data"))
-            .and_then(|v| v.as_array())
-            .map(|arr| arr.iter().filter_map(|v| v.as_f64()).collect())
-            .unwrap_or_default();
+        let data: Vec<f64> = prop_f64_array(props, "data").unwrap_or_default();
 
         let stroke_width = prop_f32(props, "stroke_width").unwrap_or(2.0);
         let fill = prop_bool(props, "fill").unwrap_or(false);
         let height = prop_f32(props, "height").unwrap_or(60.0);
 
-        let color = prop_color(props, "color")
-            .unwrap_or(Color::from_rgb(0.298, 0.686, 0.314));
+        let color = Color::extract(props, "color")
+            .map(|c| iced_convert::color(&c))
+            .unwrap_or_else(|| IcedColor::from_rgb(0.298, 0.686, 0.314));
 
-        canvas::Canvas::new(SparklineDraw {
+        canvas(SparklineDraw {
             data,
             color,
             stroke_width,
             fill,
         })
-        .width(Length::Fill)
-        .height(Length::Fixed(height))
+        .width(IcedLength::Fill)
+        .height(IcedLength::Fixed(height))
         .into()
     }
 }
@@ -68,27 +73,30 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
 /// Canvas program that draws the sparkline chart.
 struct SparklineDraw {
     data: Vec<f64>,
-    color: Color,
+    color: IcedColor,
     stroke_width: f32,
     fill: bool,
 }
 
-impl<Message> canvas::Program<Message> for SparklineDraw {
+impl<M, R> iced_canvas::Program<M, IcedTheme, R> for SparklineDraw
+where
+    R: iced::advanced::graphics::geometry::Renderer,
+{
     type State = ();
 
     fn draw(
         &self,
         _state: &(),
-        renderer: &iced::Renderer,
-        _theme: &Theme,
+        renderer: &R,
+        _theme: &IcedTheme,
         bounds: iced::Rectangle,
         _cursor: iced::mouse::Cursor,
-    ) -> Vec<canvas::Geometry> {
+    ) -> Vec<iced_canvas::Geometry<R>> {
         if self.data.len() < 2 {
             return vec![];
         }
 
-        let mut frame = canvas::Frame::new(renderer, bounds.size());
+        let mut frame = iced_canvas::Frame::<R>::new(renderer, bounds.size());
         let w = bounds.width;
         let h = bounds.height;
 
@@ -99,7 +107,7 @@ impl<Message> canvas::Program<Message> for SparklineDraw {
         let step = w / (self.data.len() - 1) as f32;
 
         // Build the line path
-        let mut builder = canvas::path::Builder::new();
+        let mut builder = iced_canvas::path::Builder::new();
         for (i, &val) in self.data.iter().enumerate() {
             let x = i as f32 * step;
             let y = h - ((val - min) / range) as f32 * h;
@@ -114,14 +122,14 @@ impl<Message> canvas::Program<Message> for SparklineDraw {
         // Draw the line
         frame.stroke(
             &path,
-            canvas::Stroke::default()
+            iced_canvas::Stroke::default()
                 .with_color(self.color)
                 .with_width(self.stroke_width),
         );
 
         // Optional: fill under the line with 15% opacity
         if self.fill {
-            let mut fill_builder = canvas::path::Builder::new();
+            let mut fill_builder = iced_canvas::path::Builder::new();
             for (i, &val) in self.data.iter().enumerate() {
                 let x = i as f32 * step;
                 let y = h - ((val - min) / range) as f32 * h;
