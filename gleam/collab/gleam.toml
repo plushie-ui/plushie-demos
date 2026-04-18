@@ -1,6 +1,7 @@
 name = "plushie_demo"
 version = "0.1.0"
 target = "erlang"
+plushie_rust_version = "0.6.1"
 
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"

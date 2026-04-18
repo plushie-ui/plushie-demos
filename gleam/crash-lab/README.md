@@ -14,7 +14,7 @@ view panics. The counter survives all three.
 
 ```bash
 gleam deps download
-PLUSHIE_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
 ```
 
 The build pipeline reads native widget configuration from `gleam.toml`,
