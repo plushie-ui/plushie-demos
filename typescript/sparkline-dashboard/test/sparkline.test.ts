@@ -27,9 +27,6 @@ describe("sparklineConfig", () => {
 
   test("points to the Rust crate", () => {
     expect(sparklineConfig.rustCrate).toBe("native/sparkline")
-    expect(sparklineConfig.rustConstructor).toBe(
-      "sparkline::SparklineExtension::new()",
-    )
   })
 
   test("has no declared commands (render-only native widget)", () => {

@@ -19,7 +19,6 @@ export const sparklineConfig: NativeWidgetConfig = {
     height: "number",
   },
   rustCrate: "native/sparkline",
-  rustConstructor: "sparkline::SparklineExtension::new()",
 }
 
 /** Sparkline widget builder. */

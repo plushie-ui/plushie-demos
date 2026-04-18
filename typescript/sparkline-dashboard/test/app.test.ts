@@ -6,7 +6,7 @@
  * through the wire protocol.
  *
  * Prerequisites:
- *   PLUSHIE_SOURCE_PATH=~/projects/plushie npx plushie build
+ *   PLUSHIE_RUST_SOURCE_PATH=~/projects/plushie-rust pnpm plushie build
  */
 
 import { existsSync } from "node:fs"

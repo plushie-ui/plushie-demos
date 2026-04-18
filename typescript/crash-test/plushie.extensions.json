@@ -3,7 +3,6 @@
     {
       "type": "crash_box",
       "rustCrate": "native/crash_box",
-      "rustConstructor": "crash_box::CrashBoxExtension::new()",
       "props": {
         "label": "string",
         "color": "color"

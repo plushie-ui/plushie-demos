@@ -3,5 +3,9 @@ name = "sparkline"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.plushie.widget]
+type_name = "sparkline"
+constructor = "sparkline::SparklineExtension::new()"
+
 [dependencies]
 plushie-widget-sdk = "0.6"

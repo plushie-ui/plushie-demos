@@ -23,7 +23,6 @@ export const gaugeConfig: NativeWidgetConfig = {
   events: ["value_changed"],
   commands: ["set_value", "animate_to"],
   rustCrate: "native/gauge",
-  rustConstructor: "gauge::GaugeExtension::new()",
 }
 
 /** Gauge widget builder. */

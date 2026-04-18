@@ -3,7 +3,6 @@
     {
       "type": "gauge",
       "rustCrate": "native/gauge",
-      "rustConstructor": "gauge::GaugeExtension::new()",
       "props": {
         "value": "number",
         "min": "number",

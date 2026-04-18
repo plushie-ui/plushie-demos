@@ -3,7 +3,6 @@
     {
       "type": "sparkline",
       "rustCrate": "native/sparkline",
-      "rustConstructor": "sparkline::SparklineExtension::new()",
       "props": {
         "data": { "list": "number" },
         "color": "color",

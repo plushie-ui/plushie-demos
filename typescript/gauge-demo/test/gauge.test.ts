@@ -40,7 +40,6 @@ describe("gaugeConfig", () => {
 
   test("points to the Rust crate", () => {
     expect(gaugeConfig.rustCrate).toBe("native/gauge")
-    expect(gaugeConfig.rustConstructor).toBe("gauge::GaugeExtension::new()")
   })
 })
 

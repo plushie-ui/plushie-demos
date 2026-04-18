@@ -21,7 +21,6 @@ export const crashBoxConfig: NativeWidgetConfig = {
   },
   commands: ["panic"],
   rustCrate: "native/crash_box",
-  rustConstructor: "crash_box::CrashBoxExtension::new()",
 }
 
 /** Crash box widget builder. */
