@@ -1,4 +1,6 @@
 use plushie_widget_sdk::iced;
+use plushie_widget_sdk::iced::widget::canvas as iced_canvas;
+use plushie_widget_sdk::iced::{Color as IcedColor, Length as IcedLength, Theme as IcedTheme};
 use plushie_widget_sdk::prelude::*;
 
 // ---------------------------------------------------------------------------
@@ -13,27 +15,6 @@ impl SparklineExtension {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/// Parse a "#rrggbb" or "#rrggbbaa" hex string into an iced Color.
-fn hex_to_color(hex: &str) -> Option<Color> {
-    let hex = hex.strip_prefix('#').unwrap_or(hex);
-    if hex.len() != 6 && hex.len() != 8 {
-        return None;
-    }
-    let r = u8::from_str_radix(&hex[0..2], 16).ok()? as f32 / 255.0;
-    let g = u8::from_str_radix(&hex[2..4], 16).ok()? as f32 / 255.0;
-    let b = u8::from_str_radix(&hex[4..6], 16).ok()? as f32 / 255.0;
-    let a = if hex.len() == 8 {
-        u8::from_str_radix(&hex[6..8], 16).ok()? as f32 / 255.0
-    } else {
-        1.0
-    };
-    Some(Color::from_rgba(r, g, b, a))
-}
-
 impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
     fn type_names(&self) -> &[&str] {
         &["sparkline"]
@@ -43,25 +24,33 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
         "sparkline"
     }
 
-    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
+    fn fresh_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(SparklineExtension::new())
     }
 
-    fn render<'a>(&'a self, node: &'a TreeNode, _ctx: &RenderCtx<'a, R>) -> Element<'a, Message, Theme, R> {
+    fn render<'a>(
+        &'a self,
+        node: &'a TreeNode,
+        _ctx: &RenderCtx<'a, R>,
+    ) -> Element<'a, Message, IcedTheme, R> {
         let data = prop_f64_array(&node.props, "data").unwrap_or_default();
 
         let stroke_width = prop_f32(&node.props, "stroke_width").unwrap_or(2.0);
         let fill = prop_bool_default(&node.props, "fill", false);
         let height = prop_f32(&node.props, "height").unwrap_or(60.0);
-        let color = prop_str(&node.props, "color")
-            .as_deref()
-            .and_then(hex_to_color)
-            .unwrap_or(Color::from_rgb(0.298, 0.686, 0.314));
+        let color = Color::extract(&node.props, "color")
+            .map(|c| iced_convert::color(&c))
+            .unwrap_or_else(|| IcedColor::from_rgb(0.298, 0.686, 0.314));
 
-        canvas(SparklineDraw { data, color, stroke_width, fill })
-            .width(Length::Fill)
-            .height(Length::Fixed(height))
-            .into()
+        canvas(SparklineDraw {
+            data,
+            color,
+            stroke_width,
+            fill,
+        })
+        .width(IcedLength::Fill)
+        .height(IcedLength::Fixed(height))
+        .into()
     }
 }
 
@@ -71,27 +60,27 @@ impl<R: PlushieRenderer> PlushieWidget<R> for SparklineExtension {
 
 struct SparklineDraw {
     data: Vec<f64>,
-    color: Color,
+    color: IcedColor,
     stroke_width: f32,
     fill: bool,
 }
 
-impl<R: PlushieRenderer> iced::widget::canvas::Program<Message, iced::Theme, R> for SparklineDraw {
+impl<R: PlushieRenderer> iced_canvas::Program<Message, IcedTheme, R> for SparklineDraw {
     type State = ();
 
     fn draw(
         &self,
         _state: &Self::State,
         renderer: &R,
-        _theme: &iced::Theme,
+        _theme: &IcedTheme,
         bounds: iced::Rectangle,
         _cursor: iced::mouse::Cursor,
-    ) -> Vec<iced::widget::canvas::Geometry<R>> {
+    ) -> Vec<iced_canvas::Geometry<R>> {
         if self.data.len() < 2 {
             return vec![];
         }
 
-        let mut frame = iced::widget::canvas::Frame::new(renderer, bounds.size());
+        let mut frame = iced_canvas::Frame::new(renderer, bounds.size());
         let w = bounds.width;
         let h = bounds.height;
 
@@ -101,7 +90,7 @@ impl<R: PlushieRenderer> iced::widget::canvas::Program<Message, iced::Theme, R> 
         let step = w / (self.data.len() - 1) as f32;
 
         // Build line path
-        let line = iced::widget::canvas::Path::new(|b| {
+        let line = iced_canvas::Path::new(|b| {
             for (i, &val) in self.data.iter().enumerate() {
                 let x = i as f32 * step;
                 let y = h - ((val - min) / range) as f32 * h;
@@ -115,14 +104,14 @@ impl<R: PlushieRenderer> iced::widget::canvas::Program<Message, iced::Theme, R> 
 
         frame.stroke(
             &line,
-            iced::widget::canvas::Stroke::default()
+            iced_canvas::Stroke::default()
                 .with_color(self.color)
                 .with_width(self.stroke_width),
         );
 
         // Optional semi-transparent fill under the curve
         if self.fill {
-            let fill_path = iced::widget::canvas::Path::new(|b| {
+            let fill_path = iced_canvas::Path::new(|b| {
                 for (i, &val) in self.data.iter().enumerate() {
                     let x = i as f32 * step;
                     let y = h - ((val - min) / range) as f32 * h;
