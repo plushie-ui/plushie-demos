@@ -107,7 +107,7 @@ describe("update", () => {
     // temperature unchanged - waits for Rust value_changed
     expect(newModel.temperature).toBe(50)
     expect(cmd).not.toBeNull()
-    expect((cmd as Record<string, unknown>)["type"]).toBe("extension_command")
+    expect((cmd as Record<string, unknown>)["type"]).toBe("command")
   })
 
   test("high sets targetTemp and returns set_value command", () => {
@@ -325,10 +325,10 @@ describe("rapid clicks", () => {
 
     for (let i = 0; i < commands.length; i++) {
       const cmd = commands[i] as Record<string, unknown>
-      expect(cmd["type"]).toBe("extension_command")
+      expect(cmd["type"]).toBe("command")
       const payload = cmd["payload"] as Record<string, unknown>
-      expect(payload["op"]).toBe("set_value")
-      const inner = payload["payload"] as Record<string, unknown>
+      expect(payload["family"]).toBe("set_value")
+      const inner = payload["value"] as Record<string, unknown>
       expect(inner["value"]).toBe(i % 2 === 0 ? 90 : 20)
     }
   })

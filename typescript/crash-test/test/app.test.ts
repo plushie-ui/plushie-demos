@@ -83,11 +83,11 @@ describe("CrashBox builder", () => {
 describe("CrashBoxCmds", () => {
   test("panic command has correct structure", () => {
     const cmd = CrashBoxCmds.panic("cb1")
-    expect(cmd.type).toBe("extension_command")
+    expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
-      node_id: "cb1",
-      op: "panic",
-      payload: {},
+      id: "cb1",
+      family: "panic",
+      value: null,
     })
   })
 })
@@ -115,7 +115,7 @@ describe("handlers", () => {
     const [model, cmd] = unwrap(triggerPanic(init()))
     expect(model.status).toContain("panic")
     expect(cmd).not.toBeNull()
-    expect((cmd as Record<string, unknown>)["type"]).toBe("extension_command")
+    expect((cmd as Record<string, unknown>)["type"]).toBe("command")
   })
 
   test("triggerHandlerThrow actually throws", () => {

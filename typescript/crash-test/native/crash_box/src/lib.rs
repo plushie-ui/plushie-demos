@@ -8,6 +8,7 @@
 //! This demonstrates that a bug in one widget cannot crash the
 //! renderer or affect other widgets.
 
+use plushie_widget_sdk::iced::{Color as IcedColor, Length as IcedLength, Theme as IcedTheme};
 use plushie_widget_sdk::prelude::*;
 
 /// Crash box widget - panics on command to demonstrate isolation.
@@ -28,7 +29,7 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashBoxExtension {
         "crash_box"
     }
 
-    fn clone_for_session(&self) -> Box<dyn PlushieWidget<R>> {
+    fn fresh_for_session(&self) -> Box<dyn PlushieWidget<R>> {
         Box::new(CrashBoxExtension::new())
     }
 
@@ -36,16 +37,17 @@ impl<R: PlushieRenderer> PlushieWidget<R> for CrashBoxExtension {
         &'a self,
         node: &'a TreeNode,
         _ctx: &RenderCtx<'a, R>,
-    ) -> Element<'a, Message, Theme, R> {
-        let props = node.props();
+    ) -> Element<'a, Message, IcedTheme, R> {
+        let props = &node.props;
         let label = prop_str(props, "label").unwrap_or_default();
-        let color = prop_color(props, "color")
-            .unwrap_or(Color::from_rgb(0.18, 0.80, 0.44));
+        let color = Color::extract(props, "color")
+            .map(|c| iced_convert::color(&c))
+            .unwrap_or_else(|| IcedColor::from_rgb(0.18, 0.80, 0.44));
 
         container(text(label).size(14).color(color))
-            .width(Length::Fill)
-            .height(Length::Fixed(60.0))
-            .center(plushie_widget_sdk::iced::Length::Fill)
+            .width(IcedLength::Fill)
+            .height(IcedLength::Fixed(60.0))
+            .center(IcedLength::Fill)
             .into()
     }
 

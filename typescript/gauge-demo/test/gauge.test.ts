@@ -104,23 +104,23 @@ describe("Gauge widget builder", () => {
 // -- Commands ---------------------------------------------------------------
 
 describe("GaugeCmds", () => {
-  test("set_value produces an extension_command", () => {
+  test("set_value produces an command", () => {
     const cmd = GaugeCmds.set_value("g1", { value: 42 })
-    expect(cmd.type).toBe("extension_command")
+    expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
-      node_id: "g1",
-      op: "set_value",
-      payload: { value: 42 },
+      id: "g1",
+      family: "set_value",
+      value: { value: 42 },
     })
   })
 
-  test("animate_to produces an extension_command", () => {
+  test("animate_to produces an command", () => {
     const cmd = GaugeCmds.animate_to("g1", { value: 90 })
-    expect(cmd.type).toBe("extension_command")
+    expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
-      node_id: "g1",
-      op: "animate_to",
-      payload: { value: 90 },
+      id: "g1",
+      family: "animate_to",
+      value: { value: 90 },
     })
   })
 
@@ -138,14 +138,14 @@ describe("GaugeCmds", () => {
   test("payload has standard three-key shape", () => {
     const cmd = GaugeCmds.set_value("g1", { value: 0 })
     expect(Object.keys(cmd.payload).sort()).toEqual(
-      ["node_id", "op", "payload"].sort(),
+      ["id", "family", "value"].sort(),
     )
   })
 
   test("different node IDs target correctly", () => {
     const a = GaugeCmds.set_value("gauge-a", { value: 10 })
     const b = GaugeCmds.set_value("gauge-b", { value: 20 })
-    expect(a.payload["node_id"]).toBe("gauge-a")
-    expect(b.payload["node_id"]).toBe("gauge-b")
+    expect(a.payload["id"]).toBe("gauge-a")
+    expect(b.payload["id"]).toBe("gauge-b")
   })
 })
