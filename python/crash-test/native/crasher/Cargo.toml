@@ -7,7 +7,7 @@ edition = "2024"
 impl = []
 
 [dependencies]
-plushie-widget-sdk = { path = "../../../../../plushie-rust/crates/plushie-widget-sdk" }
+plushie-widget-sdk = "0.6"
 
 [package.metadata.plushie.widget]
 type_name = "crasher"
