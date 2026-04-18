@@ -3,5 +3,12 @@ name = "sparkline"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+impl = []
+
 [dependencies]
-plushie-widget-sdk = "0.6"
+plushie-widget-sdk = { path = "../../../../../plushie-rust/crates/plushie-widget-sdk" }
+
+[package.metadata.plushie.widget]
+type_name = "sparkline"
+constructor = "sparkline::SparklineExtension::new()"

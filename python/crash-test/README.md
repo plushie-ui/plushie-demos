@@ -41,6 +41,17 @@ renderer binary:
 python -m plushie build
 ```
 
+The build delegates to `cargo plushie build`, discovering the
+widget via the `[package.metadata.plushie.widget]` block in
+`native/crasher/Cargo.toml`.
+
+For local development against a sibling `plushie-rust` checkout,
+set `PLUSHIE_RUST_SOURCE_PATH`:
+
+```sh
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust python -m plushie build
+```
+
 ## Run
 
 ```sh
@@ -69,7 +80,7 @@ src/crash_test/
   crasher.py           # native widget definition and commands
   app.py               # CrashTestApp (Elm architecture)
 native/crasher/
-  Cargo.toml           # Rust crate deps
+  Cargo.toml           # Rust crate deps + [package.metadata.plushie.widget]
   src/lib.rs           # CrasherExtension (panics on demand)
 tests/
   conftest.py          # shared fixtures

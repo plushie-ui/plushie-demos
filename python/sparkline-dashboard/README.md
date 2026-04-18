@@ -32,8 +32,17 @@ renderer binary that includes it:
 python -m plushie build --release
 ```
 
-This reads `[[tool.plushie.extensions]]` from `pyproject.toml` and
-generates a custom binary with the sparkline widget registered.
+This delegates to `cargo plushie build`, which discovers the widget
+via the `[package.metadata.plushie.widget]` block in
+`native/sparkline/Cargo.toml` and generates a custom renderer that
+registers it.
+
+For local development against a sibling `plushie-rust` checkout,
+set `PLUSHIE_RUST_SOURCE_PATH`:
+
+```sh
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust python -m plushie build --release
+```
 
 > **Note:** `python -m plushie download` will refuse to download a
 > precompiled binary when native widgets are configured. The stock
