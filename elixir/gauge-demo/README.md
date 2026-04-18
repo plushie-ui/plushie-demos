@@ -32,7 +32,7 @@ Requires the [plushie renderer source](https://github.com/plushie-ui/plushie-rus
 checked out locally:
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
+export PLUSHIE_RUST_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 ```
 
@@ -54,7 +54,7 @@ mix plushie.gui GaugeDemo.TemperatureMonitor
 ## Test
 
 ```sh
-export PLUSHIE_SOURCE_PATH=~/projects/plushie-rust
+export PLUSHIE_RUST_SOURCE_PATH=~/projects/plushie-rust
 mix plushie.build
 mix test
 ```
