@@ -3,6 +3,9 @@ name = "gauge"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+impl = []
+
 [package.metadata.plushie.widget]
 type_name = "gauge"
 constructor = "gauge::GaugeExtension::new()"
