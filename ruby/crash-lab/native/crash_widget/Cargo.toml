@@ -3,5 +3,9 @@ name = "crash_widget"
 version = "0.1.0"
 edition = "2024"
 
+[package.metadata.plushie.widget]
+type_name = "crash_widget"
+constructor = "crash_widget::CrashExtension::new()"
+
 [dependencies]
 plushie-widget-sdk = "0.6"
