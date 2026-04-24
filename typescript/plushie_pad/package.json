@@ -1,0 +1,27 @@
+{
+  "name": "plushie-pad",
+  "version": "0.1.0",
+  "description": "Plushie Pad: a live TypeScript experiment editor. Threaded by the plushie-typescript guide chapters.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "plushie-pad": "./bin/plushie-pad.js"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "plushie": "file:../../../plushie-typescript"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.0.0"
+  }
+}
