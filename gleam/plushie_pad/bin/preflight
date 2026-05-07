@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Run local CI checks for plushie_pad.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+gleam format --check
+gleam build
+echo "All checks passed."
