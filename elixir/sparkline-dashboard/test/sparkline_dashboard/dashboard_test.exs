@@ -40,7 +40,7 @@ defmodule SparklineDashboard.DashboardTest do
     assert_exists("#main#net_card/net_header/net_label")
   end
 
-  test "sparkline widgets have extension type" do
+  test "sparkline widgets render as the native sparkline type" do
     for metric <- ~w(cpu mem net) do
       element = find!("#main##{metric}_card/#{metric}_spark")
       assert element.type == "sparkline"
@@ -53,6 +53,8 @@ defmodule SparklineDashboard.DashboardTest do
                tree(),
                Path.join(["test", "snapshots", "sparkline_dashboard_initial.json"])
              )
+
+    assert_screenshot("sparkline_dashboard_initial")
   end
 
   # -- Controls ---------------------------------------------------------------

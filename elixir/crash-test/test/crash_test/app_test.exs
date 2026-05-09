@@ -71,6 +71,8 @@ defmodule CrashTest.AppTest do
                tree(),
                Path.join(["test", "snapshots", "crash_test_initial.json"])
              )
+
+    assert_screenshot("crash_test_initial")
   end
 
   # -- Unknown events ---------------------------------------------------------

@@ -1,4 +1,4 @@
-defmodule CrashTest.CrashExtension do
+defmodule CrashTest.CrashWidget do
   @moduledoc """
   Minimal native widget that can be deliberately panicked.
 

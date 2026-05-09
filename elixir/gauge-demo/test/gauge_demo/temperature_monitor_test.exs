@@ -53,6 +53,8 @@ defmodule GaugeDemo.TemperatureMonitorTest do
                tree(),
                Path.join(["test", "snapshots", "temperature_monitor_initial.json"])
              )
+
+    assert_screenshot("temperature_monitor_initial")
   end
 
   # -- Button interactions ----------------------------------------------------
@@ -70,11 +72,9 @@ defmodule GaugeDemo.TemperatureMonitorTest do
     assert model().target_temp == 90.0
   end
 
-  @tag :skip
-  # Requires native widget command round-trip through iced's widget
-  # system. The synthetic event path (used in mock/headless) bypasses
-  # iced, so the gauge widget's set_value command never fires.
-  # Passes in windowed mode with a real display.
+  # Requires a native widget command round-trip through iced's widget system.
+  # The headless backend bypasses iced, so set_value never fires from Rust.
+  @tag backend: :windowed
   test "high click updates temperature after gauge confirmation" do
     click("#high")
     assert wait_for(fn -> model().temperature == 90.0 end)
@@ -94,6 +94,10 @@ defmodule GaugeDemo.TemperatureMonitorTest do
 
   # -- Unknown events ---------------------------------------------------------
 
+  # Verifies the last command wins when commands are queued quickly.
+  # Requires native widget command round-trips; trivially passes in headless
+  # because temperature never leaves its initial 20.0.
+  @tag backend: :windowed
   test "temperature follows the most recent confirmed button interaction" do
     click("#high")
     click("#reset")

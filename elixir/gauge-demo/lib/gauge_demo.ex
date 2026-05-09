@@ -5,7 +5,7 @@ defmodule GaugeDemo do
   This project demonstrates how to build a native Rust widget and use
   it from an Elixir Plushie app. The two main modules are:
 
-  - `GaugeDemo.GaugeExtension` - widget definition (props, commands,
+  - `GaugeDemo.Gauge` - widget definition (props, commands,
     Rust crate references). The macro generates the struct, setters,
     Widget protocol implementation, and command functions.
 

@@ -1,10 +1,10 @@
-defmodule GaugeDemo.GaugeExtension do
+defmodule GaugeDemo.Gauge do
   @moduledoc """
   Gauge native widget - renders a numeric gauge with label and color.
 
   Defines a native Rust widget with typed props and two commands.
-  The Rust side (`native/gauge/src/lib.rs`) implements
-  `WidgetExtension` to render the gauge and handle commands.
+  The Rust side (`native/gauge/src/lib.rs`) implements the native
+  widget interface to render the gauge and handle commands.
 
   ## Props
 

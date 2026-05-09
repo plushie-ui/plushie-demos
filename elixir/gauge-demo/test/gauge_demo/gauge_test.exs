@@ -1,7 +1,7 @@
-defmodule GaugeDemo.GaugeExtensionTest do
+defmodule GaugeDemo.GaugeTest do
   use ExUnit.Case, async: true
 
-  alias GaugeDemo.GaugeExtension, as: Gauge
+  alias GaugeDemo.Gauge
 
   describe "widget metadata" do
     test "type_names returns the gauge widget type" do

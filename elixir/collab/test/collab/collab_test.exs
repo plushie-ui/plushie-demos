@@ -87,6 +87,8 @@ defmodule CollabTest do
                tree(),
                Path.join(["test", "snapshots", "collab_initial.json"])
              )
+
+    assert_screenshot("collab_initial")
   end
 
   test "count text reflects model" do

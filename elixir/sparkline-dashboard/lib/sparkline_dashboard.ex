@@ -6,7 +6,7 @@ defmodule SparklineDashboard do
   widget and drive it with timer subscriptions. The two
   main modules are:
 
-  - `SparklineDashboard.SparklineExtension` - native widget definition
+  - `SparklineDashboard.Sparkline` - native widget definition
     (props only, no commands or events). The macro generates the struct,
     setters, Widget protocol implementation, and Buildable callbacks.
 

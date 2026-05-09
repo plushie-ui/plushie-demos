@@ -12,7 +12,7 @@ defmodule CrashTest.App do
 
   use Plushie.App
 
-  alias CrashTest.CrashExtension
+  alias CrashTest.CrashWidget
   alias Plushie.Event.WidgetEvent
 
   defmodule Model do
@@ -64,7 +64,7 @@ defmodule CrashTest.App do
   # The renderer isolates it via catch_unwind and shows a red placeholder.
 
   def update(model, %WidgetEvent{type: :click, id: "panic_widget"}) do
-    {model, CrashExtension.panic("crash_ext")}
+    {model, CrashWidget.panic("crash_ext")}
   end
 
   def update(model, _event), do: model
@@ -138,7 +138,7 @@ defmodule CrashTest.App do
           )
         end
 
-        CrashExtension.new("crash_ext", label: "Widget OK")
+        CrashWidget.new("crash_ext", label: "Widget OK")
       end
     end
   end

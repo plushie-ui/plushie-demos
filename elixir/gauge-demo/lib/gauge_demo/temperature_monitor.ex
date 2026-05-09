@@ -17,7 +17,7 @@ defmodule GaugeDemo.TemperatureMonitor do
 
   use Plushie.App
 
-  alias GaugeDemo.GaugeExtension, as: Gauge
+  alias GaugeDemo.Gauge
   alias Plushie.Event.WidgetEvent
 
   defmodule Model do

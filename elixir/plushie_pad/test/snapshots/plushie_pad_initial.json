@@ -1,0 +1,478 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "id": "main#sidebar-wrap/sidebar/sidebar-title",
+                      "props": {
+                        "a11y": {
+                          "label_from": "content",
+                          "role": "label"
+                        },
+                        "content": "Experiments",
+                        "size": 14
+                      },
+                      "type": "text"
+                    },
+                    {
+                      "children": [],
+                      "id": "main#sidebar-wrap/sidebar/search",
+                      "props": {
+                        "a11y": {
+                          "description": "Search...",
+                          "label_from": "placeholder",
+                          "role": "text_input"
+                        },
+                        "placeholder": "Search...",
+                        "value": ""
+                      },
+                      "type": "text_input"
+                    },
+                    {
+                      "children": [
+                        {
+                          "children": [],
+                          "id": "auto:PlushiePad.FileList:24",
+                          "props": {
+                            "spacing": 2
+                          },
+                          "type": "keyed_column"
+                        }
+                      ],
+                      "id": "main#sidebar-wrap/sidebar/file-scroll",
+                      "props": {
+                        "a11y": {
+                          "role": "scroll_view"
+                        },
+                        "height": "fill"
+                      },
+                      "type": "scrollable"
+                    }
+                  ],
+                  "id": "main#sidebar-wrap/sidebar",
+                  "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
+                    "height": "fill",
+                    "padding": 8,
+                    "spacing": 8,
+                    "width": 200
+                  },
+                  "type": "column"
+                }
+              ],
+              "id": "main#sidebar-wrap",
+              "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
+                "border": {
+                  "color": "#333333",
+                  "radius": 0,
+                  "width": 1
+                }
+              },
+              "type": "container"
+            },
+            {
+              "children": [],
+              "id": "main#editor",
+              "props": {
+                "a11y": {
+                  "label_from": "placeholder",
+                  "role": "multiline_text_input"
+                },
+                "content": "defmodule Pad.Experiments.Hello do\n  import Plushie.UI\n\n  def view do\n    column padding: 16, spacing: 8 do\n      text(\"greeting\", \"Hello, Plushie!\", size: 24)\n      button(\"btn\", \"Click Me\")\n    end\n  end\nend\n",
+                "font": "monospace",
+                "height": "fill",
+                "highlight_syntax": "ex",
+                "width": [
+                  "fill_portion",
+                  1
+                ]
+              },
+              "type": "text_editor"
+            },
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [],
+                      "id": "main#preview/greeting",
+                      "props": {
+                        "a11y": {
+                          "label_from": "content",
+                          "role": "label"
+                        },
+                        "content": "Hello, Plushie!",
+                        "size": 24
+                      },
+                      "type": "text"
+                    },
+                    {
+                      "children": [],
+                      "id": "main#preview/btn",
+                      "props": {
+                        "a11y": {
+                          "label_from": "label",
+                          "role": "button"
+                        },
+                        "label": "Click Me"
+                      },
+                      "type": "button"
+                    }
+                  ],
+                  "id": "auto:Pad.Experiments.Hello:5",
+                  "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
+                    "padding": 16,
+                    "spacing": 8
+                  },
+                  "type": "column"
+                }
+              ],
+              "id": "main#preview",
+              "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
+                "height": "fill",
+                "padding": 12,
+                "width": [
+                  "fill_portion",
+                  1
+                ]
+              },
+              "type": "container"
+            }
+          ],
+          "id": "auto:PlushiePad:339",
+          "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
+            "height": "fill",
+            "spacing": 0,
+            "width": "fill"
+          },
+          "type": "row"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [
+                    {
+                      "children": [
+                        {
+                          "children": [],
+                          "id": "auto:PlushiePad:480",
+                          "props": {
+                            "a11y": {
+                              "role": "label"
+                            },
+                            "content": "Save",
+                            "fill": "#ffffff",
+                            "id": "auto:PlushiePad:480",
+                            "size": 14,
+                            "x": 50,
+                            "y": 11
+                          },
+                          "type": "text"
+                        },
+                        {
+                          "children": [],
+                          "id": "auto:PlushiePad:471",
+                          "props": {
+                            "fill": {
+                              "end": [
+                                100,
+                                0
+                              ],
+                              "start": [
+                                0,
+                                0
+                              ],
+                              "stops": [
+                                [
+                                  0.0,
+                                  "#3b82f6"
+                                ],
+                                [
+                                  1.0,
+                                  "#2563eb"
+                                ]
+                              ],
+                              "type": "linear"
+                            },
+                            "h": 36,
+                            "id": "auto:PlushiePad:471",
+                            "radius": 6,
+                            "w": 100,
+                            "x": 0,
+                            "y": 0
+                          },
+                          "type": "rect"
+                        }
+                      ],
+                      "id": "main#save-canvas/button/save",
+                      "props": {
+                        "a11y": {
+                          "label": "Save experiment",
+                          "role": "button"
+                        },
+                        "cursor": "pointer",
+                        "focusable": true,
+                        "hover_style": {
+                          "fill": "#2563eb"
+                        },
+                        "id": "save",
+                        "on_click": true,
+                        "pressed_style": {
+                          "fill": "#1d4ed8"
+                        }
+                      },
+                      "type": "group"
+                    }
+                  ],
+                  "id": "main#save-canvas/button",
+                  "props": {
+                    "id": "button",
+                    "name": "button"
+                  },
+                  "type": "__layer__"
+                }
+              ],
+              "id": "main#save-canvas",
+              "props": {
+                "a11y": {
+                  "role": "canvas"
+                },
+                "height": 36,
+                "width": 100
+              },
+              "type": "canvas"
+            },
+            {
+              "children": [],
+              "id": "main#import",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
+                "label": "Import"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "main#export",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
+                "label": "Export"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "main#copy",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
+                "label": "Copy"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "main#detach",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
+                "label": "Detach"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "main#show-browser",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "button"
+                },
+                "label": "Browse"
+              },
+              "type": "button"
+            },
+            {
+              "children": [],
+              "id": "main#auto-save",
+              "props": {
+                "a11y": {
+                  "label_from": "label",
+                  "role": "check_box"
+                },
+                "checked": false,
+                "label": ""
+              },
+              "type": "checkbox"
+            },
+            {
+              "children": [],
+              "id": "main#auto-label",
+              "props": {
+                "a11y": {
+                  "label_from": "content",
+                  "role": "label"
+                },
+                "content": "Auto-save",
+                "size": 12
+              },
+              "type": "text"
+            },
+            {
+              "children": [],
+              "id": "main#new-name",
+              "props": {
+                "a11y": {
+                  "description": "name.ex",
+                  "label_from": "placeholder",
+                  "role": "text_input"
+                },
+                "on_submit": true,
+                "placeholder": "name.ex",
+                "value": ""
+              },
+              "type": "text_input"
+            }
+          ],
+          "id": "auto:PlushiePad:364",
+          "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
+            "padding": [
+              4,
+              8
+            ],
+            "spacing": 8
+          },
+          "type": "row"
+        },
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "main#event-log/toggle-log",
+                  "props": {
+                    "a11y": {
+                      "label_from": "label",
+                      "role": "button"
+                    },
+                    "label": "Hide Log"
+                  },
+                  "type": "button"
+                },
+                {
+                  "children": [],
+                  "id": "main#event-log/count",
+                  "props": {
+                    "a11y": {
+                      "label_from": "content",
+                      "role": "label"
+                    },
+                    "content": "0 events",
+                    "size": 12
+                  },
+                  "type": "text"
+                }
+              ],
+              "id": "auto:PlushiePad.EventLog:17",
+              "props": {
+                "a11y": {
+                  "role": "generic_container"
+                },
+                "spacing": 8
+              },
+              "type": "row"
+            },
+            {
+              "children": [
+                {
+                  "children": [],
+                  "id": "auto:PlushiePad.EventLog:24",
+                  "props": {
+                    "a11y": {
+                      "role": "generic_container"
+                    },
+                    "padding": 4,
+                    "spacing": 2
+                  },
+                  "type": "column"
+                }
+              ],
+              "id": "main#event-log/log-scroll",
+              "props": {
+                "a11y": {
+                  "role": "scroll_view"
+                },
+                "height": 120
+              },
+              "type": "scrollable"
+            }
+          ],
+          "id": "main#event-log",
+          "props": {
+            "a11y": {
+              "role": "generic_container"
+            },
+            "spacing": 4
+          },
+          "type": "column"
+        }
+      ],
+      "id": "auto:PlushiePad:338",
+      "props": {
+        "a11y": {
+          "role": "generic_container"
+        },
+        "height": "fill",
+        "spacing": 0,
+        "width": "fill"
+      },
+      "type": "column"
+    }
+  ],
+  "id": "main",
+  "props": {
+    "a11y": {
+      "role": "window"
+    },
+    "theme": "dark",
+    "title": "Plushie Pad"
+  },
+  "type": "window"
+}

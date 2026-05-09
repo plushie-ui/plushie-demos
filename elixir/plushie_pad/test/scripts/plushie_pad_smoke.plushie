@@ -1,0 +1,5 @@
+app: PlushiePad
+backend: headless
+-----
+assert_text "#main#preview/greeting" "Hello, Plushie!"
+click "#main#preview/btn"

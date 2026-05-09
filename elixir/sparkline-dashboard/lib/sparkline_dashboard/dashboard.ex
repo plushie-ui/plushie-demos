@@ -17,7 +17,7 @@ defmodule SparklineDashboard.Dashboard do
 
   use Plushie.App
 
-  alias SparklineDashboard.SparklineExtension, as: Sparkline
+  alias SparklineDashboard.Sparkline
   alias Plushie.Event.{TimerEvent, WidgetEvent}
   alias Plushie.Subscription
 

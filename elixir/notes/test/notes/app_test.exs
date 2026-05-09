@@ -43,6 +43,8 @@ defmodule Notes.AppTest do
                tree(),
                Path.join(["test", "snapshots", "notes_app_initial.json"])
              )
+
+    assert_screenshot("notes_app_initial")
   end
 
   # -- Navigation -------------------------------------------------------------

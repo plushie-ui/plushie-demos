@@ -62,6 +62,16 @@ defmodule PlushiePad.PadTest do
     test "route starts at editor" do
       assert Plushie.Route.current(model().route) == :editor
     end
+
+    test "initial tree matches snapshot" do
+      assert :ok =
+               Plushie.Test.assert_tree_snapshot(
+                 tree(),
+                 Path.join(["test", "snapshots", "plushie_pad_initial.json"])
+               )
+
+      assert_screenshot("plushie_pad_initial")
+    end
   end
 
   describe "file management" do
