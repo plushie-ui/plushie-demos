@@ -114,3 +114,5 @@ class Dashboard
     end
   end
 end
+
+Plushie.run(Dashboard) if $PROGRAM_NAME == __FILE__

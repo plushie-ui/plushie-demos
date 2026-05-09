@@ -128,3 +128,5 @@ class TemperatureMonitor
     (history + [value]).last(MAX_HISTORY)
   end
 end
+
+Plushie.run(TemperatureMonitor) if $PROGRAM_NAME == __FILE__

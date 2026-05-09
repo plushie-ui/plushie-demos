@@ -130,8 +130,10 @@ export function view(model: Model) {
 
 // -- Standalone app (modes 3 and 4) -------------------------------------------
 
-export default app<Model>({
+const _app = app<Model>({
   init: init(),
   settings: { defaultEventRate: 30 },
   view,
 })
+export default _app
+_app.run()

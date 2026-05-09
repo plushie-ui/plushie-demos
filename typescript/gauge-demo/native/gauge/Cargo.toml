@@ -11,5 +11,5 @@ type_name = "gauge"
 constructor = "gauge::GaugeExtension::new()"
 
 [dependencies]
-plushie-widget-sdk = "0.6"
+plushie-widget-sdk = "0.7"
 serde_json = "1"

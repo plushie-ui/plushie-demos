@@ -56,7 +56,7 @@ const clearSamples = (s: Model): Model => ({
 
 // -- App ----------------------------------------------------------------------
 
-export default app<Model>({
+const _app = app<Model>({
   init: {
     cpuSamples: [],
     memSamples: [],
@@ -109,6 +109,8 @@ export default app<Model>({
     </Window>
   ),
 })
+export default _app
+_app.run()
 
 // -- View helpers -------------------------------------------------------------
 

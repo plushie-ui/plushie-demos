@@ -80,7 +80,7 @@ def _sparkline_card(
     return ui.container(
         f"{id}_card",
         ui.column(
-            ui.row(*header_children, spacing=8),
+            ui.row(*header_children, id=f"{id}_header", spacing=8),
             sparkline(
                 f"{id}_spark",
                 data=data,
@@ -89,6 +89,7 @@ def _sparkline_card(
                 fill=fill,
                 height=60.0,
             ),
+            id=f"{id}_col",
             spacing=4,
         ),
         padding=12,
@@ -154,6 +155,7 @@ class Dashboard(plushie.App[Model]):
                         size=14,
                         color="#888888",
                     ),
+                    id="controls",
                     spacing=12,
                 ),
                 # Sparkline charts
@@ -178,6 +180,7 @@ class Dashboard(plushie.App[Model]):
                     color="#FF9800",
                     fill=False,
                 ),
+                id="main_col",
                 padding=20,
                 spacing=16,
             ),

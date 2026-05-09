@@ -147,7 +147,9 @@ export function view(model: Model) {
 
 // -- App --------------------------------------------------------------------
 
-export default app<Model>({
+const _app = app<Model>({
   init: init(),
   view,
 })
+export default _app
+_app.run()

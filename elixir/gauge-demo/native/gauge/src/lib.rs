@@ -2,13 +2,13 @@
 //!
 //! Renders a temperature gauge using iced container and text widgets.
 //! Demonstrates the PlushieWidget trait with init, prepare, render,
-//! handle_widget_op, cleanup_stale, and fresh_for_session.
+//! handle_widget_op, and fresh_for_session.
 
 use plushie_widget_sdk::iced::widget::column;
 use plushie_widget_sdk::iced::{Color as IcedColor, Length as IcedLength, Theme as IcedTheme};
 use plushie_widget_sdk::prelude::*;
 use serde_json::json;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 /// Gauge widget: renders a numeric gauge with label and color.
 pub struct GaugeExtension {
@@ -149,8 +149,4 @@ impl<R: PlushieRenderer> PlushieWidget<R> for GaugeExtension {
         }
     }
 
-    fn cleanup_stale(&mut self, live_ids: &HashSet<(String, String)>) {
-        let live: HashSet<&str> = live_ids.iter().map(|(_, id)| id.as_str()).collect();
-        self.states.retain(|id, _| live.contains(id.as_str()));
-    }
 }
