@@ -57,3 +57,114 @@ impl Experiment for Counter {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use plushie::event::{EventType, WidgetEvent as RawWidgetEvent};
+    use plushie::test::TestSession;
+    use serde_json::Value;
+
+    fn click_event(id: &str) -> Event {
+        Event::Widget(RawWidgetEvent {
+            event_type: EventType::Click,
+            scoped_id: ScopedId::parse(id),
+            value: Value::Null,
+        })
+    }
+
+    struct CounterApp;
+
+    impl App for CounterApp {
+        type Model = Counter;
+
+        fn init() -> (Self::Model, Command) {
+            (Counter::default(), Command::none())
+        }
+
+        fn update(model: &mut Self::Model, event: Event) -> Command {
+            model.update(&event);
+            Command::none()
+        }
+
+        fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {
+            window("main").child(model.view()).into()
+        }
+    }
+
+    #[test]
+    fn starts_at_zero() {
+        let session = TestSession::<CounterApp>::start();
+        assert_eq!(session.model().count, 0);
+    }
+
+    #[test]
+    fn inc_increments() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.click("inc");
+        assert_eq!(session.model().count, 1);
+    }
+
+    #[test]
+    fn dec_decrements() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.click("dec");
+        assert_eq!(session.model().count, -1);
+    }
+
+    #[test]
+    fn reset_zeroes_after_increments() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.click("inc");
+        session.click("inc");
+        session.click("inc");
+        session.click("reset");
+        assert_eq!(session.model().count, 0);
+    }
+
+    #[test]
+    fn mixed_inc_dec() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.click("inc");
+        session.click("inc");
+        session.click("dec");
+        assert_eq!(session.model().count, 1);
+    }
+
+    #[test]
+    fn can_go_negative() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.click("dec");
+        session.click("dec");
+        assert_eq!(session.model().count, -2);
+    }
+
+    #[test]
+    fn view_text_tracks_count() {
+        let mut session = TestSession::<CounterApp>::start();
+        session.assert_text("count", "Count: 0");
+        session.click("inc");
+        session.assert_text("count", "Count: 1");
+        session.click("dec");
+        session.assert_text("count", "Count: 0");
+    }
+
+    #[test]
+    fn unrelated_click_returns_false() {
+        let mut counter = Counter::default();
+        let changed = counter.update(&click_event("other"));
+        assert!(!changed);
+        assert_eq!(counter.count, 0);
+    }
+
+    #[test]
+    fn inc_returns_true() {
+        let mut counter = Counter::default();
+        assert!(counter.update(&click_event("inc")));
+    }
+
+    #[test]
+    fn name_is_counter() {
+        assert_eq!(Counter::default().name(), "counter");
+    }
+}

@@ -56,3 +56,49 @@ impl Experiment for CanvasExperiment {
             .into()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use plushie::test::TestSession;
+
+    struct CanvasApp;
+
+    impl App for CanvasApp {
+        type Model = CanvasExperiment;
+
+        fn init() -> (Self::Model, Command) {
+            (CanvasExperiment, Command::none())
+        }
+
+        fn update(_model: &mut Self::Model, _event: Event) -> Command {
+            Command::none()
+        }
+
+        fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {
+            window("main").child(model.view()).into()
+        }
+    }
+
+    #[test]
+    fn name_is_canvas() {
+        assert_eq!(CanvasExperiment.name(), "canvas");
+    }
+
+    #[test]
+    fn canvas_widget_exists_in_view() {
+        let session = TestSession::<CanvasApp>::start();
+        session.assert_exists("sketch");
+    }
+
+    #[test]
+    fn title_widget_exists() {
+        let session = TestSession::<CanvasApp>::start();
+        session.assert_exists("title");
+    }
+
+    #[test]
+    fn source_is_nonempty() {
+        assert!(!CanvasExperiment.source().is_empty());
+    }
+}

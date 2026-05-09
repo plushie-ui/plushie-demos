@@ -108,3 +108,105 @@ impl Experiment for ListExperiment {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use plushie::test::TestSession;
+
+    struct ListApp;
+
+    impl App for ListApp {
+        type Model = ListExperiment;
+
+        fn init() -> (Self::Model, Command) {
+            (ListExperiment::default(), Command::none())
+        }
+
+        fn update(model: &mut Self::Model, event: Event) -> Command {
+            model.update(&event);
+            Command::none()
+        }
+
+        fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {
+            window("main").child(model.view()).into()
+        }
+    }
+
+    #[test]
+    fn starts_with_two_items() {
+        let session = TestSession::<ListApp>::start();
+        assert_eq!(session.model().items, vec!["spam", "eggs"]);
+    }
+
+    #[test]
+    fn starts_with_empty_draft() {
+        let session = TestSession::<ListApp>::start();
+        assert_eq!(session.model().draft, "");
+    }
+
+    #[test]
+    fn typing_updates_draft() {
+        let mut session = TestSession::<ListApp>::start();
+        session.type_text("draft", "beans");
+        assert_eq!(session.model().draft, "beans");
+    }
+
+    #[test]
+    fn add_button_appends_item_and_clears_draft() {
+        let mut session = TestSession::<ListApp>::start();
+        session.type_text("draft", "beans");
+        session.click("add");
+        assert_eq!(session.model().items, vec!["spam", "eggs", "beans"]);
+        assert_eq!(session.model().draft, "");
+    }
+
+    #[test]
+    fn submit_on_draft_appends_item() {
+        let mut session = TestSession::<ListApp>::start();
+        session.type_text("draft", "toast");
+        session.submit("draft");
+        assert_eq!(session.model().items, vec!["spam", "eggs", "toast"]);
+    }
+
+    #[test]
+    fn add_with_empty_draft_is_noop() {
+        let mut session = TestSession::<ListApp>::start();
+        session.click("add");
+        assert_eq!(session.model().items.len(), 2);
+    }
+
+    #[test]
+    fn add_trims_whitespace() {
+        let mut session = TestSession::<ListApp>::start();
+        session.type_text("draft", "  shrubbery  ");
+        session.click("add");
+        assert_eq!(session.model().items.last().unwrap(), "shrubbery");
+    }
+
+    #[test]
+    fn delete_first_item_via_scoped_id() {
+        let mut session = TestSession::<ListApp>::start();
+        // "item_0/delete" scopes the click to the first row
+        session.click("item_0/delete");
+        assert_eq!(session.model().items, vec!["eggs"]);
+    }
+
+    #[test]
+    fn delete_second_item_via_scoped_id() {
+        let mut session = TestSession::<ListApp>::start();
+        session.click("item_1/delete");
+        assert_eq!(session.model().items, vec!["spam"]);
+    }
+
+    #[test]
+    fn title_widget_exists() {
+        let session = TestSession::<ListApp>::start();
+        session.assert_exists("title");
+    }
+
+    #[test]
+    fn name_is_list() {
+        assert_eq!(ListExperiment::default().name(), "list");
+    }
+}

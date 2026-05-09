@@ -75,3 +75,83 @@ impl Experiment for Form {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use plushie::test::TestSession;
+
+    struct FormApp;
+
+    impl App for FormApp {
+        type Model = Form;
+
+        fn init() -> (Self::Model, Command) {
+            (Form::default(), Command::none())
+        }
+
+        fn update(model: &mut Self::Model, event: Event) -> Command {
+            model.update(&event);
+            Command::none()
+        }
+
+        fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {
+            window("main").child(model.view()).into()
+        }
+    }
+
+    #[test]
+    fn starts_with_empty_name() {
+        let session = TestSession::<FormApp>::start();
+        assert_eq!(session.model().name, "");
+    }
+
+    #[test]
+    fn starts_unsubscribed() {
+        let session = TestSession::<FormApp>::start();
+        assert!(!session.model().subscribed);
+    }
+
+    #[test]
+    fn starts_at_default_volume() {
+        let session = TestSession::<FormApp>::start();
+        assert!((session.model().volume - 25.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn name_input_updates_model() {
+        let mut session = TestSession::<FormApp>::start();
+        session.type_text("name", "Arthur Dent");
+        assert_eq!(session.model().name, "Arthur Dent");
+    }
+
+    #[test]
+    fn subscribe_toggle_flips_state() {
+        let mut session = TestSession::<FormApp>::start();
+        session.set_toggle("subscribe", true);
+        assert!(session.model().subscribed);
+        session.set_toggle("subscribe", false);
+        assert!(!session.model().subscribed);
+    }
+
+    #[test]
+    fn slider_updates_volume() {
+        let mut session = TestSession::<FormApp>::start();
+        session.slide("volume", 75.0);
+        assert!((session.model().volume - 75.0).abs() < f32::EPSILON);
+    }
+
+    #[test]
+    fn echo_text_reflects_all_fields() {
+        let mut session = TestSession::<FormApp>::start();
+        session.type_text("name", "Zaphod");
+        session.set_toggle("subscribe", true);
+        session.slide("volume", 42.0);
+        session.assert_text("echo", r#"name = "Zaphod", subscribed = true, volume = 42"#);
+    }
+
+    #[test]
+    fn name_is_form() {
+        assert_eq!(Form::default().name(), "form");
+    }
+}

@@ -130,3 +130,167 @@ impl App for PadApp {
             .into()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use plushie::test::TestSession;
+
+    // ---------------------------------------------------------------------------
+    // init
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn init_selects_first_experiment() {
+        let session = TestSession::<PadApp>::start();
+        assert_eq!(session.model().selected, 0);
+    }
+
+    #[test]
+    fn init_event_log_is_empty() {
+        let session = TestSession::<PadApp>::start();
+        assert!(session.model().event_log.is_empty());
+    }
+
+    #[test]
+    fn init_loads_all_experiments() {
+        let session = TestSession::<PadApp>::start();
+        assert_eq!(session.model().experiments.len(), 5);
+    }
+
+    // ---------------------------------------------------------------------------
+    // view structure
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn view_has_sidebar() {
+        let session = TestSession::<PadApp>::start();
+        session.assert_exists("sidebar");
+    }
+
+    #[test]
+    fn view_has_source_pane() {
+        let session = TestSession::<PadApp>::start();
+        session.assert_exists("source");
+    }
+
+    #[test]
+    fn view_has_preview_pane() {
+        let session = TestSession::<PadApp>::start();
+        session.assert_exists("preview");
+    }
+
+    #[test]
+    fn view_has_event_log() {
+        let session = TestSession::<PadApp>::start();
+        session.assert_exists("event_log");
+    }
+
+    #[test]
+    fn sidebar_has_pick_button_for_each_experiment() {
+        let session = TestSession::<PadApp>::start();
+        for i in 0..5 {
+            session.assert_exists(format!("pick_{i}").as_str());
+        }
+    }
+
+    // ---------------------------------------------------------------------------
+    // sidebar selection
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn clicking_pick_changes_selected() {
+        let mut session = TestSession::<PadApp>::start();
+        session.click("pick_2");
+        assert_eq!(session.model().selected, 2);
+    }
+
+    #[test]
+    fn clicking_pick_logs_selection() {
+        let mut session = TestSession::<PadApp>::start();
+        session.click("pick_1");
+        let log = &session.model().event_log;
+        assert!(!log.is_empty());
+        assert!(log[0].contains("selected counter"), "expected 'selected counter' in log, got: {:?}", log[0]);
+    }
+
+    #[test]
+    fn clicking_last_experiment() {
+        let mut session = TestSession::<PadApp>::start();
+        session.click("pick_4");
+        assert_eq!(session.model().selected, 4);
+        assert_eq!(session.model().experiments[4].name(), "form");
+    }
+
+    // ---------------------------------------------------------------------------
+    // event log: push_log logic tested directly
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn push_log_adds_entry_at_front() {
+        let mut model = Model {
+            selected: 0,
+            experiments: crate::experiments::build_gallery(),
+            event_log: Vec::new(),
+        };
+        model.push_log("first".into());
+        model.push_log("second".into());
+        assert_eq!(model.event_log[0], "second");
+        assert_eq!(model.event_log[1], "first");
+    }
+
+    #[test]
+    fn push_log_caps_at_capacity() {
+        let mut model = Model {
+            selected: 0,
+            experiments: crate::experiments::build_gallery(),
+            event_log: Vec::new(),
+        };
+        for i in 0..=EVENT_LOG_CAPACITY + 5 {
+            model.push_log(format!("entry {i}"));
+        }
+        assert_eq!(model.event_log.len(), EVENT_LOG_CAPACITY);
+    }
+
+    #[test]
+    fn push_log_truncates_long_entries() {
+        let long = "x".repeat(EVENT_LOG_MAX_LEN + 50);
+        let mut model = Model {
+            selected: 0,
+            experiments: crate::experiments::build_gallery(),
+            event_log: Vec::new(),
+        };
+        model.push_log(long);
+        let entry = &model.event_log[0];
+        assert!(entry.ends_with("..."));
+        assert!(entry.len() <= EVENT_LOG_MAX_LEN + 3);
+    }
+
+    #[test]
+    fn push_log_preserves_short_entries() {
+        let short = "hello";
+        let mut model = Model {
+            selected: 0,
+            experiments: crate::experiments::build_gallery(),
+            event_log: Vec::new(),
+        };
+        model.push_log(short.into());
+        assert_eq!(model.event_log[0], short);
+    }
+
+    // ---------------------------------------------------------------------------
+    // preview routing
+    // ---------------------------------------------------------------------------
+
+    #[test]
+    fn preview_click_routes_to_hello_experiment() {
+        let mut session = TestSession::<PadApp>::start();
+        // "wave" is inside the preview container, so it gets routed to
+        // the current experiment (hello). Check the event log for routing
+        // rather than inspecting experiment state (experiments are opaque
+        // dyn trait objects from this scope).
+        let log_before = session.model().event_log.len();
+        session.click("wave");
+        assert!(session.model().event_log.len() > log_before);
+    }
+}

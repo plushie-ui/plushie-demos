@@ -2960,6 +2960,7 @@ name = "plushie_pad"
 version = "0.1.0"
 dependencies = [
  "plushie",
+ "serde_json",
 ]
 
 [[package]]

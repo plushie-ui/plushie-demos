@@ -62,3 +62,27 @@ pub fn build_gallery() -> Vec<Box<dyn Experiment>> {
         Box::new(form::Form::default()),
     ]
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn gallery_has_five_experiments() {
+        assert_eq!(build_gallery().len(), 5);
+    }
+
+    #[test]
+    fn gallery_order_matches_sidebar_expectation() {
+        let gallery = build_gallery();
+        let names: Vec<&str> = gallery.iter().map(|e| e.name()).collect();
+        assert_eq!(names, vec!["hello", "counter", "list", "canvas", "form"]);
+    }
+
+    #[test]
+    fn all_experiments_have_nonempty_source() {
+        for exp in build_gallery() {
+            assert!(!exp.source().is_empty(), "{} has empty source", exp.name());
+        }
+    }
+}
