@@ -94,7 +94,7 @@ pub fn subscribe(model: Model) -> List(subscription.Subscription) {
 
 // -- View --------------------------------------------------------------------
 
-pub fn view(model: Model) -> Node {
+pub fn view(model: Model) -> List(Node) {
   let assert Ok(cpu_color) = color.from_hex("#4CAF50")
   let assert Ok(mem_color) = color.from_hex("#2196F3")
   let assert Ok(net_color) = color.from_hex("#FF9800")
@@ -105,16 +105,16 @@ pub fn view(model: Model) -> Node {
     False -> "Resume"
   }
 
-  ui.window("main", [window.Title("Sparkline Dashboard")], [
+  [ui.window("main", [window.Title("Sparkline Dashboard")], [
     ui.column(
       "content",
       [
         column.Padding(padding.all(16.0)),
-        column.Spacing(16),
+        column.Spacing(16.0),
         column.AlignX(alignment.Center),
       ],
       [
-        ui.row("controls", [row.Spacing(8)], [
+        ui.row("controls", [row.Spacing(8.0)], [
           ui.button_("toggle_running", toggle_label),
           ui.button_("clear", "Clear"),
         ]),
@@ -130,7 +130,7 @@ pub fn view(model: Model) -> Node {
         ),
       ],
     ),
-  ])
+  ])]
 }
 
 // -- Metrics -----------------------------------------------------------------
@@ -190,7 +190,7 @@ fn sparkline_card(
   ui.container(id <> "_card", [container.Padding(padding.all(12.0))], [
     ui.column(
       id <> "_col",
-      [column.Spacing(4)],
+      [column.Spacing(4.0)],
       list.flatten([
         [ui.text_(id <> "_label", label_text)],
         value_nodes,

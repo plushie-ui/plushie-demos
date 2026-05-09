@@ -245,14 +245,14 @@ pub fn subscribe_returns_key_press_subscription_test() {
 
 pub fn view_root_is_window_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.equal(tree.kind, "window")
   should.equal(tree.id, "main")
 }
 
 pub fn view_window_has_title_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.equal(dict.get(tree.props, "title"), Ok(StringVal("Notes")))
 }
 
@@ -260,19 +260,19 @@ pub fn view_window_has_title_test() {
 
 pub fn list_view_contains_create_button_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "create")))
 }
 
 pub fn list_view_contains_search_input_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "search")))
 }
 
 pub fn list_view_shows_empty_state_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "empty")))
 }
 
@@ -282,14 +282,14 @@ pub fn list_view_shows_note_rows_test() {
       Note(id: "1", title: "A", body: ""),
       Note(id: "2", title: "B", body: ""),
     ])
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "note-1")))
   should.be_true(option.is_some(find_node(tree, "note-2")))
 }
 
 pub fn list_view_shows_delete_buttons_test() {
   let m = Model(..empty_model(), notes: [Note(id: "1", title: "A", body: "")])
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "delete-1")))
 }
 
@@ -297,27 +297,27 @@ pub fn list_view_shows_delete_buttons_test() {
 
 pub fn editor_view_contains_back_button_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "back")))
 }
 
 pub fn editor_view_contains_undo_redo_buttons_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "undo")))
   should.be_true(option.is_some(find_node(tree, "redo")))
 }
 
 pub fn editor_view_contains_title_input_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   let assert option.Some(title) = find_node(tree, "title")
   should.equal(dict.get(title.props, "value"), Ok(StringVal("Test Note")))
 }
 
 pub fn editor_view_contains_body_editor_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "body")))
 }
 
@@ -325,25 +325,25 @@ pub fn editor_view_contains_body_editor_test() {
 
 pub fn shortcut_bar_present_in_list_view_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "shortcut-bar")))
 }
 
 pub fn shortcut_bar_present_in_editor_view_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "shortcut-bar")))
 }
 
 pub fn list_shortcuts_show_ctrl_n_test() {
   let #(m, _) = model.init()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "ctrl-n-hint")))
 }
 
 pub fn editor_shortcuts_show_ctrl_z_test() {
   let m = model_with_note_open()
-  let tree = app.view(m)
+  let assert [tree, ..] = app.view(m)
   should.be_true(option.is_some(find_node(tree, "ctrl-z-hint")))
 }
 

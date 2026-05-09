@@ -7,7 +7,7 @@ the previous one.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from typing import Any
 
 import plushie
@@ -16,7 +16,6 @@ from plushie.events import (
     Click,
     Input,
     KeyEvent,
-    Select,
     Submit,
     TimerTick,
 )
@@ -51,7 +50,7 @@ def _ensure_default_experiment() -> None:
                 "from plushie import ui\n\n"
                 "\n"
                 "def view():\n"
-                '    return ui.column(\n'
+                "    return ui.column(\n"
                 '        ui.text("greeting", "Hello, Plushie!", size=24),\n'
                 '        ui.button("btn", "Click Me"),\n'
                 "        padding=16,\n"
@@ -74,9 +73,7 @@ class Pad(plushie.App[Model]):
             last_saved_source=source,
         )
 
-    def update(
-        self, model: Model, event: Any
-    ) -> Model | tuple[Model, Command | list[Command]]:
+    def update(self, model: Model, event: Any) -> Model | tuple[Model, Command]:
         match event:
             case Click(id=exp_id) if exp_id.startswith("select-"):
                 name = exp_id.removeprefix("select-")

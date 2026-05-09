@@ -13,7 +13,7 @@ from typing import Any
 
 from data_explorer.app import DataExplorer, Model
 from plushie.commands import Command
-from plushie.events import AsyncResult, Click, EffectResult, Sort, Submit
+from plushie.events import AsyncResult, Click, EffectResult, FileOpened, Sort, Submit
 from plushie.tree import find, normalize
 
 SAMPLE_CSV = str(Path(__file__).resolve().parent.parent / "sample_data" / "sample.csv")
@@ -34,9 +34,7 @@ class TestOpenFileFlow:
         model = app.init()
 
         # Simulate EffectResult with the sample CSV path
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         assert model.loading is True
         assert cmd is not None
@@ -63,9 +61,7 @@ class TestOpenFileFlow:
         app = DataExplorer()
         model = app.init()
 
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
         model, _ = _unwrap(
@@ -85,9 +81,7 @@ class TestSearchAfterLoad:
     def _load(self) -> tuple[DataExplorer, Model]:
         app = DataExplorer()
         model = app.init()
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
         model, _ = _unwrap(
@@ -110,9 +104,7 @@ class TestPaginationAfterLoad:
     def _load(self) -> tuple[DataExplorer, Model]:
         app = DataExplorer()
         model = app.init()
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
         model, _ = _unwrap(
@@ -141,9 +133,7 @@ class TestSearchEdgeCases:
     def _load(self) -> tuple[DataExplorer, Model]:
         app = DataExplorer()
         model = app.init()
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
         model, _ = _unwrap(
@@ -166,9 +156,7 @@ class TestSortAfterLoad:
     def _load(self) -> tuple[DataExplorer, Model]:
         app = DataExplorer()
         model = app.init()
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": SAMPLE_CSV}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path=SAMPLE_CSV))
         model, cmd = _unwrap(app.update(model, event))
         loaded = cmd.payload["fn"]()  # type: ignore[union-attr]
         model, _ = _unwrap(

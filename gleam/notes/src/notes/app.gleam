@@ -129,20 +129,20 @@ pub fn subscribe(_model: Model) -> List(Subscription) {
 /// Build the app with custom message types and key subscriptions.
 pub fn app() {
   app.application(model.init, update, view, msg.on_event)
-  |> app.with_subscriptions(subscribe)
+  |> app.with_subscribe(subscribe)
 }
 
 // -- View --------------------------------------------------------------------
 
 /// Build the UI tree. Dispatches to list or editor view based on
 /// the current route, with a shortcut hint bar at the bottom.
-pub fn view(model: Model) -> Node {
+pub fn view(model: Model) -> List(Node) {
   let content = case model.current_view {
     ListView -> list_view(model)
     EditorView(id) -> editor_view(model, id)
   }
 
-  ui.window("main", [window.Title("Notes"), window.Size(600.0, 500.0)], [
+  [ui.window("main", [window.Title("Notes"), window.Size(600.0, 500.0)], [
     ui.column(
       "root",
       [
@@ -155,7 +155,7 @@ pub fn view(model: Model) -> Node {
         shortcut_bar(model.current_view),
       ],
     ),
-  ])
+  ])]
 }
 
 // -- List view ---------------------------------------------------------------
@@ -174,10 +174,10 @@ fn list_view(model: Model) -> Node {
 
   ui.column(
     "list-view",
-    [column.Spacing(12), column.Width(length.Fill)],
+    [column.Spacing(12.0), column.Width(length.Fill)],
     list.flatten([
       [
-        ui.row("list-header", [row.Spacing(8)], [
+        ui.row("list-header", [row.Spacing(8.0)], [
           ui.text("list-title", "Notes", [text_opts.Size(24.0)]),
           ui.button_("create", "+ New"),
         ]),
@@ -203,10 +203,10 @@ fn note_row(note: Note) -> Node {
 
   let assert Ok(muted) = color.from_hex("#888888")
 
-  ui.row("row-" <> note.id, [row.Spacing(8), row.Width(length.Fill)], [
+  ui.row("row-" <> note.id, [row.Spacing(8.0), row.Width(length.Fill)], [
     ui.column(
       "info-" <> note.id,
-      [column.Spacing(2), column.Width(length.Fill)],
+      [column.Spacing(2.0), column.Width(length.Fill)],
       [
         ui.button("note-" <> note.id, note.title, [button.Width(length.Fill)]),
         ui.text("preview-" <> note.id, preview, [
@@ -238,12 +238,12 @@ fn editor_view(model: Model, note_id: String) -> Node {
       ui.column(
         "editor-view",
         [
-          column.Spacing(12),
+          column.Spacing(12.0),
           column.Width(length.Fill),
           column.Height(length.Fill),
         ],
         [
-          ui.row("editor-header", [row.Spacing(8)], [
+          ui.row("editor-header", [row.Spacing(8.0)], [
             ui.button_("back", "Back"),
             ui.button("undo", "Undo", [button.Disabled(!has_undo)]),
             ui.button("redo", "Redo", [button.Disabled(!has_redo)]),
@@ -283,7 +283,7 @@ fn shortcut_bar(current_view: View) -> Node {
 
   ui.row(
     "shortcut-bar",
-    [row.Spacing(16), row.Padding(padding.xy(8.0, 0.0)), row.Width(length.Fill)],
+    [row.Spacing(16.0), row.Padding(padding.xy(8.0, 0.0)), row.Width(length.Fill)],
     hints,
   )
 }
@@ -292,7 +292,7 @@ fn shortcut_hint(id: String, key_label: String, action: String) -> Node {
   let assert Ok(badge_bg) = color.from_hex("#f0f0f0")
   let assert Ok(hint_color) = color.from_hex("#666666")
 
-  ui.row(id <> "-hint", [row.Spacing(4), row.AlignY(alignment.Center)], [
+  ui.row(id <> "-hint", [row.Spacing(4.0), row.AlignY(alignment.Center)], [
     ui.container(
       id <> "-badge",
       [

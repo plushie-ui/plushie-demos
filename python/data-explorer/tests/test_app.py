@@ -15,7 +15,16 @@ import pandas as pd
 
 from data_explorer.app import DataExplorer, Model, _stats_panel
 from plushie.commands import Command
-from plushie.events import AsyncResult, Click, EffectResult, Input, Sort, Submit
+from plushie.events import (
+    AsyncResult,
+    Click,
+    EffectCancelled,
+    EffectResult,
+    FileOpened,
+    Input,
+    Sort,
+    Submit,
+)
 from plushie.tree import find, normalize, text_of
 
 SAMPLE_CSV = str(Path(__file__).resolve().parent.parent / "sample_data" / "sample.csv")
@@ -79,9 +88,7 @@ class TestUpdateEffectResult:
     def test_ok_result_triggers_loading(self) -> None:
         app = _app()
         model = app.init()
-        event = EffectResult(
-            tag="file_open", status="ok", result={"path": "/tmp/test.csv"}
-        )
+        event = EffectResult(tag="file_open", result=FileOpened(path="/tmp/test.csv"))
         new_model, cmd = _unwrap(app.update(model, event))
         assert new_model.loading is True
         assert new_model.status == "Loading..."
@@ -92,7 +99,7 @@ class TestUpdateEffectResult:
     def test_cancelled_returns_model_unchanged(self) -> None:
         app = _app()
         model = app.init()
-        event = EffectResult(tag="file_open", status="cancelled")
+        event = EffectResult(tag="file_open", result=EffectCancelled())
         result = app.update(model, event)
         assert result is model
 

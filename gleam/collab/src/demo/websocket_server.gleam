@@ -174,7 +174,7 @@ fn handle_ws_message(
 
 /// Render a model to a tree, encode as snapshot JSON, and send over WebSocket.
 fn send_snapshot(conn: WebsocketConnection, model: collab.Model) -> Nil {
-  let tree = collab.view(model)
+  let assert [tree, ..] = collab.view(model)
   case encode_snapshot(tree) {
     Ok(json_str) -> {
       let _ = mist.send_text_frame(conn, json_str)

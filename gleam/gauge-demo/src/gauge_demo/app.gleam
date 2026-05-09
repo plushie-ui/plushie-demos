@@ -85,17 +85,17 @@ pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
 }
 
 /// Build the UI tree from the current model.
-pub fn view(model: Model) -> Node {
+pub fn view(model: Model) -> List(Node) {
   let temp = model.temperature
   let status = temperature_status(temp)
   let color = status_color(temp)
 
-  ui.window("main", [window.Title("Temperature Gauge")], [
+  [ui.window("main", [window.Title("Temperature Gauge")], [
     ui.column(
       "content",
       [
         column.Padding(padding.all(24.0)),
-        column.Spacing(16),
+        column.Spacing(16.0),
         column.AlignX(alignment.Center),
       ],
       [
@@ -118,7 +118,7 @@ pub fn view(model: Model) -> Node {
           [],
         ),
         ui.slider("target", #(0.0, 100.0), model.target_temp, []),
-        ui.row("actions", [row.Spacing(8)], [
+        ui.row("actions", [row.Spacing(8.0)], [
           ui.button_("reset", "Reset (20\u{00B0}C)"),
           ui.button_("high", "High (90\u{00B0}C)"),
         ]),
@@ -127,7 +127,7 @@ pub fn view(model: Model) -> Node {
         ]),
       ],
     ),
-  ])
+  ])]
 }
 
 // -- Helpers -----------------------------------------------------------------

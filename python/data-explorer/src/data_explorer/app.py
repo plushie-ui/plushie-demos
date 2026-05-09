@@ -24,7 +24,16 @@ import pandas as pd
 import plushie
 from plushie import effects, ui
 from plushie.commands import Command
-from plushie.events import AsyncResult, Click, EffectResult, Input, Sort, Submit
+from plushie.events import (
+    AsyncResult,
+    Click,
+    EffectResult,
+    FileOpened,
+    FilesOpened,
+    Input,
+    Sort,
+    Submit,
+)
 
 from data_explorer.loader import df_columns, df_dtypes, df_to_rows, load_file
 from data_explorer.stats import column_stats, summary_stats
@@ -77,16 +86,19 @@ class DataExplorer(plushie.App[Model]):
                     ],
                 )
 
-            case EffectResult(status="ok", result=result):
-                path = result.get("path") or result.get("paths", [None])[0]
-                if path:
-                    return (
-                        replace(model, loading=True, status="Loading..."),
-                        Command.task(lambda: self._load(path), "file_loaded"),
-                    )
-                return model
+            case EffectResult(tag="file_open", result=FileOpened(path=path)):
+                return (
+                    replace(model, loading=True, status="Loading..."),
+                    Command.task(lambda: self._load(path), "file_loaded"),
+                )
 
-            case EffectResult(status="cancelled"):
+            case EffectResult(tag="file_open", result=FilesOpened(paths=(path, *_))):
+                return (
+                    replace(model, loading=True, status="Loading..."),
+                    Command.task(lambda: self._load(path), "file_loaded"),
+                )
+
+            case EffectResult(tag="file_open"):
                 return model
 
             case AsyncResult(tag="file_loaded", value=result):

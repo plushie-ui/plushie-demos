@@ -10,7 +10,7 @@ import sparkline_dashboard/app
 
 fn dashboard_app() {
   plushie_app.simple(app.init, app.update, app.view)
-  |> plushie_app.with_subscriptions(app.subscribe)
+  |> plushie_app.with_subscribe(app.subscribe)
 }
 
 // ---------------------------------------------------------------------------
@@ -19,7 +19,7 @@ fn dashboard_app() {
 
 pub fn init_samples_empty_test() {
   let ctx = testing.start(dashboard_app())
-  let model = testing.model(ctx)
+  let model: app.Model = testing.model(ctx)
   should.equal(model.cpu_samples, [])
   should.equal(model.mem_samples, [])
   should.equal(model.net_samples, [])
@@ -28,7 +28,8 @@ pub fn init_samples_empty_test() {
 
 pub fn init_running_test() {
   let ctx = testing.start(dashboard_app())
-  should.be_true(testing.model(ctx).running)
+  let model: app.Model = testing.model(ctx)
+  should.be_true(model.running)
   testing.stop(ctx)
 }
 
@@ -79,7 +80,8 @@ pub fn view_initial_data_is_empty_test() {
   // backend round-trips it through the wire protocol where empty
   // arrays may come back as ListVal([]) or StringVal("") depending
   // on the codec path. Assert the model is empty instead.
-  should.equal(testing.model(ctx).cpu_samples, [])
+  let model: app.Model = testing.model(ctx)
+  should.equal(model.cpu_samples, [])
   // Also verify the widget exists and has the data prop
   should.be_true(option.is_some(element.prop(cpu, "data")))
   testing.stop(ctx)
@@ -91,9 +93,11 @@ pub fn view_initial_data_is_empty_test() {
 
 pub fn toggle_pauses_test() {
   let ctx = testing.start(dashboard_app())
-  should.be_true(testing.model(ctx).running)
+  let model: app.Model = testing.model(ctx)
+  should.be_true(model.running)
   let ctx = testing.click(ctx, "toggle_running")
-  should.be_false(testing.model(ctx).running)
+  let model: app.Model = testing.model(ctx)
+  should.be_false(model.running)
   testing.stop(ctx)
 }
 
@@ -101,7 +105,8 @@ pub fn toggle_resumes_test() {
   let ctx = testing.start(dashboard_app())
   let ctx = testing.click(ctx, "toggle_running")
   let ctx = testing.click(ctx, "toggle_running")
-  should.be_true(testing.model(ctx).running)
+  let model: app.Model = testing.model(ctx)
+  should.be_true(model.running)
   testing.stop(ctx)
 }
 

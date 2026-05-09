@@ -80,19 +80,19 @@ pub fn update(model: Model, event: Event) -> #(Model, command.Command(Event)) {
 /// Build the UI tree from the current model. The tree is diffed
 /// against the previous render and only changes are sent to the
 /// renderer as patches.
-pub fn view(model: Model) -> Node {
+pub fn view(model: Model) -> List(Node) {
   let t = case model.dark_mode {
     True -> theme.Dark
     False -> theme.Light
   }
 
-  ui.window("main", [window.Title("Plushie Demo"), window.Size(500.0, 450.0)], [
+  [ui.window("main", [window.Title("Plushie Demo"), window.Size(500.0, 450.0)], [
     ui.themer("theme-root", t, [], [
       ui.column(
         "root",
         [
           column.Padding(padding.all(20.0)),
-          column.Spacing(16),
+          column.Spacing(16.0),
           column.Width(length.Fill),
         ],
         [
@@ -101,7 +101,7 @@ pub fn view(model: Model) -> Node {
           ui.text_input("name", model.name, [
             text_input.Placeholder("Your name"),
           ]),
-          ui.row("counter-row", [row.Spacing(8)], [
+          ui.row("counter-row", [row.Spacing(8.0)], [
             ui.button_("dec", "-"),
             ui.text_("count", "Count: " <> int.to_string(model.count)),
             ui.button_("inc", "+"),
@@ -114,7 +114,7 @@ pub fn view(model: Model) -> Node {
         ],
       ),
     ]),
-  ])
+  ])]
 }
 
 /// Build the app with a 30 Hz event rate cap. This throttles

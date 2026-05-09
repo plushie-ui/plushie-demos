@@ -12,7 +12,7 @@ import sparkline_dashboard/app
 pub fn main() {
   let application =
     plushie_app.simple(app.init, app.update, app.view)
-    |> plushie_app.with_subscriptions(app.subscribe)
+    |> plushie_app.with_subscribe(app.subscribe)
 
   case plushie.start(application, plushie.default_start_opts()) {
     Ok(rt) -> plushie.wait(rt)

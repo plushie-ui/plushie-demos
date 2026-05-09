@@ -2,16 +2,13 @@
 name = "data-explorer"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = ["plushie", "pandas>=2.0"]
+dependencies = ["plushie==0.6.0", "pandas>=2.0"]
 
 [project.optional-dependencies]
 excel = ["openpyxl>=3.0"]
 parquet = ["pyarrow>=10.0"]
 all = ["openpyxl>=3.0", "pyarrow>=10.0"]
 dev = ["pytest", "ruff", "pyright"]
-
-[tool.uv.sources]
-plushie = { path = "../../../plushie-python", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Live Python experiment editor dogfooding the plushie SDK"
 requires-python = ">=3.12"
 dependencies = [
-    "plushie",
+    "plushie==0.6.0",
 ]
 
 [project.optional-dependencies]

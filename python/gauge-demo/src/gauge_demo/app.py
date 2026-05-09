@@ -4,7 +4,7 @@ Demonstrates:
 - Native widget extension (gauge rendered in Rust/iced)
 - Extension commands (set_value, animate_to)
 - Extension events (value_changed from Rust)
-- Settings with extension_config
+- Settings with widget_config
 
 Run::
 
@@ -139,7 +139,7 @@ class TemperatureMonitor(plushie.App[Model]):
 
     def settings(self) -> dict[str, Any]:
         return {
-            "extension_config": {
+            "widget_config": {
                 "gauge": {"arcWidth": 8, "tickCount": 10},
             },
         }

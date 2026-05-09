@@ -6,27 +6,4 @@ publish = false
 description = "Experiment gallery anchor pad for the Plushie Rust SDK"
 
 [dependencies]
-plushie = { path = "../../../plushie-rust/crates/plushie" }
-
-# Mirror the sibling plushie-rust workspace's local-dev patch so the
-# pad picks up the in-flight plushie-iced checkout the same way
-# `cargo check` inside plushie-rust does. Without this, cargo
-# resolves plushie-iced from crates.io and fails against the local
-# plushie-widget-sdk code that tracks unreleased iced APIs.
-[patch.crates-io]
-plushie-iced             = { path = "../../../plushie-iced" }
-plushie-iced-core        = { path = "../../../plushie-iced/core" }
-plushie-iced-cryoglyph   = { path = "../../../plushie-iced/cryoglyph" }
-plushie-iced-debug       = { path = "../../../plushie-iced/debug" }
-plushie-iced-futures     = { path = "../../../plushie-iced/futures" }
-plushie-iced-graphics    = { path = "../../../plushie-iced/graphics" }
-plushie-iced-highlighter = { path = "../../../plushie-iced/highlighter" }
-plushie-iced-program     = { path = "../../../plushie-iced/program" }
-plushie-iced-renderer    = { path = "../../../plushie-iced/renderer" }
-plushie-iced-runtime     = { path = "../../../plushie-iced/runtime" }
-plushie-iced-selector    = { path = "../../../plushie-iced/selector" }
-plushie-iced-test        = { path = "../../../plushie-iced/test" }
-plushie-iced-tiny-skia   = { path = "../../../plushie-iced/tiny_skia" }
-plushie-iced-wgpu        = { path = "../../../plushie-iced/wgpu" }
-plushie-iced-widget      = { path = "../../../plushie-iced/widget" }
-plushie-iced-winit       = { path = "../../../plushie-iced/winit" }
+plushie = "0.7.1"

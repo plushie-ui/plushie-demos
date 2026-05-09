@@ -488,15 +488,15 @@ class TestRapidClicks:
 class TestSettings:
     """Settings returned by the app."""
 
-    def test_extension_config_present(self) -> None:
+    def test_widget_config_present(self) -> None:
         app = _app()
         s = app.settings()
-        assert "extension_config" in s
-        assert "gauge" in s["extension_config"]
+        assert "widget_config" in s
+        assert "gauge" in s["widget_config"]
 
     def test_gauge_config_values(self) -> None:
         app = _app()
-        cfg = app.settings()["extension_config"]["gauge"]
+        cfg = app.settings()["widget_config"]["gauge"]
         assert cfg["arcWidth"] == 8
         assert cfg["tickCount"] == 10
 

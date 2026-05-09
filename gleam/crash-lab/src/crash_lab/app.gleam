@@ -107,7 +107,7 @@ pub fn update(model: Model, event: Event) -> #(Model, Command(Event)) {
 /// If `view_broken` is True, this function panics. The runtime
 /// catches the panic and keeps displaying the previous tree, which
 /// still contains the "Recover" button.
-pub fn view(model: Model) -> Node {
+pub fn view(model: Model) -> List(Node) {
   case model.view_broken {
     True -> panic as "intentional panic in view"
     False -> Nil
@@ -133,12 +133,12 @@ pub fn view(model: Model) -> Node {
     ]
   }
 
-  ui.window("main", [window.Title("Crash Lab"), window.Size(500.0, 520.0)], [
+  [ui.window("main", [window.Title("Crash Lab"), window.Size(500.0, 520.0)], [
     ui.column(
       "root",
       [
         column.Padding(padding.all(20.0)),
-        column.Spacing(16),
+        column.Spacing(16.0),
         column.Width(length.Fill),
         column.AlignX(alignment.Center),
       ],
@@ -156,13 +156,13 @@ pub fn view(model: Model) -> Node {
             [
               ui.column(
                 "counter-col",
-                [column.Spacing(8), column.AlignX(alignment.Center)],
+                [column.Spacing(8.0), column.AlignX(alignment.Center)],
                 [
                   ui.text("counter-label", "Counter (proof of life)", [
                     text.Size(12.0),
                     text.Color(muted),
                   ]),
-                  ui.row("counter-row", [row.Spacing(8)], [
+                  ui.row("counter-row", [row.Spacing(8.0)], [
                     ui.button_("dec", "-"),
                     ui.text_("count", int.to_string(model.count)),
                     ui.button_("inc", "+"),
@@ -176,11 +176,11 @@ pub fn view(model: Model) -> Node {
         widget_nodes,
         // Action buttons
         [
-          ui.row("rust-actions", [row.Spacing(8)], [
+          ui.row("rust-actions", [row.Spacing(8.0)], [
             ui.button_("panic-extension", "Panic Extension"),
             ui.button_("toggle-widget", toggle_label),
           ]),
-          ui.row("gleam-actions", [row.Spacing(8)], [
+          ui.row("gleam-actions", [row.Spacing(8.0)], [
             ui.button_("panic-update", "Panic Update"),
             ui.button_("break-view", "Break View"),
             ui.button_("recover-view", "Recover"),
@@ -196,7 +196,7 @@ pub fn view(model: Model) -> Node {
         ],
       ]),
     ),
-  ])
+  ])]
 }
 
 /// Build the app.
