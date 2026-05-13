@@ -60,6 +60,20 @@ Bundle the app into a self-contained executable with PyInstaller:
 
 This downloads the plushie binary, bundles it alongside the Python app
 and sample data, and produces `dist/DataExplorer/DataExplorer`. The
-resulting directory can be distributed to users who do not have Python
-installed. The plushie SDK automatically resolves the bundled binary
-at runtime via PyInstaller's `sys._MEIPASS` mechanism.
+renderer is staged as `plushie-renderer`, which is the bundled filename
+the SDK resolver checks at runtime.
+
+The script also emits shared launcher inputs under `dist/package/`:
+
+- `payload/` with `bin/plushie-renderer` and `host/DataExplorer/`
+- `payload.tar.zst`
+- `plushie-package.toml`
+
+The shared launcher handoff is:
+
+```sh
+cargo plushie package --manifest dist/package/plushie-package.toml --release
+```
+
+When `PLUSHIE_SOCKET` is set, the packaged host connects to the
+renderer-parent socket instead of spawning its bundled renderer.
