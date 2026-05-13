@@ -20,6 +20,9 @@ run_package_command() {
 
   if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
     cargo_plushie_dir="$(cd "$PLUSHIE_RUST_SOURCE_PATH" && pwd)"
+  elif ! command -v cargo-plushie >/dev/null 2>&1; then
+    echo "skip: package smoke - cargo-plushie is unavailable; install cargo-plushie or set PLUSHIE_RUST_SOURCE_PATH" >&2
+    return 0
   fi
 
   smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-smoke-cwd.XXXXXXXXXX")"
