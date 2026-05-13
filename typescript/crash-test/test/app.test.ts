@@ -6,7 +6,7 @@
  * the app keeps running after crashes.
  */
 
-import { existsSync } from "node:fs"
+import { existsSync, readdirSync, statSync } from "node:fs"
 import { resolve } from "node:path"
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { createSession, stopPool } from "plushie/testing"
@@ -82,7 +82,7 @@ describe("CrashBox builder", () => {
 
 describe("CrashBoxCmds", () => {
   test("panic command has correct structure", () => {
-    const cmd = CrashBoxCmds.panic("cb1")
+    const cmd = CrashBoxCmds.panic!("cb1")
     expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
       id: "cb1",
@@ -218,23 +218,29 @@ describe("recovery sequence", () => {
 // Integration tests (require custom binary)
 // ═══════════════════════════════════════════════════════════════════════════
 
-const binaryPath = resolve(
-  "node_modules",
-  ".plushie",
-  "build",
-  "target",
-  "debug",
-  "crash-test-plushie",
-)
-const hasBinary = existsSync(binaryPath)
-const integration = hasBinary ? describe : describe.skip
+function findBuiltRenderer(): string | null {
+  const binDir = resolve("node_modules", ".plushie", "bin")
+  if (!existsSync(binDir)) return null
+
+  for (const name of readdirSync(binDir).sort()) {
+    const candidate = resolve(binDir, name)
+    if (name.startsWith("plushie-renderer") && statSync(candidate).isFile()) {
+      return candidate
+    }
+  }
+
+  return null
+}
+
+const binaryPath = findBuiltRenderer()
+const integration = binaryPath === null ? describe.skip : describe
 
 // Tests are sequential - shared session.
 integration("crash test (integration)", () => {
   let session: TestSession<Model>
 
   beforeAll(async () => {
-    session = await createSession(crashApp, { binary: binaryPath })
+    session = await createSession(crashApp, { binary: binaryPath! })
     await session.start()
   })
 

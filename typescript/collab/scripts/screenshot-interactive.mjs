@@ -13,7 +13,7 @@ function savePng(name, result) {
   console.log(`Saved: ${dir}/${name}.png`)
 }
 
-const app = (await import("../src/collab.tsx")).default
+const app = (await import("../src/app.ts")).default
 const session = await createSession(app, { mode: "headless" })
 await session.start()
 await new Promise((r) => setTimeout(r, 300))

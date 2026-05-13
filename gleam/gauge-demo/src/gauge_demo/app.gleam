@@ -90,44 +90,46 @@ pub fn view(model: Model) -> List(Node) {
   let status = temperature_status(temp)
   let color = status_color(temp)
 
-  [ui.window("main", [window.Title("Temperature Gauge")], [
-    ui.column(
-      "content",
-      [
-        column.Padding(padding.all(24.0)),
-        column.Spacing(16.0),
-        column.AlignX(alignment.Center),
-      ],
-      [
-        ui.text("title", "Temperature Monitor", [text.Size(24.0)]),
-        gauge.gauge("temp", temp, [
-          gauge.min(0.0),
-          gauge.max(100.0),
-          gauge.color(color),
-          gauge.label(format_temp(temp)),
-          gauge.width(Fixed(200.0)),
-          gauge.height(Fixed(200.0)),
-        ]),
-        ui.text("status", "Status: " <> status, [text.Color(color)]),
-        ui.text(
-          "reading",
-          "Current: "
-            <> format_temp(temp)
-            <> " | Target: "
-            <> format_temp(model.target_temp),
-          [],
-        ),
-        ui.slider("target", #(0.0, 100.0), model.target_temp, []),
-        ui.row("actions", [row.Spacing(8.0)], [
-          ui.button_("reset", "Reset (20\u{00B0}C)"),
-          ui.button_("high", "High (90\u{00B0}C)"),
-        ]),
-        ui.text("history", "History: " <> format_history(model.history), [
-          text.Size(12.0),
-        ]),
-      ],
-    ),
-  ])]
+  [
+    ui.window("main", [window.Title("Temperature Gauge")], [
+      ui.column(
+        "content",
+        [
+          column.Padding(padding.all(24.0)),
+          column.Spacing(16.0),
+          column.AlignX(alignment.Center),
+        ],
+        [
+          ui.text("title", "Temperature Monitor", [text.Size(24.0)]),
+          gauge.gauge("temp", temp, [
+            gauge.min(0.0),
+            gauge.max(100.0),
+            gauge.color(color),
+            gauge.label(format_temp(temp)),
+            gauge.width(Fixed(200.0)),
+            gauge.height(Fixed(200.0)),
+          ]),
+          ui.text("status", "Status: " <> status, [text.Color(color)]),
+          ui.text(
+            "reading",
+            "Current: "
+              <> format_temp(temp)
+              <> " | Target: "
+              <> format_temp(model.target_temp),
+            [],
+          ),
+          ui.slider("target", #(0.0, 100.0), model.target_temp, []),
+          ui.row("actions", [row.Spacing(8.0)], [
+            ui.button_("reset", "Reset (20\u{00B0}C)"),
+            ui.button_("high", "High (90\u{00B0}C)"),
+          ]),
+          ui.text("history", "History: " <> format_history(model.history), [
+            text.Size(12.0),
+          ]),
+        ],
+      ),
+    ]),
+  ]
 }
 
 // -- Helpers -----------------------------------------------------------------

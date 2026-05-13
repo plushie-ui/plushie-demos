@@ -6,8 +6,8 @@ defmodule PlushiePad.FileList do
   field(:active_file, :any)
   field(:search_query, :any)
   field(:selection, :any)
-    field :event_rate, :integer, doc: "Max events per second."
-    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
+  field :event_rate, :integer, doc: "Max events per second."
+  field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   def view(id, props) do
     import Plushie.UI

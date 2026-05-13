@@ -119,11 +119,11 @@ defmodule GaugeDemo.TemperatureMonitor do
 
   @impl true
   def settings do
-    [
+    %{
       widget_config: %{
         "gauge" => %{"arcWidth" => 8, "tickCount" => 10}
       }
-    ]
+    }
   end
 
   # -- Pure helpers (public for testing) --------------------------------------

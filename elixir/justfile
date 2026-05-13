@@ -12,8 +12,15 @@ preflight:
         mix deps.get; \
         mix format --check-formatted; \
         mix compile --warnings-as-errors; \
-        if [ -d native ]; then mix plushie.build; fi; \
+        if [ -d native ]; then \
+          mix run --no-start -e 'app = Mix.Project.config()[:app]; Enum.each(Application.spec(app, :modules) || [], &Code.ensure_loaded/1); Plushie.WidgetRegistry.invalidate(); Mix.Task.run("plushie.build")'; \
+          PLUSHIE_BINARY_PATH="$(find _build/plushie/bin -maxdepth 1 -type f -perm -111 | sort | head -n 1)"; \
+          export PLUSHIE_BINARY_PATH; \
+        fi; \
         mix test; \
         if grep -q "dialyxir" mix.exs; then mix dialyzer; fi \
       ); \
     done
+
+package-smoke:
+    ../scripts/package_smoke.sh elixir

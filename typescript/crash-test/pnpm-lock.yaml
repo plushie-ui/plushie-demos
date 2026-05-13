@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       plushie:
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: file:../../../plushie-typescript
+        version: file:../../../plushie-typescript
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -482,8 +482,8 @@ packages:
     resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
     engines: {node: '>=12'}
 
-  plushie@0.6.0:
-    resolution: {integrity: sha512-fqI2qpvpIpWQ4PxKuqxhUCJbgMn1uksDgZJZT3h8zzV57VT+rAnO0UPXybsIEizqFzupAli1cxh44JzQhawIBw==}
+  plushie@file:../../../plushie-typescript:
+    resolution: {directory: ../../../plushie-typescript, type: directory}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -964,7 +964,7 @@ snapshots:
 
   picomatch@4.0.3: {}
 
-  plushie@0.6.0:
+  plushie@file:../../../plushie-typescript:
     dependencies:
       '@msgpack/msgpack': 3.1.3
 

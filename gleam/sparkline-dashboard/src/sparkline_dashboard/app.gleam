@@ -105,32 +105,34 @@ pub fn view(model: Model) -> List(Node) {
     False -> "Resume"
   }
 
-  [ui.window("main", [window.Title("Sparkline Dashboard")], [
-    ui.column(
-      "content",
-      [
-        column.Padding(padding.all(16.0)),
-        column.Spacing(16.0),
-        column.AlignX(alignment.Center),
-      ],
-      [
-        ui.row("controls", [row.Spacing(8.0)], [
-          ui.button_("toggle_running", toggle_label),
-          ui.button_("clear", "Clear"),
-        ]),
-        ui.text_("status", int.to_string(sample_count) <> " samples"),
-        sparkline_card("cpu", "CPU", model.cpu_samples, cpu_color, True),
-        sparkline_card("mem", "Memory", model.mem_samples, mem_color, True),
-        sparkline_card(
-          "net",
-          "Network I/O",
-          model.net_samples,
-          net_color,
-          False,
-        ),
-      ],
-    ),
-  ])]
+  [
+    ui.window("main", [window.Title("Sparkline Dashboard")], [
+      ui.column(
+        "content",
+        [
+          column.Padding(padding.all(16.0)),
+          column.Spacing(16.0),
+          column.AlignX(alignment.Center),
+        ],
+        [
+          ui.row("controls", [row.Spacing(8.0)], [
+            ui.button_("toggle_running", toggle_label),
+            ui.button_("clear", "Clear"),
+          ]),
+          ui.text_("status", int.to_string(sample_count) <> " samples"),
+          sparkline_card("cpu", "CPU", model.cpu_samples, cpu_color, True),
+          sparkline_card("mem", "Memory", model.mem_samples, mem_color, True),
+          sparkline_card(
+            "net",
+            "Network I/O",
+            model.net_samples,
+            net_color,
+            False,
+          ),
+        ],
+      ),
+    ]),
+  ]
 }
 
 // -- Metrics -----------------------------------------------------------------

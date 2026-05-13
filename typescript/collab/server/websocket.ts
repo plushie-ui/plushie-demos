@@ -78,7 +78,10 @@ function sendSnapshot(ws: WebSocket, session: string, model: Model): void {
   if (ws.readyState !== ws.OPEN) return
   const tree = view(model)
   const normalized = normalize(tree)
-  const snapshot = encodeSnapshot(session, normalized)
+  const snapshot = encodeSnapshot(
+    session,
+    normalized as unknown as Record<string, unknown>,
+  )
   ws.send(JSON.stringify(snapshot))
 }
 

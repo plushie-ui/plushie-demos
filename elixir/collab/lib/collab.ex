@@ -71,7 +71,12 @@ defmodule Collab do
       %{model | status: shared_model.status}
     else
       # Replace shared fields, preserve per-client state
-      %{shared_model | dark_mode: model.dark_mode, client_id: model.client_id, shared: model.shared}
+      %{
+        shared_model
+        | dark_mode: model.dark_mode,
+          client_id: model.client_id,
+          shared: model.shared
+      }
     end
   end
 
@@ -134,7 +139,7 @@ defmodule Collab do
   end
 
   @impl true
-  def settings, do: [default_event_rate: 30]
+  def settings, do: %{default_event_rate: 30}
 
   # In shared mode, forward events to the shared server for broadcast.
   # In standalone mode, this is a no-op.

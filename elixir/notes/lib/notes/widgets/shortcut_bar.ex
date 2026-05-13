@@ -19,8 +19,8 @@ defmodule Notes.Widgets.ShortcutBar do
   widget(:shortcut_bar)
 
   field(:hints, :any, default: [])
-    field :event_rate, :integer, doc: "Max events per second."
-    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
+  field :event_rate, :integer, doc: "Max events per second."
+  field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   def view(id, props) do
     import Plushie.UI

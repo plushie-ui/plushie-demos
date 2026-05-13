@@ -15,7 +15,7 @@
  * is alive. Click Reset to recover from view errors.
  */
 
-import { app } from "plushie"
+import { app, type Handler } from "plushie"
 import { Window, Column, Row, Text, Button } from "plushie/ui"
 import { CrashBox, CrashBoxCmds } from "./crash-box.js"
 
@@ -52,7 +52,7 @@ export const decrement = (s: Model): Model => ({
  */
 export const triggerPanic = (s: Model): [Model, unknown] => [
   { ...s, status: "Rust panic triggered - widget is poisoned" },
-  CrashBoxCmds.panic("crash-widget"),
+  CrashBoxCmds.panic!("crash-widget"),
 ]
 
 /**
@@ -104,13 +104,13 @@ export function view(model: Model) {
 
         {/* Counter - proves the app is still alive after crashes */}
         <Row spacing={8}>
-          <Button id="dec" onClick={decrement}>
+          <Button id="dec" onClick={decrement as Handler<unknown>}>
             -
           </Button>
           <Text id="count" size={20}>
             {String(model.count)}
           </Text>
-          <Button id="inc" onClick={increment}>
+          <Button id="inc" onClick={increment as Handler<unknown>}>
             +
           </Button>
         </Row>
@@ -123,16 +123,16 @@ export function view(model: Model) {
 
         {/* Crash buttons */}
         <Row spacing={8}>
-          <Button id="panic" onClick={triggerPanic}>
+          <Button id="panic" onClick={triggerPanic as Handler<unknown>}>
             Panic Widget
           </Button>
-          <Button id="throw_handler" onClick={triggerHandlerThrow}>
+          <Button id="throw_handler" onClick={triggerHandlerThrow as Handler<unknown>}>
             Throw Handler
           </Button>
-          <Button id="throw_view" onClick={triggerViewThrow}>
+          <Button id="throw_view" onClick={triggerViewThrow as Handler<unknown>}>
             Throw View
           </Button>
-          <Button id="reset" onClick={reset}>
+          <Button id="reset" onClick={reset as Handler<unknown>}>
             Reset
           </Button>
         </Row>
@@ -149,7 +149,10 @@ export function view(model: Model) {
 
 const _app = app<Model>({
   init: init(),
+  update: (model) => model as Model,
   view,
 })
 export default _app
-_app.run()
+if (process.env["VITEST"] !== "true") {
+  void _app.run()
+}

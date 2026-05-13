@@ -19,8 +19,8 @@ defmodule CrashTest.CrashWidget do
   rust_constructor("crash_widget::CrashExtension::new()")
 
   field(:label, :string, default: "Widget OK")
-    field :event_rate, :integer, doc: "Max events per second."
-    field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
+  field :event_rate, :integer, doc: "Max events per second."
+  field :a11y, Plushie.Type.A11y, doc: "Accessibility annotations."
 
   command(:panic)
 end

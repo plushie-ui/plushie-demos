@@ -142,20 +142,22 @@ pub fn view(model: Model) -> List(Node) {
     EditorView(id) -> editor_view(model, id)
   }
 
-  [ui.window("main", [window.Title("Notes"), window.Size(600.0, 500.0)], [
-    ui.column(
-      "root",
-      [
-        column.Padding(padding.all(16.0)),
-        column.Width(length.Fill),
-        column.Height(length.Fill),
-      ],
-      [
-        content,
-        shortcut_bar(model.current_view),
-      ],
-    ),
-  ])]
+  [
+    ui.window("main", [window.Title("Notes"), window.Size(600.0, 500.0)], [
+      ui.column(
+        "root",
+        [
+          column.Padding(padding.all(16.0)),
+          column.Width(length.Fill),
+          column.Height(length.Fill),
+        ],
+        [
+          content,
+          shortcut_bar(model.current_view),
+        ],
+      ),
+    ]),
+  ]
 }
 
 // -- List view ---------------------------------------------------------------
@@ -283,7 +285,11 @@ fn shortcut_bar(current_view: View) -> Node {
 
   ui.row(
     "shortcut-bar",
-    [row.Spacing(16.0), row.Padding(padding.xy(8.0, 0.0)), row.Width(length.Fill)],
+    [
+      row.Spacing(16.0),
+      row.Padding(padding.xy(8.0, 0.0)),
+      row.Width(length.Fill),
+    ],
     hints,
   )
 }

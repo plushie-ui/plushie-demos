@@ -12,7 +12,7 @@ echo "==> pyright"
 pyright plushie_pad tests
 
 echo "==> pytest"
-pytest
+python -m pytest
 
 echo ""
 echo "All checks passed."

@@ -4,6 +4,12 @@ default:
     just --list
 
 preflight:
+    renderer_binary="${PLUSHIE_BINARY_PATH:-}"; \
+    if [ -z "$renderer_binary" ] && [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then \
+      cargo build --release -p plushie-renderer --manifest-path "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml"; \
+      renderer_binary="$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer"; \
+    fi; \
+    if [ -n "$renderer_binary" ]; then export PLUSHIE_BINARY_PATH="$renderer_binary"; fi; \
     for package in */package.json; do \
       demo="${package%/package.json}"; \
       echo "==> typescript/$demo"; \
@@ -11,9 +17,12 @@ preflight:
         cd "$demo"; \
         pnpm install --frozen-lockfile; \
         if grep -q '"check"' package.json; then pnpm run check; elif [ -f tsconfig.json ]; then pnpm exec tsc --noEmit; fi; \
+        if [ -d native ] && grep -q '"build:ext"' package.json; then pnpm run build:ext; fi; \
         pnpm test; \
         if grep -q '"build"' package.json; then pnpm run build; fi; \
-        if grep -q '"build:browser"' package.json; then pnpm run build:browser; fi; \
-        if [ -d native ] && grep -q '"build:ext"' package.json; then pnpm run build:ext; fi \
+        if grep -q '"build:browser"' package.json; then pnpm run build:browser; fi \
       ); \
     done
+
+package-smoke:
+    ../scripts/package_smoke.sh typescript

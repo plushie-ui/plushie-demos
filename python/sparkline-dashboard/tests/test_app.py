@@ -500,22 +500,23 @@ class TestAppFixtureDashboard:
         from plushie.testing import AppFixture
 
         with AppFixture(Dashboard, self._pool) as app:
-            # Sparklines are inside named containers (cpu_card, etc.)
-            # so their wire IDs are scoped: cpu_card/cpu_spark
-            for card, spark in [
-                ("cpu_card", "cpu_spark"),
-                ("mem_card", "mem_spark"),
-                ("net_card", "net_spark"),
+            # Sparklines are inside named containers, so their wire IDs
+            # include the full container scope.
+            for card, column, spark in [
+                ("cpu_card", "cpu_col", "cpu_spark"),
+                ("mem_card", "mem_col", "mem_spark"),
+                ("net_card", "net_col", "net_spark"),
             ]:
-                app.assert_exists(f"#{card}/{spark}")
-                el = app.find(f"#{card}/{spark}")
+                selector = f"#main_col/{card}/{column}/{spark}"
+                app.assert_exists(selector)
+                el = app.find(selector)
                 assert el.type == "sparkline"
 
     def test_sparkline_initial_props(self) -> None:
         from plushie.testing import AppFixture
 
         with AppFixture(Dashboard, self._pool) as app:
-            el = app.find("#cpu_card/cpu_spark")
+            el = app.find("#main_col/cpu_card/cpu_col/cpu_spark")
             assert el.props["data"] == []
             assert el.props["color"] == "#4CAF50"
             assert el.props["fill"] is True
@@ -528,12 +529,12 @@ class TestAppFixtureDashboard:
             app.assert_exists("#toggle_running")
             app.assert_exists("#clear")
             app.assert_exists("#status")
-            app.assert_exists("#cpu_card/cpu_spark")
-            app.assert_exists("#mem_card/mem_spark")
-            app.assert_exists("#net_card/net_spark")
-            app.assert_exists("#cpu_card/cpu_label")
-            app.assert_exists("#mem_card/mem_label")
-            app.assert_exists("#net_card/net_label")
+            app.assert_exists("#main_col/cpu_card/cpu_col/cpu_spark")
+            app.assert_exists("#main_col/mem_card/mem_col/mem_spark")
+            app.assert_exists("#main_col/net_card/net_col/net_spark")
+            app.assert_exists("#main_col/cpu_card/cpu_col/cpu_header/cpu_label")
+            app.assert_exists("#main_col/mem_card/mem_col/mem_header/mem_label")
+            app.assert_exists("#main_col/net_card/net_col/net_header/net_label")
 
     def test_title_text(self) -> None:
         from plushie.testing import AppFixture

@@ -7,4 +7,6 @@
 
 import { padApp } from "./app.js"
 
-padApp.run()
+if (process.env["VITEST"] !== "true") {
+  void padApp.run()
+}

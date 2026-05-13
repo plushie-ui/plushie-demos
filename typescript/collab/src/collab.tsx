@@ -7,7 +7,7 @@
  * browser WASM mode.
  */
 
-import { app } from "plushie"
+import type { Handler } from "plushie"
 import {
   Window,
   Column,
@@ -92,17 +92,17 @@ export function view(model: Model) {
             value={model.name}
             placeholder="Your name"
             width="fill"
-            onInput={setName}
+            onInput={setName as Handler<unknown>}
           />
 
           <Row spacing={8}>
-            <Button id="dec" onClick={decrement}>
+            <Button id="dec" onClick={decrement as Handler<unknown>}>
               -
             </Button>
             <Text id="count" size={18}>
               {String(model.count)}
             </Text>
-            <Button id="inc" onClick={increment}>
+            <Button id="inc" onClick={increment as Handler<unknown>}>
               +
             </Button>
           </Row>
@@ -111,7 +111,7 @@ export function view(model: Model) {
             id="theme"
             label="Dark mode"
             value={model.darkMode}
-            onToggle={toggleTheme}
+            onToggle={toggleTheme as Handler<unknown>}
           />
 
           <TextEditor
@@ -120,20 +120,10 @@ export function view(model: Model) {
             placeholder="Shared notes..."
             height={200}
             width="fill"
-            onInput={setNotes}
+            onInput={setNotes as Handler<unknown>}
           />
         </Column>
       </Themer>
     </Window>
   )
 }
-
-// -- Standalone app (modes 3 and 4) -------------------------------------------
-
-const _app = app<Model>({
-  init: init(),
-  settings: { defaultEventRate: 30 },
-  view,
-})
-export default _app
-_app.run()

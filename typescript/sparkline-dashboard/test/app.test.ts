@@ -9,7 +9,7 @@
  *   PLUSHIE_RUST_SOURCE_PATH=~/projects/plushie-rust pnpm plushie build
  */
 
-import { existsSync } from "node:fs"
+import { existsSync, readdirSync, statSync } from "node:fs"
 import { resolve } from "node:path"
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { createSession, stopPool } from "plushie/testing"
@@ -17,16 +17,22 @@ import type { TestSession } from "plushie/testing"
 import dashboardApp from "../src/app.js"
 import type { Model } from "../src/app.js"
 
-const binaryPath = resolve(
-  "node_modules",
-  ".plushie",
-  "build",
-  "target",
-  "debug",
-  "sparkline-dashboard-plushie",
-)
-const hasBinary = existsSync(binaryPath)
-const integration = hasBinary ? describe : describe.skip
+function findBuiltRenderer(): string | null {
+  const binDir = resolve("node_modules", ".plushie", "bin")
+  if (!existsSync(binDir)) return null
+
+  for (const name of readdirSync(binDir).sort()) {
+    const candidate = resolve(binDir, name)
+    if (name.startsWith("plushie-renderer") && statSync(candidate).isFile()) {
+      return candidate
+    }
+  }
+
+  return null
+}
+
+const binaryPath = findBuiltRenderer()
+const integration = binaryPath === null ? describe.skip : describe
 
 // Tests are sequential within the describe block - each test builds
 // on the state left by the previous one (shared session, no reset).
@@ -34,7 +40,7 @@ integration("sparkline dashboard", () => {
   let session: TestSession<Model>
 
   beforeAll(async () => {
-    session = await createSession(dashboardApp, { binary: binaryPath })
+    session = await createSession(dashboardApp, { binary: binaryPath! })
     await session.start()
   })
 

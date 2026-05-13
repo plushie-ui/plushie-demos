@@ -11,7 +11,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "plushie": "0.6.0"
+    "plushie": "file:../../../plushie-typescript"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -4,4 +4,4 @@ exec plushie --listen \
   --exec-bin npx \
   --exec-arg plushie \
   --exec-arg connect \
-  --exec-arg src/collab.tsx
+  --exec-arg src/app.ts

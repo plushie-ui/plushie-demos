@@ -96,7 +96,10 @@ function sendWsSnapshot(ws: WebSocket, session: string, model: Model): void {
   if (ws.readyState !== ws.OPEN) return
   const tree = view(model)
   const normalized = normalize(tree)
-  const snapshot = encodeSnapshot(session, normalized)
+  const snapshot = encodeSnapshot(
+    session,
+    normalized as unknown as Record<string, unknown>,
+  )
   ws.send(JSON.stringify(snapshot))
 }
 
@@ -144,7 +147,7 @@ const sshServer = new SshServer(
 function handleSshChannel(channel: ServerChannel): void {
   let clientId: string | null = null
   let handshakeDone = false
-  let buffer = new Uint8Array(0)
+  let buffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0)
 
   channel.on("error", () => {
     // Ignore write errors on destroyed channels
@@ -206,7 +209,10 @@ function sendSshSnapshot(
   if (channel.destroyed) return
   const tree = view(model)
   const normalized = normalize(tree)
-  const snapshot = encodeSnapshot(session, normalized)
+  const snapshot = encodeSnapshot(
+    session,
+    normalized as unknown as Record<string, unknown>,
+  )
   const bytes = msgpackEncode(snapshot)
   channel.write(Buffer.from(encodePacket(new Uint8Array(bytes))))
 }

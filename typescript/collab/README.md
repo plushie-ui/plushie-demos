@@ -3,7 +3,7 @@
 Collaborative scratchpad showing 6 different ways to run the same
 Plushie app, from native desktop to shared-state WebSocket and SSH.
 
-All modes share a single app definition (`src/collab.tsx`) with a
+All modes share the same app logic (`src/collab.tsx`) with a
 name input, shared notes, a counter, a dark-mode toggle, and a
 connection status line.
 

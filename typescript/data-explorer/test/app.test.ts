@@ -3,7 +3,7 @@
  *
  * Pure function tests verify the Data.query pipeline and dataset
  * integrity. Integration tests run the full app through the real
- * plushie-renderer binary in headless mode.
+ * plushie-renderer binary in mock mode.
  */
 
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
@@ -136,13 +136,13 @@ describe("countries dataset", () => {
   })
 })
 
-// -- Integration tests (headless renderer) ----------------------------------
+// -- Integration tests (mock renderer) --------------------------------------
 
 describe("data explorer (integration)", () => {
   let session: TestSession<Model>
 
   beforeAll(async () => {
-    session = await createSession(app, { mode: "headless" })
+    session = await createSession(app, { mode: "mock" })
     await session.start()
   })
 

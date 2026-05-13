@@ -13,7 +13,7 @@
  * the command and echoes the new value back.
  */
 
-import { app, isWidget } from "plushie"
+import { app, isWidget, type Handler } from "plushie"
 import { Window, Column, Row, Text, Button, Slider } from "plushie/ui"
 import { Gauge, GaugeCmds } from "./gauge.js"
 
@@ -22,7 +22,7 @@ import { Gauge, GaugeCmds } from "./gauge.js"
 export interface Model {
   temperature: number
   targetTemp: number
-  history: number[]
+  history: readonly number[]
 }
 
 /** Maximum history entries to retain. */
@@ -50,7 +50,7 @@ export function statusColor(temp: number): string {
   return "#3498db"
 }
 
-function appendHistory(history: number[], value: number): number[] {
+function appendHistory(history: readonly number[], value: number): number[] {
   return [...history, value].slice(-MAX_HISTORY)
 }
 
@@ -61,22 +61,22 @@ function appendHistory(history: number[], value: number): number[] {
 
 const setTarget = (s: Model, e: { value: unknown }): [Model, unknown] => [
   { ...s, targetTemp: e.value as number },
-  GaugeCmds.animate_to("temp", { value: e.value }),
+  GaugeCmds.animate_to!("temp", { value: e.value }),
 ]
 
 export const resetTemp = (s: Model): [Model, unknown] => [
   { ...s, targetTemp: 20 },
-  GaugeCmds.set_value("temp", { value: 20 }),
+  GaugeCmds.set_value!("temp", { value: 20 }),
 ]
 
 export const setHigh = (s: Model): [Model, unknown] => [
   { ...s, targetTemp: 90 },
-  GaugeCmds.set_value("temp", { value: 90 }),
+  GaugeCmds.set_value!("temp", { value: 90 }),
 ]
 
 // -- View -------------------------------------------------------------------
 
-export function view(model: Model) {
+export function view(model: Readonly<Model>) {
   const temp = model.temperature
 
   return (
@@ -109,14 +109,14 @@ export function view(model: Model) {
           id="target"
           value={model.targetTemp}
           range={[0, 100]}
-          onSlide={setTarget}
+          onSlide={setTarget as Handler<unknown>}
         />
 
         <Row spacing={8}>
-          <Button id="reset" onClick={resetTemp}>
+          <Button id="reset" onClick={resetTemp as Handler<unknown>}>
             {`Reset (20\u00B0C)`}
           </Button>
-          <Button id="high" onClick={setHigh}>
+          <Button id="high" onClick={setHigh as Handler<unknown>}>
             {`High (90\u00B0C)`}
           </Button>
         </Row>
@@ -169,4 +169,6 @@ const _app = app<Model>({
   view,
 })
 export default _app
-_app.run()
+if (process.env["VITEST"] !== "true") {
+  void _app.run()
+}

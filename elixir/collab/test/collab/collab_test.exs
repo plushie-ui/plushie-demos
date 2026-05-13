@@ -101,6 +101,6 @@ defmodule CollabTest do
 
   test "has default_event_rate" do
     settings = Collab.settings()
-    assert Keyword.get(settings, :default_event_rate) == 30
+    assert settings.default_event_rate == 30
   end
 end

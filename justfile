@@ -14,5 +14,8 @@ preflight:
     done
     just renderer-parent-smoke
 
+package-smoke:
+    ./scripts/package_smoke.sh
+
 renderer-parent-smoke:
     ./scripts/renderer_parent_smoke.sh

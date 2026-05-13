@@ -2,13 +2,14 @@
  * Collab app tests.
  *
  * Integration tests run through the real plushie-renderer binary in
- * headless mode. Pure function tests cover init/update/view logic.
+ * mock mode. Pure function tests cover init/update/view logic.
  */
 
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { createSession, stopPool } from "plushie/testing"
 import type { TestSession } from "plushie/testing"
-import collabApp, { init, update, view } from "../src/collab.js"
+import collabApp from "../src/app.js"
+import { init, update, view } from "../src/collab.js"
 import type { Model } from "../src/collab.js"
 
 // -- Integration tests (real binary) -----------------------------------------
@@ -18,7 +19,7 @@ describe("collab (integration)", () => {
   let session: TestSession<Model>
 
   beforeAll(async () => {
-    session = await createSession(collabApp, { mode: "headless" })
+    session = await createSession(collabApp, { mode: "mock" })
     await session.start()
   })
 

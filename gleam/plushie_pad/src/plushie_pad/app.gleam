@@ -11,21 +11,20 @@ import gleam/string
 import plushie/app.{type App}
 import plushie/command.{type Command}
 import plushie/event.{
-  type Event, type EventTarget, Click, Close, EventTarget, Input, Key, KeyEvent,
-  KeyPressed, Submit, Toggle, Widget,
+  type Event, Click, EventTarget, Input, Key, KeyEvent, KeyPressed, Submit,
+  Toggle, Widget,
 }
 import plushie/node.{type Node}
 import plushie/prop/border
 import plushie/prop/color
 import plushie/prop/font.{Monospace}
-import plushie/prop/length.{Fill, FillPortion, Fixed, Shrink}
+import plushie/prop/length.{Fill, FillPortion, Fixed}
 import plushie/prop/padding
 import plushie/prop/theme.{Dark}
 import plushie/subscription.{type Subscription}
 import plushie/ui
 import plushie/undo
 import plushie/widget/button
-import plushie/widget/checkbox
 import plushie/widget/column
 import plushie/widget/container
 import plushie/widget/row

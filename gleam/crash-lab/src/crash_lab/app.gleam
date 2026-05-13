@@ -133,70 +133,72 @@ pub fn view(model: Model) -> List(Node) {
     ]
   }
 
-  [ui.window("main", [window.Title("Crash Lab"), window.Size(500.0, 520.0)], [
-    ui.column(
-      "root",
-      [
-        column.Padding(padding.all(20.0)),
-        column.Spacing(16.0),
-        column.Width(length.Fill),
-        column.AlignX(alignment.Center),
-      ],
-      list.flatten([
-        [ui.text("title", "Crash Lab", [text.Size(24.0)])],
-        // Counter section
+  [
+    ui.window("main", [window.Title("Crash Lab"), window.Size(500.0, 520.0)], [
+      ui.column(
+        "root",
         [
-          ui.container(
-            "counter-section",
-            [
-              container.Padding(padding.all(12.0)),
-              container.BgColor(section_bg),
-              container.Width(length.Fill),
-            ],
-            [
-              ui.column(
-                "counter-col",
-                [column.Spacing(8.0), column.AlignX(alignment.Center)],
-                [
-                  ui.text("counter-label", "Counter (proof of life)", [
-                    text.Size(12.0),
-                    text.Color(muted),
-                  ]),
-                  ui.row("counter-row", [row.Spacing(8.0)], [
-                    ui.button_("dec", "-"),
-                    ui.text_("count", int.to_string(model.count)),
-                    ui.button_("inc", "+"),
-                  ]),
-                ],
-              ),
-            ],
-          ),
+          column.Padding(padding.all(20.0)),
+          column.Spacing(16.0),
+          column.Width(length.Fill),
+          column.AlignX(alignment.Center),
         ],
-        // Crash widget section
-        widget_nodes,
-        // Action buttons
-        [
-          ui.row("rust-actions", [row.Spacing(8.0)], [
-            ui.button_("panic-extension", "Panic Extension"),
-            ui.button_("toggle-widget", toggle_label),
-          ]),
-          ui.row("gleam-actions", [row.Spacing(8.0)], [
-            ui.button_("panic-update", "Panic Update"),
-            ui.button_("break-view", "Break View"),
-            ui.button_("recover-view", "Recover"),
-          ]),
-        ],
-        // Explanation
-        [
-          ui.text(
-            "hint",
-            "All three crash types are caught. The counter survives every one.",
-            [text.Size(11.0), text.Color(muted)],
-          ),
-        ],
-      ]),
-    ),
-  ])]
+        list.flatten([
+          [ui.text("title", "Crash Lab", [text.Size(24.0)])],
+          // Counter section
+          [
+            ui.container(
+              "counter-section",
+              [
+                container.Padding(padding.all(12.0)),
+                container.BgColor(section_bg),
+                container.Width(length.Fill),
+              ],
+              [
+                ui.column(
+                  "counter-col",
+                  [column.Spacing(8.0), column.AlignX(alignment.Center)],
+                  [
+                    ui.text("counter-label", "Counter (proof of life)", [
+                      text.Size(12.0),
+                      text.Color(muted),
+                    ]),
+                    ui.row("counter-row", [row.Spacing(8.0)], [
+                      ui.button_("dec", "-"),
+                      ui.text_("count", int.to_string(model.count)),
+                      ui.button_("inc", "+"),
+                    ]),
+                  ],
+                ),
+              ],
+            ),
+          ],
+          // Crash widget section
+          widget_nodes,
+          // Action buttons
+          [
+            ui.row("rust-actions", [row.Spacing(8.0)], [
+              ui.button_("panic-extension", "Panic Extension"),
+              ui.button_("toggle-widget", toggle_label),
+            ]),
+            ui.row("gleam-actions", [row.Spacing(8.0)], [
+              ui.button_("panic-update", "Panic Update"),
+              ui.button_("break-view", "Break View"),
+              ui.button_("recover-view", "Recover"),
+            ]),
+          ],
+          // Explanation
+          [
+            ui.text(
+              "hint",
+              "All three crash types are caught. The counter survives every one.",
+              [text.Size(11.0), text.Color(muted)],
+            ),
+          ],
+        ]),
+      ),
+    ]),
+  ]
 }
 
 /// Build the app.

@@ -108,8 +108,8 @@ defmodule GaugeDemo.TemperatureMonitorTest do
 
   test "settings has widget_config" do
     settings = GaugeDemo.TemperatureMonitor.settings()
-    assert Keyword.has_key?(settings, :widget_config)
-    assert settings[:widget_config]["gauge"]["arcWidth"] == 8
+    assert Map.has_key?(settings, :widget_config)
+    assert settings.widget_config["gauge"]["arcWidth"] == 8
   end
 
   # -- Gauge wire props -------------------------------------------------------

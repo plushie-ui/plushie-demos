@@ -2,21 +2,21 @@
  * Live dashboard with sparkline charts for simulated system metrics.
  */
 
-import { app, Subscription, isTimer } from "plushie"
+import { app, Subscription, isTimer, type Handler } from "plushie"
 import { Window, Column, Row, Text, Button, Container } from "plushie/ui"
 import { Sparkline } from "./sparkline.js"
 
 export interface Model {
-  cpuSamples: number[]
-  memSamples: number[]
-  netSamples: number[]
+  cpuSamples: readonly number[]
+  memSamples: readonly number[]
+  netSamples: readonly number[]
   running: boolean
   tickCount: number
 }
 
 const MAX_SAMPLES = 100
 
-function capSamples(samples: number[], value: number): number[] {
+function capSamples(samples: readonly number[], value: number): number[] {
   return [...samples, value].slice(-MAX_SAMPLES)
 }
 
@@ -90,10 +90,10 @@ const _app = app<Model>({
 
         {/* Controls */}
         <Row spacing={12}>
-          <Button id="toggle_running" onClick={toggleRunning}>
+          <Button id="toggle_running" onClick={toggleRunning as Handler<unknown>}>
             {state.running ? "Pause" : "Resume"}
           </Button>
-          <Button id="clear" onClick={clearSamples}>
+          <Button id="clear" onClick={clearSamples as Handler<unknown>}>
             Clear
           </Button>
           <Text id="status" size={14} color="#888888">
@@ -110,14 +110,16 @@ const _app = app<Model>({
   ),
 })
 export default _app
-_app.run()
+if (process.env["VITEST"] !== "true") {
+  void _app.run()
+}
 
 // -- View helpers -------------------------------------------------------------
 
 function sparklineCard(
   id: string,
   label: string,
-  data: number[],
+  data: readonly number[],
   color: string,
   fill: boolean,
 ) {

@@ -104,7 +104,7 @@ describe("Gauge widget builder", () => {
 
 describe("GaugeCmds", () => {
   test("set_value produces an command", () => {
-    const cmd = GaugeCmds.set_value("g1", { value: 42 })
+    const cmd = GaugeCmds.set_value!("g1", { value: 42 })
     expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
       id: "g1",
@@ -114,7 +114,7 @@ describe("GaugeCmds", () => {
   })
 
   test("animate_to produces an command", () => {
-    const cmd = GaugeCmds.animate_to("g1", { value: 90 })
+    const cmd = GaugeCmds.animate_to!("g1", { value: 90 })
     expect(cmd.type).toBe("command")
     expect(cmd.payload).toEqual({
       id: "g1",
@@ -124,26 +124,26 @@ describe("GaugeCmds", () => {
   })
 
   test("commands carry the COMMAND symbol", () => {
-    const cmd = GaugeCmds.set_value("g1", { value: 0 })
+    const cmd = GaugeCmds.set_value!("g1", { value: 0 })
     const COMMAND = Symbol.for("plushie.command")
-    expect((cmd as Record<symbol, unknown>)[COMMAND]).toBe(true)
+    expect((cmd as unknown as Record<symbol, unknown>)[COMMAND]).toBe(true)
   })
 
   test("commands are frozen", () => {
-    const cmd = GaugeCmds.animate_to("g1", { value: 50 })
+    const cmd = GaugeCmds.animate_to!("g1", { value: 50 })
     expect(Object.isFrozen(cmd)).toBe(true)
   })
 
   test("payload has standard three-key shape", () => {
-    const cmd = GaugeCmds.set_value("g1", { value: 0 })
+    const cmd = GaugeCmds.set_value!("g1", { value: 0 })
     expect(Object.keys(cmd.payload).sort()).toEqual(
       ["id", "family", "value"].sort(),
     )
   })
 
   test("different node IDs target correctly", () => {
-    const a = GaugeCmds.set_value("gauge-a", { value: 10 })
-    const b = GaugeCmds.set_value("gauge-b", { value: 20 })
+    const a = GaugeCmds.set_value!("gauge-a", { value: 10 })
+    const b = GaugeCmds.set_value!("gauge-b", { value: 20 })
     expect(a.payload["id"]).toBe("gauge-a")
     expect(b.payload["id"]).toBe("gauge-b")
   })

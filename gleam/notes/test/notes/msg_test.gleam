@@ -63,36 +63,64 @@ pub fn captured_ctrl_n_is_noop_test() {
 
 pub fn click_create_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "create", window_id: "main", scope: [], full: "main#create"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "create",
+          window_id: "main",
+          scope: [],
+          full: "main#create",
+        )),
+      ),
+    ),
     CreateNote,
   )
 }
 
 pub fn click_back_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "back", window_id: "main", scope: [], full: "main#back"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "back",
+          window_id: "main",
+          scope: [],
+          full: "main#back",
+        )),
+      ),
+    ),
     ShowList,
   )
 }
 
 pub fn click_undo_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "undo", window_id: "main", scope: [], full: "main#undo"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "undo",
+          window_id: "main",
+          scope: [],
+          full: "main#undo",
+        )),
+      ),
+    ),
     Undo,
   )
 }
 
 pub fn click_redo_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "redo", window_id: "main", scope: [], full: "main#redo"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "redo",
+          window_id: "main",
+          scope: [],
+          full: "main#redo",
+        )),
+      ),
+    ),
     Redo,
   )
 }
@@ -104,7 +132,12 @@ pub fn click_redo_test() {
 pub fn search_input_test() {
   let e =
     Widget(Input(
-      target: EventTarget(id: "search", window_id: "main", scope: [], full: "main#search"),
+      target: EventTarget(
+        id: "search",
+        window_id: "main",
+        scope: [],
+        full: "main#search",
+      ),
       value: "hello",
     ))
   should.equal(msg.on_event(e), SetSearch("hello"))
@@ -113,7 +146,12 @@ pub fn search_input_test() {
 pub fn title_input_test() {
   let e =
     Widget(Input(
-      target: EventTarget(id: "title", window_id: "main", scope: [], full: "main#title"),
+      target: EventTarget(
+        id: "title",
+        window_id: "main",
+        scope: [],
+        full: "main#title",
+      ),
       value: "My Note",
     ))
   should.equal(msg.on_event(e), EditTitle("My Note"))
@@ -122,7 +160,12 @@ pub fn title_input_test() {
 pub fn body_input_test() {
   let e =
     Widget(Input(
-      target: EventTarget(id: "body", window_id: "main", scope: [], full: "main#body"),
+      target: EventTarget(
+        id: "body",
+        window_id: "main",
+        scope: [],
+        full: "main#body",
+      ),
       value: "some text",
     ))
   should.equal(msg.on_event(e), EditBody("some text"))
@@ -134,37 +177,65 @@ pub fn body_input_test() {
 
 pub fn click_note_row_opens_note_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "note-42", window_id: "main", scope: [], full: "main#note-42"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "note-42",
+          window_id: "main",
+          scope: [],
+          full: "main#note-42",
+        )),
+      ),
+    ),
     OpenNote("42"),
   )
 }
 
 pub fn click_delete_button_deletes_note_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "delete-42", window_id: "main", scope: [], full: "main#delete-42"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "delete-42",
+          window_id: "main",
+          scope: [],
+          full: "main#delete-42",
+        )),
+      ),
+    ),
     DeleteNote("42"),
   )
 }
 
 pub fn unknown_click_is_noop_test() {
   should.equal(
-    msg.on_event(Widget(Click(
-      target: EventTarget(id: "something-else", window_id: "main", scope: [], full: "main#something-else"),
-    ))),
+    msg.on_event(
+      Widget(
+        Click(target: EventTarget(
+          id: "something-else",
+          window_id: "main",
+          scope: [],
+          full: "main#something-else",
+        )),
+      ),
+    ),
     NoOp,
   )
 }
 
 pub fn unknown_event_is_noop_test() {
   should.equal(
-    msg.on_event(Widget(Toggle(
-      target: EventTarget(id: "x", window_id: "main", scope: [], full: "main#x"),
-      value: True,
-    ))),
+    msg.on_event(
+      Widget(Toggle(
+        target: EventTarget(
+          id: "x",
+          window_id: "main",
+          scope: [],
+          full: "main#x",
+        ),
+        value: True,
+      )),
+    ),
     NoOp,
   )
 }

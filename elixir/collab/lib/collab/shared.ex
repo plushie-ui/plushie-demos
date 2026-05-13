@@ -28,7 +28,7 @@ defmodule Collab.Shared do
   end
 
   @doc "Register a client runtime for broadcast delivery."
-  @spec connect(GenServer.server(), String.t(), pid()) :: :ok
+  @spec connect(GenServer.server(), String.t(), GenServer.server()) :: :ok
   def connect(server, client_id, runtime) do
     GenServer.call(server, {:connect, client_id, runtime})
   end
@@ -58,6 +58,7 @@ defmodule Collab.Shared do
 
   @impl true
   def handle_call({:connect, id, runtime}, _from, state) do
+    runtime = resolve_runtime!(runtime)
     Process.monitor(runtime)
     clients = Map.put(state.clients, id, runtime)
     model = %{state.model | status: status_text(clients)}
@@ -136,5 +137,15 @@ defmodule Collab.Shared do
   defp status_text(clients) do
     count = map_size(clients)
     "#{count} connected"
+  end
+
+  @spec resolve_runtime!(GenServer.server()) :: pid()
+  defp resolve_runtime!(runtime) when is_pid(runtime), do: runtime
+
+  defp resolve_runtime!(runtime) do
+    case GenServer.whereis(runtime) do
+      pid when is_pid(pid) -> pid
+      nil -> raise ArgumentError, "collab runtime is not running: #{inspect(runtime)}"
+    end
   end
 end
