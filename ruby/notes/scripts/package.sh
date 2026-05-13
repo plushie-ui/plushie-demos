@@ -77,6 +77,22 @@ archive_payload() {
   fi
 }
 
+dereference_payload_symlinks() {
+  while IFS= read -r -d '' link; do
+    target="$(ruby -e 'print File.realpath(ARGV.fetch(0))' "$link")"
+    tmp="$link.deref.$$"
+
+    if [ -d "$target" ]; then
+      cp -R "$target" "$tmp"
+    else
+      cp "$target" "$tmp"
+    fi
+
+    rm "$link"
+    mv "$tmp" "$link"
+  done < <(find "$PAYLOAD_DIR" -type l -print0)
+}
+
 require_command bundle
 require_command ruby
 require_command tar
@@ -113,6 +129,8 @@ echo "Installing runtime gems..."
 
 cp "$renderer" "$PAYLOAD_DIR/bin/plushie-renderer"
 chmod +x "$PAYLOAD_DIR/bin/plushie-renderer"
+
+dereference_payload_symlinks
 
 metadata="$(
   cd "$APP_DIR"
