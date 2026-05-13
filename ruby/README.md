@@ -26,7 +26,7 @@ Multi-transport collaborative scratchpad. Demonstrates 4 ways to run
 the exact same Plushie app:
 
 - **Native (Ruby spawns renderer)** - standard desktop mode
-- **Native (renderer spawns Ruby)** - reverse startup via `--exec`
+- **Native (renderer spawns Ruby)** - reverse startup via structured exec args
 - **SSH** - native renderer connecting through an SSH tunnel
 - **WebSocket** - shared state, multiple browser tabs see the same data
 

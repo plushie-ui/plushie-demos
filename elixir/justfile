@@ -1,0 +1,19 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for mixfile in */mix.exs; do \
+      demo="${mixfile%/mix.exs}"; \
+      echo "==> elixir/$demo"; \
+      ( \
+        cd "$demo"; \
+        mix deps.get; \
+        mix format --check-formatted; \
+        mix compile --warnings-as-errors; \
+        if [ -d native ]; then mix plushie.build; fi; \
+        mix test; \
+        if grep -q "dialyxir" mix.exs; then mix dialyzer; fi \
+      ); \
+    done

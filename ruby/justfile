@@ -1,0 +1,16 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for gemfile in */Gemfile; do \
+      demo="${gemfile%/Gemfile}"; \
+      echo "==> ruby/$demo"; \
+      ( \
+        cd "$demo"; \
+        bundle check; \
+        bundle exec rake; \
+        if [ -d native ]; then bundle exec rake plushie:build; fi \
+      ); \
+    done

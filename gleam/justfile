@@ -1,0 +1,11 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for script in */bin/preflight; do \
+      demo="${script%/bin/preflight}"; \
+      echo "==> gleam/$demo"; \
+      "$script"; \
+    done

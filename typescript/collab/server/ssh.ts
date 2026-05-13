@@ -4,7 +4,10 @@
  * Everything from the WebSocket server (mode 2), plus an SSH daemon
  * on port 2222. Native plushie clients connect via:
  *
- *   plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"
+ *   plushie --exec-bin ssh --exec-arg -T --exec-arg -s --exec-arg -p \
+ *     --exec-arg 2222 --exec-arg -o \
+ *     --exec-arg StrictHostKeyChecking=no --exec-arg localhost \
+ *     --exec-arg plushie
  *
  * The SSH handler speaks the plushie wire protocol (msgpack with
  * 4-byte length-prefix framing) and routes events to the same
@@ -219,7 +222,26 @@ sshServer.listen(SSH_PORT, "127.0.0.1", () => {
   console.log(`SSH server:       127.0.0.1:${SSH_PORT}`)
   console.log()
   console.log("Connect a native renderer via SSH:")
-  console.log(
-    `  plushie --exec "ssh -T -s -p ${SSH_PORT} -o StrictHostKeyChecking=no localhost plushie"`,
-  )
+  const command = [
+    "plushie",
+    "--exec-bin",
+    "ssh",
+    "--exec-arg",
+    "-T",
+    "--exec-arg",
+    "-s",
+    "--exec-arg",
+    "-p",
+    "--exec-arg",
+    String(SSH_PORT),
+    "--exec-arg",
+    "-o",
+    "--exec-arg",
+    "StrictHostKeyChecking=no",
+    "--exec-arg",
+    "localhost",
+    "--exec-arg",
+    "plushie",
+  ]
+  console.log(`  ${command.join(" ")}`)
 })

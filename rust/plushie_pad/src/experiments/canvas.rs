@@ -31,9 +31,7 @@ impl Experiment for CanvasExperiment {
                     .width(320.0)
                     .height(200.0)
                     .child(
-                        layer("bg").child(
-                            rect(0.0, 0.0, 320.0, 200.0).fill(Color::hex("#1a1a2e")),
-                        ),
+                        layer("bg").child(rect(0.0, 0.0, 320.0, 200.0).fill(Color::hex("#1a1a2e"))),
                     )
                     .child(
                         layer("shapes")
@@ -42,10 +40,7 @@ impl Experiment for CanvasExperiment {
                                     .fill(Color::hex("#3b82f6"))
                                     .radius(6.0),
                             )
-                            .child(
-                                circle(180.0, 100.0, 50.0)
-                                    .fill(Color::hex("#22c55e")),
-                            )
+                            .child(circle(180.0, 100.0, 50.0).fill(Color::hex("#22c55e")))
                             .child(
                                 line(0.0, 180.0, 320.0, 180.0)
                                     .stroke(Color::hex("#94a3b8"))

@@ -36,7 +36,7 @@ WASM renderer into the right locations automatically.
 | 1 | `./bin/client-side.sh` | Serve client-side WASM app. Each browser tab is independent. |
 | 2 | `./bin/websocket.sh` | WebSocket server. All browser tabs share state. |
 | 3 | `./bin/native.sh` | Native desktop. Node.js spawns the renderer. |
-| 4 | `./bin/stdio.sh` | Native desktop. Renderer spawns Node.js via `--exec`. |
+| 4 | `./bin/stdio.sh` | Native desktop. Renderer spawns Node.js via structured exec args. |
 | 5 | `./bin/ssh-server.sh` | SSH + WebSocket server. All clients share state. |
 | 6 | `./bin/ssh-client.sh` | Connect a native renderer to the SSH server. |
 
@@ -71,11 +71,16 @@ If you have `sshd` running on a remote machine with the project
 installed, you can run the app over an existing SSH connection:
 
 ```bash
-plushie --exec "ssh -T user@remote 'cd /path/to/collab && npx plushie stdio src/collab.tsx'"
+plushie \
+  --exec-bin ssh \
+  --exec-arg -T \
+  --exec-arg -s \
+  --exec-arg user@remote \
+  --exec-arg plushie
 ```
 
-This works because the renderer spawns the SSH client, which
-tunnels stdin/stdout to the remote `plushie stdio` process.
+This works when the remote SSH subsystem starts the app's stdio
+entrypoint and tunnels stdin/stdout back to the renderer.
 
 ## Test
 

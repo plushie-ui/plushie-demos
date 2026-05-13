@@ -14,7 +14,7 @@
 ////
 //// Run: gleam run -m demo/ssh_server
 ////   Starts SSH on port 2222 and HTTP+WS on port 8080
-//// Then: plushie --json --exec "ssh -p 2222 -s plushie localhost"
+//// Then: plushie --json --exec-bin ssh --exec-arg -p --exec-arg 2222 --exec-arg -s --exec-arg localhost --exec-arg plushie
 
 import demo/shared.{type SharedMsg}
 import demo/static_server

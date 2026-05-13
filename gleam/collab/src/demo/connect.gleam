@@ -1,12 +1,11 @@
 //// Mode 4: Socket transport for reverse startup.
 ////
 //// The plushie renderer binary creates a Unix socket via `--listen`,
-//// then spawns this Gleam process via `--exec`. The process connects
-//// back to the renderer over the socket. This is the socket-based
-//// equivalent of the stdio mode.
+//// then spawns this Gleam process via structured exec args. The
+//// process connects back to the renderer over the socket.
 ////
 //// Run: ./bin/native_rust.sh
-////   (which runs: plushie --listen --exec "gleam run -m demo/connect")
+////   (which runs: plushie --listen --exec-bin gleam ...)
 
 import demo/collab
 import plushie/connect

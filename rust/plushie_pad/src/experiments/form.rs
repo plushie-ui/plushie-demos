@@ -40,10 +40,7 @@ impl Experiment for Form {
             .spacing(12.0)
             .width(Fill)
             .child(text("Form controls").id("title").size(18.0))
-            .child(
-                text_input("name", &self.name)
-                    .placeholder("Your name"),
-            )
+            .child(text_input("name", &self.name).placeholder("Your name"))
             .child(checkbox("subscribe", self.subscribed).label("Subscribe to updates"))
             .child(slider("volume", (0.0, 100.0), self.volume).step(1.0))
             .child(

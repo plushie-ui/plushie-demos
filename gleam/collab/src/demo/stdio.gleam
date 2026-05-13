@@ -1,11 +1,11 @@
 //// Mode 4: Stdio transport for reverse startup.
 ////
-//// The plushie renderer binary spawns this Gleam process via --exec
-//// and communicates over its stdin/stdout. This is the reverse of
-//// mode 3: the renderer drives the lifecycle instead of Gleam.
+//// The plushie renderer binary spawns this Gleam process via structured
+//// exec args and communicates over its stdin/stdout. This is the
+//// reverse of mode 3: the renderer drives the lifecycle instead of Gleam.
 ////
 //// Run: ./bin/native_rust.sh
-////   (which runs: plushie --exec "gleam run -m demo/stdio")
+////   (which runs: plushie --exec-bin gleam ...)
 
 import demo/collab
 import plushie

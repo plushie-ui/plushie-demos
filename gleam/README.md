@@ -21,7 +21,7 @@ same Plushie app:
 1. **Client-side WASM** - runs entirely in the browser, no server
 2. **WebSocket** - shared state, multiple browser tabs see the same data
 3. **Native (Gleam spawns renderer)** - standard desktop mode
-4. **Native (renderer spawns Gleam)** - reverse startup via `--exec`
+4. **Native (renderer spawns Gleam)** - reverse startup via structured exec args
 5. **SSH server** - shared state over SSH, interoperable with WebSocket
 6. **SSH client** - native renderer connecting to the SSH server
 

@@ -27,7 +27,7 @@ the exact same Plushie app:
 
 - **WebSocket** - shared state, multiple browser tabs see the same data
 - **Native (Elixir spawns renderer)** - standard desktop mode
-- **Native (renderer spawns Elixir)** - reverse startup via `--exec`
+- **Native (renderer spawns Elixir)** - reverse startup via structured exec args
 - **SSH server** - shared state over SSH, interoperable with WebSocket
 - **SSH client** - native renderer connecting to the SSH server
 

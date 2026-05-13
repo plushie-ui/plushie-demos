@@ -86,35 +86,41 @@ pub fn view(model: Model) -> List(Node) {
     False -> theme.Light
   }
 
-  [ui.window("main", [window.Title("Plushie Demo"), window.Size(500.0, 450.0)], [
-    ui.themer("theme-root", t, [], [
-      ui.column(
-        "root",
-        [
-          column.Padding(padding.all(20.0)),
-          column.Spacing(16.0),
-          column.Width(length.Fill),
-        ],
-        [
-          ui.text("header", "Plushie Demo", [text.Size(24.0)]),
-          ui.text_("status", model.status),
-          ui.text_input("name", model.name, [
-            text_input.Placeholder("Your name"),
-          ]),
-          ui.row("counter-row", [row.Spacing(8.0)], [
-            ui.button_("dec", "-"),
-            ui.text_("count", "Count: " <> int.to_string(model.count)),
-            ui.button_("inc", "+"),
-          ]),
-          ui.checkbox("theme", "Dark mode", model.dark_mode, []),
-          ui.text_input("notes", model.notes, [
-            text_input.Placeholder("Shared notes..."),
-            text_input.Width(length.Fill),
-          ]),
-        ],
-      ),
-    ]),
-  ])]
+  [
+    ui.window(
+      "main",
+      [window.Title("Plushie Demo"), window.Size(500.0, 450.0)],
+      [
+        ui.themer("theme-root", t, [], [
+          ui.column(
+            "root",
+            [
+              column.Padding(padding.all(20.0)),
+              column.Spacing(16.0),
+              column.Width(length.Fill),
+            ],
+            [
+              ui.text("header", "Plushie Demo", [text.Size(24.0)]),
+              ui.text_("status", model.status),
+              ui.text_input("name", model.name, [
+                text_input.Placeholder("Your name"),
+              ]),
+              ui.row("counter-row", [row.Spacing(8.0)], [
+                ui.button_("dec", "-"),
+                ui.text_("count", "Count: " <> int.to_string(model.count)),
+                ui.button_("inc", "+"),
+              ]),
+              ui.checkbox("theme", "Dark mode", model.dark_mode, []),
+              ui.text_input("notes", model.notes, [
+                text_input.Placeholder("Shared notes..."),
+                text_input.Width(length.Fill),
+              ]),
+            ],
+          ),
+        ]),
+      ],
+    ),
+  ]
 }
 
 /// Build the app with a 30 Hz event rate cap. This throttles

@@ -11,7 +11,7 @@
 use plushie::prelude::*;
 use plushie::settings::Settings;
 
-use crate::experiments::{build_gallery, Experiment};
+use crate::experiments::{Experiment, build_gallery};
 use crate::ui;
 
 /// Maximum number of lines kept in the event log pane.
@@ -211,7 +211,11 @@ mod tests {
         session.click("pick_1");
         let log = &session.model().event_log;
         assert!(!log.is_empty());
-        assert!(log[0].contains("selected counter"), "expected 'selected counter' in log, got: {:?}", log[0]);
+        assert!(
+            log[0].contains("selected counter"),
+            "expected 'selected counter' in log, got: {:?}",
+            log[0]
+        );
     }
 
     #[test]

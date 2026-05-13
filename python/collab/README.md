@@ -42,8 +42,8 @@ open http://localhost:8080/websocket.html
 |---|---------|-------------|
 | 1 | `python -m plushie run collab_demo.collab:Collab` | Native desktop. Python spawns the renderer. |
 | 2 | `python -m collab_demo.server` | SSH + WebSocket server. All clients share state. |
-| 3 | `plushie --listen --exec "python -m plushie connect collab_demo.collab:Collab"` | Native desktop. Renderer spawns Python. |
-| 4 | `plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"` | Native renderer over SSH (needs mode 2 running). |
+| 3 | `plushie --listen --exec-bin python --exec-arg -m --exec-arg plushie --exec-arg connect --exec-arg collab_demo.collab:Collab` | Native desktop. Renderer spawns Python. |
+| 4 | `plushie --exec-bin ssh --exec-arg -T --exec-arg -s --exec-arg -p --exec-arg 2222 --exec-arg -o --exec-arg StrictHostKeyChecking=no --exec-arg localhost --exec-arg plushie` | Native renderer over SSH (needs mode 2 running). |
 | 5 | `open http://localhost:8080/websocket.html` | Browser client (needs mode 2 running). |
 
 ## Collaborative demo
@@ -60,7 +60,16 @@ python -m collab_demo.server
 open http://localhost:8080/websocket.html
 
 # Terminal 3: native desktop over SSH
-plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"
+plushie \
+  --exec-bin ssh \
+  --exec-arg -T \
+  --exec-arg -s \
+  --exec-arg -p \
+  --exec-arg 2222 \
+  --exec-arg -o \
+  --exec-arg StrictHostKeyChecking=no \
+  --exec-arg localhost \
+  --exec-arg plushie
 
 # Terminal 4: another browser tab
 open http://localhost:8080/websocket.html

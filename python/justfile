@@ -1,0 +1,16 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for project in */pyproject.toml; do \
+      demo="${project%/pyproject.toml}"; \
+      echo "==> python/$demo"; \
+      ( \
+        cd "$demo"; \
+        python -m pip install -e ".[dev]"; \
+        ./preflight; \
+        if [ -d native ]; then python -m plushie build --release; fi \
+      ); \
+    done

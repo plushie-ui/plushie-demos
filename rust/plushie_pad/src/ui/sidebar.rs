@@ -11,10 +11,7 @@ use plushie::prelude::*;
 use crate::experiments::Experiment;
 
 pub fn view(experiments: &[Box<dyn Experiment>], selected: usize) -> View {
-    let mut list = column()
-        .id("list")
-        .spacing(4.0)
-        .padding(Padding::all(8.0));
+    let mut list = column().id("list").spacing(4.0).padding(Padding::all(8.0));
     for (index, exp) in experiments.iter().enumerate() {
         let id = format!("pick_{index}");
         let style = if index == selected {
@@ -22,11 +19,7 @@ pub fn view(experiments: &[Box<dyn Experiment>], selected: usize) -> View {
         } else {
             Style::text()
         };
-        list = list.child(
-            button(&id, exp.name())
-                .width(Fill)
-                .style(style),
-        );
+        list = list.child(button(&id, exp.name()).width(Fill).style(style));
     }
 
     container()

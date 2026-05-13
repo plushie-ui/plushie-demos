@@ -26,16 +26,16 @@ impl Experiment for Counter {
         column()
             .spacing(12.0)
             .padding(16)
-            .child(text(&format!("Count: {}", self.count)).id("count").size(20.0))
             .child(
-                row()
-                    .spacing(8.0)
-                    .children([
-                        button("inc", "+"),
-                        button("dec", "-"),
-                        button("reset", "Reset"),
-                    ]),
+                text(&format!("Count: {}", self.count))
+                    .id("count")
+                    .size(20.0),
             )
+            .child(row().spacing(8.0).children([
+                button("inc", "+"),
+                button("dec", "-"),
+                button("reset", "Reset"),
+            ]))
             .into()
     }
 

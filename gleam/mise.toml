@@ -1,0 +1,4 @@
+[tools]
+erlang = "26"
+gleam = "1"
+rust = "stable"

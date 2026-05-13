@@ -1,0 +1,19 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for package in */package.json; do \
+      demo="${package%/package.json}"; \
+      echo "==> typescript/$demo"; \
+      ( \
+        cd "$demo"; \
+        pnpm install --frozen-lockfile; \
+        if grep -q '"check"' package.json; then pnpm run check; elif [ -f tsconfig.json ]; then pnpm exec tsc --noEmit; fi; \
+        pnpm test; \
+        if grep -q '"build"' package.json; then pnpm run build; fi; \
+        if grep -q '"build:browser"' package.json; then pnpm run build:browser; fi; \
+        if [ -d native ] && grep -q '"build:ext"' package.json; then pnpm run build:ext; fi \
+      ); \
+    done

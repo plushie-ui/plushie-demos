@@ -1,0 +1,16 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+
+default:
+    just --list
+
+preflight:
+    for manifest in */Cargo.toml; do \
+      demo="${manifest%/Cargo.toml}"; \
+      echo "==> rust/$demo"; \
+      ( \
+        cd "$demo"; \
+        cargo fmt --check; \
+        cargo clippy --all-targets --all-features -- -D warnings; \
+        cargo test --all-targets --all-features \
+      ); \
+    done

@@ -20,8 +20,8 @@ WebSocket, all using a single app definition in `lib/collab.rb`.
 | # | Command | What it does |
 |---|---------|-------------|
 | 1 | `bundle exec ruby lib/collab.rb` | Native desktop. Ruby spawns the renderer. |
-| 2 | `plushie --exec "bundle exec ruby bin/connect"` | Native desktop. Renderer spawns Ruby. |
-| 3 | `plushie --exec "ssh -T host 'cd collab && bundle exec ruby bin/connect'"` | Native desktop over SSH. |
+| 2 | `plushie --exec-bin bundle --exec-arg exec --exec-arg ruby --exec-arg bin/connect` | Native desktop. Renderer spawns Ruby. |
+| 3 | `plushie --exec-bin ssh --exec-arg -T --exec-arg host --exec-arg 'cd /path/to/collab && bundle exec ruby bin/connect'` | Native desktop over SSH. |
 | 4 | `bundle exec ruby bin/server` | WebSocket server. Browser clients share state. |
 
 ## Collaborative demo

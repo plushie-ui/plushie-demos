@@ -7,10 +7,7 @@
 use plushie::prelude::*;
 
 pub fn view(entries: &[String]) -> View {
-    let mut lines = column()
-        .id("lines")
-        .spacing(2.0)
-        .padding(Padding::all(6.0));
+    let mut lines = column().id("lines").spacing(2.0).padding(Padding::all(6.0));
     for (index, entry) in entries.iter().enumerate() {
         lines = lines.child(
             text(entry)

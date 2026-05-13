@@ -3,11 +3,11 @@
 
 # Run the collab app over stdio transport.
 #
-# Used with plushie --exec for remote rendering:
-#   plushie --exec "bundle exec ruby bin/connect"
+# Used with structured renderer exec args for remote rendering:
+#   plushie --exec-bin bundle --exec-arg exec --exec-arg ruby --exec-arg bin/connect
 #
 # Or over SSH:
-#   plushie --exec "ssh -T host 'cd collab && bundle exec ruby bin/connect'"
+#   plushie --exec-bin ssh --exec-arg -T --exec-arg host --exec-arg 'cd /path/to/collab && bundle exec ruby bin/connect'
 
 require_relative "../lib/collab"
 

@@ -35,8 +35,8 @@ open http://localhost:8080/websocket.html
 |---|---------|-------------|
 | 2 | `mix collab.server` | SSH + WebSocket server. All clients share state. |
 | 3 | `mix plushie.gui Collab` | Native desktop. Elixir spawns the renderer. |
-| 4 | `bin/plushie --listen --exec "mix plushie.connect Collab"` | Native desktop. Renderer spawns Elixir. |
-| 5 | `bin/plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"` | Native renderer over SSH (needs mode 2 running). |
+| 4 | `bin/plushie --listen --exec-bin mix --exec-arg plushie.connect --exec-arg Collab` | Native desktop. Renderer spawns Elixir. |
+| 5 | `bin/plushie --exec-bin ssh --exec-arg -T --exec-arg -s --exec-arg -p --exec-arg 2222 --exec-arg -o --exec-arg StrictHostKeyChecking=no --exec-arg localhost --exec-arg plushie` | Native renderer over SSH (needs mode 2 running). |
 
 Mode 1 (client-side WASM) exists only in the gleam version since
 Elixir doesn't compile to JavaScript. Mode 2 serves the same browser
@@ -56,7 +56,16 @@ mix collab.server
 open http://localhost:8080/websocket.html
 
 # Terminal 3: native desktop over SSH
-bin/plushie --exec "ssh -T -s -p 2222 -o StrictHostKeyChecking=no localhost plushie"
+bin/plushie \
+  --exec-bin ssh \
+  --exec-arg -T \
+  --exec-arg -s \
+  --exec-arg -p \
+  --exec-arg 2222 \
+  --exec-arg -o \
+  --exec-arg StrictHostKeyChecking=no \
+  --exec-arg localhost \
+  --exec-arg plushie
 
 # Terminal 4: another browser tab
 open http://localhost:8080/websocket.html

@@ -37,7 +37,7 @@ open http://localhost:8080/websocket.html
 | 1 | `./bin/client_side.sh` | Serve client-side WASM app. Each browser tab is independent. |
 | 2 | `./bin/websocket.sh` | WebSocket server. All browser tabs share state. |
 | 3 | `./bin/native_gleam.sh` | Native desktop. Gleam spawns the renderer. |
-| 4 | `./bin/native_rust.sh` | Native desktop. Renderer spawns Gleam via `--listen --exec`. |
+| 4 | `./bin/native_rust.sh` | Native desktop. Renderer spawns Gleam with `--listen` and structured exec args. |
 | 5 | `./bin/ssh_server.sh` | SSH + WebSocket server. All clients share state. |
 | 6 | `./bin/ssh_client.sh` | Connect a native renderer to the SSH server. |
 
@@ -82,8 +82,8 @@ src/demo/
   collab.gleam              - the app (model, update, view)
   shared.gleam              - shared state actor for collaborative modes
   native_gleam.gleam        - mode 3: Gleam spawns renderer via Port
-  connect.gleam             - mode 4: socket transport for --listen --exec
-  stdio.gleam               - mode 4 legacy: stdio transport for --exec
+  connect.gleam             - mode 4: socket transport for renderer-parent startup
+  stdio.gleam               - mode 4: stdio transport for renderer-parent startup
   static_server.gleam       - mode 1: mist static file server
   websocket_server.gleam    - mode 2: mist HTTP + WebSocket server
   ssh_server.gleam          - mode 5: SSH daemon + WebSocket server

@@ -58,7 +58,7 @@ pub fn build_gallery() -> Vec<Box<dyn Experiment>> {
         Box::new(hello::Hello::default()),
         Box::new(counter::Counter::default()),
         Box::new(list::ListExperiment::default()),
-        Box::new(canvas::CanvasExperiment::default()),
+        Box::new(canvas::CanvasExperiment),
         Box::new(form::Form::default()),
     ]
 }

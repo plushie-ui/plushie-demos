@@ -27,7 +27,11 @@ impl Experiment for Hello {
             .spacing(12.0)
             .padding(16)
             .child(text("Hello, world!").size(24.0))
-            .child(text(&format!("waves: {}", self.waves)).id("waves").size(14.0))
+            .child(
+                text(&format!("waves: {}", self.waves))
+                    .id("waves")
+                    .size(14.0),
+            )
             .child(button("wave", "Wave"))
             .into()
     }
