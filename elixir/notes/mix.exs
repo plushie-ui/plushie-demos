@@ -22,7 +22,7 @@ defmodule Notes.MixProject do
 
   defp deps do
     [
-      {:plushie, "~> 0.7"},
+      {:plushie, path: "../../../plushie-elixir", override: true},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:file_system, "~> 1.0", only: :dev, runtime: false}
     ]
