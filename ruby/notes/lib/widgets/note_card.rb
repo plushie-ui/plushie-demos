@@ -17,11 +17,13 @@ class Notes
     prop :selected, :boolean, default: false
 
     def view(id, props)
+      checkbox_label = "Select #{props[:title] || "note"}"
+
       Plushie::UI::Context.push([])
       node = pointer_area("#{id}_card", on_press: true, cursor: :pointer) do
         container("#{id}_inner", padding: 12) do
           row("#{id}_row", spacing: 12, width: "fill") do
-            checkbox("select_#{id}", props[:selected])
+            checkbox("select_#{id}", props[:selected], label: checkbox_label)
 
             column("#{id}_body", spacing: 4, width: "fill") do
               text("#{id}_title", props[:title] || "Untitled",

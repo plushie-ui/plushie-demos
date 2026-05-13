@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+begin
+  require "bundler/setup"
+rescue LoadError
+end
+
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+
+require "notes"
+
+format = (ENV["PLUSHIE_FORMAT"] == "json") ? :json : :msgpack
+
+if ENV["PLUSHIE_SOCKET"] && !ENV["PLUSHIE_SOCKET"].empty?
+  Plushie.connect(Notes, format: format)
+else
+  Plushie.run(Notes, transport: :stdio, format: format)
+end

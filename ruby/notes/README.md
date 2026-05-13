@@ -30,9 +30,30 @@ No Rust toolchain needed.
 
     bundle exec ruby lib/notes.rb
 
+Renderer-parent startup for standalone packaging:
+
+    plushie-renderer --listen --exec-bin bundle --exec-arg exec --exec-arg ruby --exec-arg bin/connect
+
 ## Test
 
     bundle exec rake test
+
+## Package proof
+
+The practical first Ruby path in this repo is a directory-runtime
+payload: the active Ruby prefix, runtime gems, app files, and renderer
+are staged into one payload for the shared launcher. Tebako is a later
+candidate once a project config and native-extension story are settled;
+it is not required for this proof.
+
+Build the payload and package manifest:
+
+    PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
+
+The script writes `dist/payload.tar.zst` and
+`dist/plushie-package.toml`. Build the standalone launcher with:
+
+    cargo plushie package --manifest dist/plushie-package.toml --release
 
 ## Keyboard shortcuts
 
