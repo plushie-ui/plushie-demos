@@ -9,6 +9,9 @@ BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
 run_package_command() {
   local manifest="$1"
   local out="$2"
+  local cargo_plushie_dir=""
+  local smoke_cwd
+  local status
 
   if ! command -v cargo >/dev/null 2>&1; then
     echo "skip: package smoke - cargo is unavailable; install Rust or set up cargo-plushie" >&2
@@ -16,21 +19,45 @@ run_package_command() {
   fi
 
   if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
-    (
-      cd "$PLUSHIE_RUST_SOURCE_PATH"
-      cargo run -q -p cargo-plushie -- package \
+    cargo_plushie_dir="$(cd "$PLUSHIE_RUST_SOURCE_PATH" && pwd)"
+  fi
+
+  smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-smoke-cwd.XXXXXXXXXX")"
+
+  set +e
+  (
+    set -e
+    cd "$smoke_cwd"
+
+    if [ -n "$cargo_plushie_dir" ]; then
+      env -u PLUSHIE_BINARY_PATH \
+        -u PLUSHIE_RENDERER_BINARY \
+        -u PLUSHIE_RUST_SOURCE_PATH \
+        -u PLUSHIE_TEST_BACKEND \
+        cargo run -q -p cargo-plushie \
+        --manifest-path "$cargo_plushie_dir/Cargo.toml" \
+        -- package \
         --manifest "$manifest" \
         --smoke \
         --smoke-timeout "$SMOKE_TIMEOUT" \
         --out "$out"
-    )
-  else
-    cargo plushie package \
-      --manifest "$manifest" \
-      --smoke \
-      --smoke-timeout "$SMOKE_TIMEOUT" \
-      --out "$out"
-  fi
+    else
+      env -u PLUSHIE_BINARY_PATH \
+        -u PLUSHIE_RENDERER_BINARY \
+        -u PLUSHIE_RUST_SOURCE_PATH \
+        -u PLUSHIE_TEST_BACKEND \
+        cargo plushie package \
+        --manifest "$manifest" \
+        --smoke \
+        --smoke-timeout "$SMOKE_TIMEOUT" \
+        --out "$out"
+    fi
+  )
+  status=$?
+  set -e
+
+  rm -rf "$smoke_cwd"
+  return "$status"
 }
 
 should_run_language() {
