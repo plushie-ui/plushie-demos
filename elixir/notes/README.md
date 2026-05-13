@@ -35,6 +35,18 @@ mix plushie.download
 mix plushie.gui Notes.App
 ```
 
+Renderer-parent startup for standalone packaging:
+
+```sh
+plushie-renderer --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "Notes.Connect.main()"
+```
+
+Release-safe renderer-parent startup:
+
+```sh
+plushie-renderer --listen --exec-bin _build/prod/rel/notes/bin/notes --exec-arg eval --exec-arg "Notes.Connect.main()"
+```
+
 ## Test
 
 ```sh
@@ -43,6 +55,21 @@ mix test
 
 Tests cover the app logic, all three widgets, navigation, CRUD,
 undo/redo, search/sort, keyboard shortcuts, and view tree structure.
+
+## Package proof
+
+Build the host release payload and package manifest:
+
+```sh
+PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
+```
+
+The script writes `dist/payload.tar.zst` and
+`dist/plushie-package.toml`. Build the standalone launcher with:
+
+```sh
+cargo plushie package --manifest dist/plushie-package.toml --release
+```
 
 ## Project structure
 

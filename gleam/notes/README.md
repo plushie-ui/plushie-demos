@@ -23,6 +23,12 @@ gleam run -m plushie/download
 gleam run -m notes
 ```
 
+Renderer-parent startup for standalone packaging:
+
+```bash
+plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg notes/connect
+```
+
 ## Test
 
 ```bash
@@ -32,6 +38,21 @@ gleam test
 81 tests covering the message mapping, model helpers, update logic
 (navigation, create, delete, edit, undo, redo, search), view structure,
 and a full user journey.
+
+## Package proof
+
+Build the Erlang shipment payload and package manifest:
+
+```bash
+PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
+```
+
+The script writes `dist/payload.tar.zst` and
+`dist/plushie-package.toml`. Build the standalone launcher with:
+
+```bash
+cargo plushie package --manifest dist/plushie-package.toml --release
+```
 
 ## How it works
 
