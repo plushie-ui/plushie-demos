@@ -1,5 +1,5 @@
 /** A country record. */
-export interface Country {
+export interface Country extends Record<string, string | number> {
   name: string
   capital: string
   continent: string

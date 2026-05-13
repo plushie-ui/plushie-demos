@@ -6,6 +6,7 @@
  */
 
 import { app, Data } from "plushie"
+import type { DeepReadonly, Handler, WidgetEvent } from "plushie"
 import {
   Window,
   Column,
@@ -19,10 +20,10 @@ import {
 import { COUNTRIES } from "./countries.js"
 import type { Country } from "./countries.js"
 
-// -- Model ------------------------------------------------------------------
+// Model
 
 export interface Model {
-  records: Country[]
+  records: readonly Country[]
   search: string
   sortField: string
   sortDir: "asc" | "desc"
@@ -41,67 +42,76 @@ export function init(): Model {
   }
 }
 
-// -- Helpers ----------------------------------------------------------------
+// Helpers
 
 function formatNumber(n: number): string {
   return n.toLocaleString("en-US")
 }
 
 /** Run the full query pipeline against the current model. */
-export function queryRecords(model: Model) {
+export function queryRecords(model: DeepReadonly<Model>) {
+  const search =
+    model.search.length > 0
+      ? { fields: ["name", "capital", "continent"], query: model.search }
+      : undefined
+
   return Data.query(model.records, {
-    search:
-      model.search.length > 0
-        ? { fields: ["name", "capital", "continent"], query: model.search }
-        : undefined,
+    ...(search === undefined ? {} : { search }),
     sort: { field: model.sortField, direction: model.sortDir },
     page: model.page,
     pageSize: model.pageSize,
   })
 }
 
-// -- Handlers ---------------------------------------------------------------
+// Handlers
 
-const setSearch = (s: Model, e: { value: unknown }): Model => ({
+const appHandler = (handler: Handler<Model>): Handler<unknown> =>
+  handler as unknown as Handler<unknown>
+
+const setSearch: Handler<Model> = (s, e) => ({
   ...s,
-  search: e.value as string,
+  search: String(e.value ?? ""),
   page: 1,
 })
 
-const clearSearch = (s: Model): Model => ({
+const clearSearch: Handler<Model> = (s) => ({
   ...s,
   search: "",
   page: 1,
 })
 
-const handleSort = (s: Model, e: { column: unknown }): Model => {
-  const col = e.column as string
+const handleSort: Handler<Model> = (s, e) => {
+  const col = String(eventField(e, "column") ?? "")
   if (col === s.sortField) {
     return { ...s, sortDir: s.sortDir === "asc" ? "desc" : "asc", page: 1 }
   }
   return { ...s, sortField: col, sortDir: "asc", page: 1 }
 }
 
-const prevPage = (s: Model): Model => ({
+const prevPage: Handler<Model> = (s) => ({
   ...s,
   page: Math.max(1, s.page - 1),
 })
 
-const nextPage = (s: Model): Model => {
+const nextPage: Handler<Model> = (s) => {
   const { total } = queryRecords(s)
   const maxPage = Math.ceil(total / s.pageSize)
   return { ...s, page: Math.min(maxPage, s.page + 1) }
 }
 
-const setPageSize = (s: Model, e: { value: unknown }): Model => ({
+const setPageSize: Handler<Model> = (s, e) => ({
   ...s,
   pageSize: Number(e.value),
   page: 1,
 })
 
-// -- View -------------------------------------------------------------------
+function eventField(event: WidgetEvent, key: string): unknown {
+  return event.data?.[key] ?? event.value
+}
 
-export function view(model: Model) {
+// View
+
+export function view(model: DeepReadonly<Model>) {
   const result = queryRecords(model)
   const totalPages = Math.max(1, Math.ceil(result.total / result.pageSize))
 
@@ -123,10 +133,10 @@ export function view(model: Model) {
             value={model.search}
             placeholder="Search countries..."
             width="fill"
-            onInput={setSearch}
+            onInput={appHandler(setSearch)}
           />
           {model.search.length > 0 && (
-            <Button id="clear_search" onClick={clearSearch}>
+            <Button id="clear_search" onClick={appHandler(clearSearch)}>
               Clear
             </Button>
           )}
@@ -158,24 +168,24 @@ export function view(model: Model) {
           rows={tableRows}
           sortBy={model.sortField}
           sortOrder={model.sortDir}
-          onSort={handleSort}
+          onSort={appHandler(handleSort)}
           header={true}
           separator={true}
         />
 
         {/* Pagination */}
         <Row spacing={8}>
-          <Button id="prev" onClick={prevPage}>
+          <Button id="prev" onClick={appHandler(prevPage)}>
             Previous
           </Button>
-          <Button id="next" onClick={nextPage}>
+          <Button id="next" onClick={appHandler(nextPage)}>
             Next
           </Button>
           <PickList
             id="page_size"
             options={["5", "10", "25", "50"]}
             selected={String(model.pageSize)}
-            onSelect={setPageSize}
+            onSelect={appHandler(setPageSize)}
           />
         </Row>
       </Column>
@@ -183,11 +193,14 @@ export function view(model: Model) {
   )
 }
 
-// -- App --------------------------------------------------------------------
+// App
 
 const _app = app<Model>({
   init: init(),
+  update: (model) => model,
   view,
 })
 export default _app
-_app.run()
+if (process.env["VITEST"] !== "true") {
+  void _app.run()
+}

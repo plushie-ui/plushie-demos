@@ -49,6 +49,10 @@ This produces `dist/data-explorer` (~60 MB) containing:
 - The Node.js runtime
 - The plushie renderer binary (as a SEA asset)
 
+It also writes shared-launcher inputs under `dist/shared-launcher/`:
+- `payload.tar.zst`
+- `plushie-package.toml`
+
 Run it:
 
 ```sh
@@ -68,6 +72,27 @@ Copy it to another machine; no installation needed.
    binary
 5. **Result** - a single executable that, at runtime, extracts the
    plushie binary to a temp file and spawns it normally
+
+### Shared launcher payload
+
+The shared Plushie launcher expects the renderer to be a payload file
+that it can start with `--listen --exec-bin`. For that path, the
+script builds a host-only SEA at `bin/data-explorer-host` and stores
+the renderer separately at `bin/plushie-renderer...` inside
+`payload.tar.zst`.
+
+That host SEA deliberately does not embed the renderer. When the
+shared launcher starts the renderer, the renderer starts the host with
+`PLUSHIE_SOCKET`; `app().run()` detects that environment and connects
+back over the socket transport instead of resolving or extracting its
+own renderer. Embedding the renderer in that SEA would only duplicate
+bytes and would not be used on the shared-launcher path.
+
+Build the final launcher from the generated manifest:
+
+```sh
+cargo plushie package --manifest dist/shared-launcher/plushie-package.toml --release
+```
 
 ### Size breakdown
 
