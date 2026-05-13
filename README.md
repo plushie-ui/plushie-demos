@@ -54,6 +54,13 @@ See the [Python demos README](python/README.md) for setup and details.
 
 See the [TypeScript demos README](typescript/README.md) for setup and details.
 
+## Standalone Packaging Proofs
+
+The canonical first native-widget packaging proof is
+[elixir/gauge-demo](elixir/gauge-demo/). Its package script builds a
+custom renderer with the gauge Rust crate linked into the payload, so
+the proof does not rely on a stock renderer.
+
 ## Ruby
 
 | Demo | Description |

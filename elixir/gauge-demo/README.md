@@ -51,6 +51,18 @@ startup, making the `"gauge"` widget type available on the wire.
 mix plushie.gui GaugeDemo.TemperatureMonitor
 ```
 
+Renderer-parent startup for standalone packaging:
+
+```sh
+_build/plushie/package/gauge-demo-plushie --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "GaugeDemo.Connect.main()"
+```
+
+Release-safe renderer-parent startup:
+
+```sh
+_build/plushie/package/gauge-demo-plushie --listen --exec-bin _build/prod/rel/gauge_demo/bin/gauge_demo --exec-arg eval --exec-arg "GaugeDemo.Connect.main()"
+```
+
 ## Test
 
 ```sh
@@ -62,18 +74,41 @@ mix test
 The test suite uses the real custom renderer binary for the native
 gauge widget. Build it first, then run `mix test`.
 
+## Package proof
+
+This is the canonical first native-widget standalone packaging proof
+for the demo repo. It proves that the package payload contains a
+renderer rebuilt with the `native/gauge` Rust crate linked in, not a
+stock downloaded renderer.
+
+Build the custom renderer, host release payload, and package manifest:
+
+```sh
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh
+```
+
+The script writes `dist/payload.tar.zst` and
+`dist/plushie-package.toml`. Build the standalone launcher with:
+
+```sh
+cargo plushie package --manifest dist/plushie-package.toml --release
+```
+
 ## Project structure
 
 ```
 lib/
   gauge_demo.ex                 # Top-level module
   gauge_demo/
-    gauge_extension.ex          # Widget definition (props, commands, Rust refs)
+    connect.ex                  # Renderer-parent package entry point
+    gauge.ex                    # Widget definition (props, commands, Rust refs)
     temperature_monitor.ex      # App module (init/update/view/settings)
+scripts/
+  package.sh                    # Custom-renderer standalone package proof
 test/
   test_helper.exs               # Test setup
   gauge_demo/
-    gauge_extension_test.exs    # Widget metadata, struct, commands
+    gauge_test.exs              # Widget metadata, struct, commands
     temperature_monitor_test.exs  # App logic, view tree, state journey
 native/
   gauge/

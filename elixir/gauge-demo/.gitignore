@@ -2,6 +2,7 @@
 /_build/
 /deps/
 /doc/
+/dist/
 *.ez
 erl_crash.dump
 
