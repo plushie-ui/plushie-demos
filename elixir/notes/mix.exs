@@ -16,13 +16,14 @@ defmodule Notes.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :crypto]
+      extra_applications: [:logger, :crypto, :telemetry]
     ]
   end
 
   defp deps do
     [
-      {:plushie, path: "../../../plushie-elixir", override: true},
+      {:plushie,
+       path: System.get_env("PLUSHIE_ELIXIR_DIR", "../../../plushie-elixir"), override: true},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:file_system, "~> 1.0", only: :dev, runtime: false}
     ]

@@ -16,13 +16,14 @@ defmodule GaugeDemo.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :telemetry]
     ]
   end
 
   defp deps do
     [
-      {:plushie, "~> 0.7"},
+      {:plushie,
+       path: System.get_env("PLUSHIE_ELIXIR_DIR", "../../../plushie-elixir"), override: true},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:file_system, "~> 1.0", only: :dev, runtime: false}
     ]

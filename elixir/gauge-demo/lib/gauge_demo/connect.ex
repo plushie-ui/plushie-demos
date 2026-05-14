@@ -10,13 +10,15 @@ defmodule GaugeDemo.Connect do
   def main do
     format = :msgpack
     socket = resolve_socket!()
+    token = System.get_env("PLUSHIE_TOKEN")
 
     {:ok, adapter} = Plushie.SocketAdapter.start_link(socket, format)
 
     {:ok, pid} =
       Plushie.start_link(GaugeDemo.TemperatureMonitor,
         transport: {:iostream, adapter},
-        format: format
+        format: format,
+        token: token
       )
 
     wait(pid)

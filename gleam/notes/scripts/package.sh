@@ -109,6 +109,7 @@ copy_erlang_runtime() {
   root="$(resolve_erlang_root)"
   runtime_dir="$PAYLOAD_DIR/runtime/erlang"
   erts_dir="$(find_runtime_dir "$root" 'erts-*')"
+  crypto_dir="$(find_runtime_dir "$root/lib" 'crypto-*')"
   kernel_dir="$(find_runtime_dir "$root/lib" 'kernel-*')"
   sasl_dir="$(find_runtime_dir "$root/lib" 'sasl-*')"
   stdlib_dir="$(find_runtime_dir "$root/lib" 'stdlib-*')"
@@ -128,11 +129,14 @@ copy_erlang_runtime() {
   cp -aL "$root/bin" "$runtime_dir/"
   cp -aL "$root/releases" "$runtime_dir/"
   cp -aL "$erts_dir" "$runtime_dir/"
+  cp -aL "$crypto_dir" "$runtime_dir/lib/"
   cp -aL "$kernel_dir" "$runtime_dir/lib/"
   cp -aL "$sasl_dir" "$runtime_dir/lib/"
   cp -aL "$stdlib_dir" "$runtime_dir/lib/"
 
-  env -u ERL_ROOTDIR "$runtime_dir/bin/erl" -noshell -eval 'halt().'
+  env -u ERL_ROOTDIR "$runtime_dir/bin/erl" \
+    -noshell \
+    -eval 'ok = application:ensure_started(crypto), halt().'
 }
 
 validate_payload_archive_inputs() {

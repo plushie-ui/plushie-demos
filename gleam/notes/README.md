@@ -58,8 +58,8 @@ specific Erlang install. Use `PLUSHIE_BUNDLE_ERLANG=0` to skip the
 runtime copy and keep the older PATH-based behavior.
 
 This is a prototype runtime bundle, not a full OTP release. It copies
-the local ERTS plus `kernel`, `stdlib`, and `sasl`, which is enough for
-this demo's shipment. Remaining gaps:
+the local ERTS plus `kernel`, `stdlib`, `sasl`, and `crypto`, which is
+enough for this demo's shipment. Remaining gaps:
 
 - The copied runtime is OS and architecture specific.
 - System shared libraries used by ERTS are not vendored.

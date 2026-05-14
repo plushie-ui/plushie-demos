@@ -7,6 +7,8 @@ DIST_DIR="$PROJECT_DIR/dist"
 PAYLOAD_DIR="$DIST_DIR/payload"
 RELEASE_DIR="$PROJECT_DIR/_build/prod/rel/gauge_demo"
 CUSTOM_RENDERER="$PROJECT_DIR/_build/plushie/package/gauge-demo-plushie"
+DEFAULT_PLUSHIE_ELIXIR_DIR="$(cd "$PROJECT_DIR/../../../plushie-elixir" 2>/dev/null && pwd || true)"
+PLUSHIE_ELIXIR_DIR="${PLUSHIE_ELIXIR_DIR:-$DEFAULT_PLUSHIE_ELIXIR_DIR}"
 
 cd "$PROJECT_DIR"
 
@@ -56,17 +58,25 @@ package_target() {
 require_command mix
 require_command tar
 
+if [ -z "$PLUSHIE_ELIXIR_DIR" ] || [ ! -f "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION" ]; then
+  echo "Set PLUSHIE_ELIXIR_DIR to a plushie-elixir checkout before packaging this demo." >&2
+  exit 1
+fi
+
+export PLUSHIE_ELIXIR_DIR
+
 target="$(package_target)"
 
 echo "Building custom gauge renderer..."
 mkdir -p "$(dirname "$CUSTOM_RENDERER")"
 MIX_ENV=prod mix deps.get --only prod
+MIX_ENV=prod mix deps.compile plushie --force
 PLUSHIE_PACKAGE_RENDERER="$CUSTOM_RENDERER" MIX_ENV=prod mix run --no-start -e '
 Code.ensure_loaded!(GaugeDemo.Gauge)
 Plushie.WidgetRegistry.invalidate()
 Mix.Task.run("plushie.build", ["--release", "--bin-file", System.fetch_env!("PLUSHIE_PACKAGE_RENDERER")])
 '
-plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(tr -d '\n' < deps/plushie/PLUSHIE_RUST_VERSION)}"
+plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(tr -d '\n' < "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION")}"
 
 echo "Building host release..."
 MIX_ENV=prod mix release --overwrite

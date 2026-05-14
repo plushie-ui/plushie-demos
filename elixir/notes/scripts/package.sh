@@ -6,6 +6,8 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 PAYLOAD_DIR="$DIST_DIR/payload"
 RELEASE_DIR="$PROJECT_DIR/_build/prod/rel/notes"
+DEFAULT_PLUSHIE_ELIXIR_DIR="$(cd "$PROJECT_DIR/../../../plushie-elixir" 2>/dev/null && pwd || true)"
+PLUSHIE_ELIXIR_DIR="${PLUSHIE_ELIXIR_DIR:-$DEFAULT_PLUSHIE_ELIXIR_DIR}"
 
 cd "$PROJECT_DIR"
 
@@ -70,12 +72,20 @@ resolve_renderer() {
 require_command mix
 require_command tar
 
+if [ -z "$PLUSHIE_ELIXIR_DIR" ] || [ ! -f "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION" ]; then
+  echo "Set PLUSHIE_ELIXIR_DIR to a plushie-elixir checkout before packaging this demo." >&2
+  exit 1
+fi
+
+export PLUSHIE_ELIXIR_DIR
+
 renderer="$(resolve_renderer)"
 target="$(package_target)"
 
 echo "Building release..."
 MIX_ENV=prod mix deps.get --only prod
-plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(tr -d '\n' < deps/plushie/PLUSHIE_RUST_VERSION)}"
+MIX_ENV=prod mix deps.compile plushie --force
+plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(tr -d '\n' < "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION")}"
 MIX_ENV=prod mix release --overwrite
 
 echo "Preparing payload..."
