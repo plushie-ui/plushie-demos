@@ -72,6 +72,10 @@ host_command = ["bin/connect"]
 working_dir = "."
 exec_env = []
 
+[renderer]
+kind = "custom"
+source = "local-build"
+
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"

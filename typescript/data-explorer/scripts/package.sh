@@ -166,6 +166,10 @@ host_command = ["bin/$host_name"]
 working_dir = "."
 exec_env = []
 
+[renderer]
+kind = "stock"
+source = "local-resolve"
+
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"

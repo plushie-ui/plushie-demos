@@ -166,6 +166,10 @@ host_command = ["ruby/bin/$ruby_install_name$ruby_exeext", "bin/connect"]
 working_dir = "app"
 exec_env = []
 
+[renderer]
+kind = "stock"
+source = "local-resolve"
+
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"

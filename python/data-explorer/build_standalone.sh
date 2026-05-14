@@ -71,6 +71,10 @@ renderer_path = "$PAYLOAD_RENDERER"
 host_command = ["$HOST_EXE"]
 working_dir = "."
 
+[renderer]
+kind = "stock"
+source = "download"
+
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$PAYLOAD_HASH"

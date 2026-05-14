@@ -79,6 +79,10 @@ host_command = ["bin/connect"]
 working_dir = "."
 exec_env = []
 
+[renderer]
+kind = "stock"
+source = "local-resolve"
+
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"
