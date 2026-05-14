@@ -7,6 +7,8 @@ RENDERER_KIND="${PLUSHIE_PACKAGE_RENDERER_KIND:-custom}"
 
 cd "$PROJECT_DIR"
 
+gleam clean
+
 exec gleam run -m plushie/package -- \
   --app-id dev.plushie.demos.gleam.gauge \
   --app-version 0.1.0 \

@@ -6,6 +6,8 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$PROJECT_DIR"
 
+gleam clean
+
 exec gleam run -m plushie/package -- \
   --app-id dev.plushie.demos.gleam.notes \
   --app-version 0.1.0 \
