@@ -83,7 +83,10 @@ class CrashLabTest < Plushie::Test::Case
     click "#count"
     assert_text "#clicks", "Clicks: 1"
 
-    click "#raise_update"
+    _stdout, stderr = capture_io do
+      click "#raise_update"
+    end
+    assert_includes stderr, "intentional error in update handler"
 
     # Model was preserved at count=1 by the runtime's error recovery
     click "#count"
@@ -96,7 +99,10 @@ class CrashLabTest < Plushie::Test::Case
     # Clicking raise_view sets view_broken=true. On the next render,
     # the runtime catches the error and preserves the previous tree.
     # The UI stays visible (with the recover button).
-    click "#raise_view"
+    _stdout, stderr = capture_io do
+      click "#raise_view"
+    end
+    assert_includes stderr, "intentional error in view"
 
     # The previous tree is preserved by the runtime, so the view
     # should still be visible. Click recover to clear the flag.

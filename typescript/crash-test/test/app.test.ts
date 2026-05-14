@@ -50,6 +50,46 @@ function findNode(
   return null
 }
 
+async function captureExpectedRendererPanic(run: () => Promise<void>): Promise<string> {
+  const originalWrite = process.stderr.write
+  const chunks: string[] = []
+
+  process.stderr.write = ((chunk: string | Uint8Array, encodingOrCallback?: unknown, callback?: unknown) => {
+    chunks.push(typeof chunk === "string" ? chunk : Buffer.from(chunk).toString("utf8"))
+
+    if (typeof encodingOrCallback === "function") encodingOrCallback()
+    if (typeof callback === "function") callback()
+
+    return true
+  }) as typeof process.stderr.write
+
+  try {
+    await run()
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  } finally {
+    process.stderr.write = originalWrite
+  }
+
+  const output = chunks.join("")
+  const unexpected = output
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0)
+    .filter((line) => !isExpectedRendererPanicLine(line))
+  expect(unexpected).toEqual([])
+
+  return output
+}
+
+function isExpectedRendererPanicLine(line: string): boolean {
+  return (
+    (line.includes("ERROR plushie_renderer_lib::emitters") && line.includes("renderer panic at")) ||
+    (line.includes("thread '") && line.includes("panicked at")) ||
+    line.includes("intentional panic from crash_box widget - this is expected") ||
+    line.includes("note: run with `RUST_BACKTRACE=1` environment variable") ||
+    (line.includes("ERROR plushie_core::diagnostics") && line.includes("widget_panic"))
+  )
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Extension definition
 // ═══════════════════════════════════════════════════════════════════════════
@@ -268,7 +308,9 @@ integration("crash test (integration)", () => {
 
   test("counter works after panic command", async () => {
     // Send the panic command to the Rust widget
-    await session.click("panic")
+    const stderr = await captureExpectedRendererPanic(() => session.click("panic"))
+    expect(stderr).toContain("intentional panic from crash_box widget - this is expected")
+    expect(stderr).toContain("widget_panic")
 
     // The crash_box is now poisoned, but the counter still works
     await session.click("inc")
