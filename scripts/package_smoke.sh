@@ -424,8 +424,11 @@ assert_native_package_requires_custom_renderer() {
 
 assert_native_package_rejects_missing_widget() {
   local language="$1"
-  local manifest="$ROOT/elixir/gauge-demo/dist/plushie-package.toml"
-  local archive="$ROOT/elixir/gauge-demo/dist/payload.tar.zst"
+  local demo=""
+  local manifest
+  local archive
+  local renderer_name
+  local safe
   local tmp
   local stock_renderer
   local payload_hash
@@ -433,9 +436,27 @@ assert_native_package_rejects_missing_widget() {
   local out
   local display_status
 
-  if [ "$language" != "elixir" ] || [ "$RUN_ARTIFACTS" != "1" ]; then
+  if [ "$RUN_ARTIFACTS" != "1" ]; then
     return 0
   fi
+
+  case "$language" in
+    elixir)
+      demo="elixir/gauge-demo"
+      renderer_name="gauge-demo-plushie"
+      ;;
+    gleam)
+      demo="gleam/gauge-demo"
+      renderer_name="plushie-renderer"
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+
+  manifest="$ROOT/$demo/dist/plushie-package.toml"
+  archive="$ROOT/$demo/dist/payload.tar.zst"
+  safe="${demo//\//-}"
 
   if [ ! -f "$manifest" ] || [ ! -f "$archive" ]; then
     return 0
@@ -469,33 +490,35 @@ assert_native_package_rejects_missing_widget() {
   mkdir -p "$tmp/dist"
 
   extract_payload_archive "$archive" "$tmp/payload"
-  cp "$stock_renderer" "$tmp/payload/bin/gauge-demo-plushie"
-  chmod +x "$tmp/payload/bin/gauge-demo-plushie"
+  cp "$stock_renderer" "$tmp/payload/bin/$renderer_name"
+  chmod +x "$tmp/payload/bin/$renderer_name"
   archive_payload "$tmp/payload" "$tmp/dist/payload.tar.zst"
   payload_hash="$(hash_file "$tmp/dist/payload.tar.zst")"
   payload_size="$(file_size "$tmp/dist/payload.tar.zst")"
   write_native_negative_manifest "$manifest" "$tmp/dist/plushie-package.toml" "$payload_hash" "$payload_size"
 
-  out="$tmp/dist/package-smoke/elixir-gauge-demo-stock-renderer"
-  echo "==> assert elixir/gauge-demo rejects renderer without gauge widget"
+  out="$tmp/dist/package-smoke/$safe-stock-renderer"
+  echo "==> assert $demo rejects renderer without gauge widget"
   run_package_command "$tmp/dist/plushie-package.toml" "$out"
 
-  if run_artifact_command "$out"; then
-    echo "failed: elixir/gauge-demo ran with a renderer missing the gauge widget" >&2
+  if run_artifact_command "$out" "$tmp/dist/plushie-package.toml"; then
+    echo "failed: $demo ran with a renderer missing the gauge widget" >&2
     rm -rf "$tmp"
     return 1
   fi
 
-  echo "ok: elixir/gauge-demo rejected renderer without gauge widget"
+  echo "ok: $demo rejected renderer without gauge widget"
   rm -rf "$tmp"
 }
 
 run_artifact_command() {
   local artifact="$1"
+  local manifest="$2"
   local artifact_path
   local cache_dir
   local display_status
   local log
+  local report
   local status
   local timeout_bin
   local timeout_args
@@ -540,6 +563,7 @@ run_artifact_command() {
   log="$(mktemp "${TMPDIR:-/tmp}/plushie-package-artifact.XXXXXXXXXX")"
   cache_dir="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cache.XXXXXXXXXX")"
   artifact_path="$(artifact_runtime_path)"
+  report="$artifact.report"
 
   echo "==> artifact ${artifact#$ROOT/}"
   echo "    PATH=$artifact_path"
@@ -558,6 +582,8 @@ run_artifact_command() {
   ) >"$log" 2>&1
   status=$?
   set -e
+
+  write_artifact_report "$report" "$manifest" "$artifact" "$artifact_path" "$status" "$log"
 
   if grep -q "plushie launcher: smoke ok" "$log"; then
     echo "failed: artifact used launcher smoke mode" >&2
@@ -625,6 +651,124 @@ run_artifact_command() {
   rm -rf "$cache_dir"
 }
 
+manifest_value() {
+  local manifest="$1"
+  local key="$2"
+
+  awk -F '=' -v key="$key" '
+    $1 ~ "^[[:space:]]*" key "[[:space:]]*$" {
+      value = $2
+      sub(/^[[:space:]]*/, "", value)
+      sub(/[[:space:]]*$/, "", value)
+      gsub(/^"|"$/, "", value)
+      print value
+      exit
+    }
+  ' "$manifest"
+}
+
+write_artifact_report() {
+  local report="$1"
+  local manifest="$2"
+  local artifact="$3"
+  local runtime_path="$4"
+  local status="$5"
+  local log="$6"
+  local demo_dir
+  local ready="no"
+  local unknown_widget="no"
+  local renderer_path=""
+
+  demo_dir="$(demo_dir_for_manifest "$manifest")"
+  grep -Fq "$ARTIFACT_READY_MARKER" "$log" && ready="yes"
+  grep -q "unknown node type" "$log" && unknown_widget="yes"
+  renderer_path="$(sed -n 's/.* renderer=\([^ ]*\) .*/\1/p' "$log" | head -n 1)"
+
+  mkdir -p "$(dirname "$report")"
+  {
+    printf 'manifest=%s\n' "${manifest#$ROOT/}"
+    printf 'artifact=%s\n' "${artifact#$ROOT/}"
+    printf 'app_id=%s\n' "$(manifest_value "$manifest" app_id)"
+    printf 'app_version=%s\n' "$(manifest_value "$manifest" app_version)"
+    printf 'target=%s\n' "$(manifest_value "$manifest" target)"
+    printf 'host_sdk=%s\n' "$(manifest_value "$manifest" host_sdk)"
+    printf 'host_sdk_version=%s\n' "$(manifest_value "$manifest" host_sdk_version)"
+    printf 'plushie_rust_version=%s\n' "$(manifest_value "$manifest" plushie_rust_version)"
+    printf 'protocol_version=%s\n' "$(manifest_value "$manifest" protocol_version)"
+    printf 'host_sdk_dependency=%s\n' "$(host_sdk_dependency "$demo_dir")"
+    printf 'native_widget_crates=%s\n' "$(native_widget_crates "$demo_dir")"
+    printf 'renderer_kind=%s\n' "$(manifest_value "$manifest" kind)"
+    printf 'payload_hash=%s\n' "$(manifest_value "$manifest" hash)"
+    printf 'payload_size=%s\n' "$(manifest_value "$manifest" size)"
+    printf 'artifact_size=%s\n' "$(file_size "$artifact")"
+    printf 'runtime_path=%s\n' "$runtime_path"
+    printf 'exit_status=%s\n' "$status"
+    printf 'ready_marker=%s\n' "$ready"
+    printf 'unknown_widget=%s\n' "$unknown_widget"
+    printf 'renderer_path=%s\n' "$renderer_path"
+  } > "$report"
+}
+
+demo_dir_for_manifest() {
+  local manifest="$1"
+  local rel="${manifest#$ROOT/}"
+
+  printf '%s\n' "${rel%%/dist/*}"
+}
+
+host_sdk_dependency() {
+  local demo_dir="$1"
+  local root="$ROOT/$demo_dir"
+  local language="${demo_dir%%/*}"
+
+  case "$language" in
+    elixir)
+      sed -n 's/.*{:plushie, *\(.*\)}.*/\1/p' "$root/mix.exs" 2>/dev/null | head -n 1 | tr -d '\n'
+      ;;
+    gleam)
+      awk '/plushie_gleam = / { print; exit }' "$root/manifest.toml" 2>/dev/null
+      ;;
+    python)
+      awk '/plushie/ { print; exit }' "$root/pyproject.toml" 2>/dev/null
+      ;;
+    ruby)
+      awk '/plushie/ { print; exit }' "$root/Gemfile" 2>/dev/null
+      ;;
+    typescript)
+      node -e '
+        const fs = require("fs");
+        const path = process.argv[1];
+        const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
+        const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+        process.stdout.write(deps.plushie || "");
+      ' "$root/package.json" 2>/dev/null
+      ;;
+  esac
+}
+
+native_widget_crates() {
+  local demo_dir="$1"
+  local root="$ROOT/$demo_dir"
+  local crate
+  local name
+  local version
+  local sdk
+  local output=()
+
+  if [ ! -d "$root/native" ]; then
+    return 0
+  fi
+
+  while IFS= read -r crate; do
+    name="$(awk -F '"' '/^name = / { print $2; exit }' "$crate")"
+    version="$(awk -F '"' '/^version = / { print $2; exit }' "$crate")"
+    sdk="$(awk -F '"' '/^plushie-widget-sdk = / { print $2; exit }' "$crate")"
+    output+=("$name:$version:plushie-widget-sdk=$sdk")
+  done < <(find "$root/native" -name Cargo.toml -type f | sort)
+
+  (IFS=','; printf '%s\n' "${output[*]}")
+}
+
 should_run_language() {
   local candidate="$1"
 
@@ -690,7 +834,7 @@ smoke_language() {
 
     echo "==> smoke $rel"
     run_package_command "$manifest" "$out"
-    run_artifact_command "$out"
+    run_artifact_command "$out" "$manifest"
   done < <(manifests_for_language "$language")
 
   if [ "$count" -eq 0 ]; then

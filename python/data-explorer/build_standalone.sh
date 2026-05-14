@@ -12,10 +12,14 @@ source "$ROOT_DIR/scripts/package_lib.sh"
 if [ -n "$PLUSHIE_PYTHON_DIR" ] && [ -d "$PLUSHIE_PYTHON_DIR/src/plushie" ]; then
     echo "==> Installing local plushie SDK..."
     python -m pip install -e "$PLUSHIE_PYTHON_DIR"
-fi
 
-echo "==> Installing app dependencies..."
-python -m pip install -e .
+    echo "==> Installing app dependencies..."
+    python -m pip install "pandas>=2.0"
+    python -m pip install -e . --no-deps
+else
+    echo "==> Installing app dependencies..."
+    python -m pip install -e .
+fi
 
 echo "==> Resolving plushie binary..."
 if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
@@ -55,7 +59,6 @@ python -m PyInstaller \
     --hidden-import pandas \
     --hidden-import plushie \
     --collect-submodules plushie \
-    --collect-submodules pandas \
     --noconfirm \
     src/data_explorer/__main__.py
 
