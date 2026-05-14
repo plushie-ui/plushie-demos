@@ -905,6 +905,7 @@ assert_version_alignment() {
   demo_dir="$(demo_dir_for_manifest "$manifest")"
 
   assert_manifest_value_present "$manifest" host_sdk
+  assert_manifest_value_present "$manifest" app_name
   assert_manifest_value_present "$manifest" host_sdk_version
   assert_manifest_value_present "$manifest" plushie_rust_version
   assert_manifest_value_present "$manifest" protocol_version

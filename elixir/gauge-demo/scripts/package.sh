@@ -20,5 +20,6 @@ MIX_ENV=prod mix deps.get --only prod
 MIX_ENV=prod mix deps.compile --force
 MIX_ENV=prod mix plushie.package GaugeDemo.TemperatureMonitor \
   --app-id dev.plushie.demos.elixir.gauge \
+  --app-name "Elixir Gauge" \
   --renderer "$RENDERER_KIND" \
   --load GaugeDemo.Gauge
