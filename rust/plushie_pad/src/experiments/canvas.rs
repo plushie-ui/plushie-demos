@@ -9,7 +9,7 @@ use plushie::ui::{canvas, circle, layer, line, rect};
 
 use super::Experiment;
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct CanvasExperiment;
 
 impl Experiment for CanvasExperiment {
@@ -66,8 +66,8 @@ mod tests {
             (CanvasExperiment, Command::none())
         }
 
-        fn update(_model: &mut Self::Model, _event: Event) -> Command {
-            Command::none()
+        fn update(model: &Self::Model, _event: Event) -> (Self::Model, Command) {
+            (model.clone(), Command::none())
         }
 
         fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {

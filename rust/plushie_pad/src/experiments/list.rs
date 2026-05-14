@@ -9,6 +9,7 @@ use plushie::prelude::*;
 
 use super::Experiment;
 
+#[derive(Clone)]
 pub struct ListExperiment {
     items: Vec<String>,
     draft: String,
@@ -123,9 +124,10 @@ mod tests {
             (ListExperiment::default(), Command::none())
         }
 
-        fn update(model: &mut Self::Model, event: Event) -> Command {
+        fn update(model: &Self::Model, event: Event) -> (Self::Model, Command) {
+            let mut model = model.clone();
             model.update(&event);
-            Command::none()
+            (model, Command::none())
         }
 
         fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {

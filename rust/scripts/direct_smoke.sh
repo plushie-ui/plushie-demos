@@ -149,6 +149,7 @@ for manifest in "$ROOT"/*/Cargo.toml; do
   demo_name="$(basename "$demo_dir")"
 
   echo "==> rust/$demo_name release"
+  "$ROOT/scripts/prepare_local_source.sh" "$demo_dir"
   (cd "$demo_dir" && cargo build --release)
   run_from_temp_cwd "$demo_dir/target/release/${demo_name//-/_}"
 done

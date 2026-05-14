@@ -9,11 +9,15 @@ preflight:
       echo "==> rust/$demo"; \
       ( \
         cd "$demo"; \
+        ../scripts/prepare_local_source.sh "."; \
         cargo fmt --check; \
         cargo clippy --all-targets --all-features -- -D warnings; \
         cargo test --all-targets --all-features \
       ); \
     done
 
-package-smoke:
+direct-smoke:
     ./scripts/direct_smoke.sh
+
+package-smoke:
+    PACKAGE_SMOKE_BUILD=1 ../scripts/package_smoke.sh rust

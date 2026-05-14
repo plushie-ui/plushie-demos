@@ -30,7 +30,7 @@ pub mod list;
 /// `view` returns the render for the preview pane, `update` is
 /// called once per event scoped into the preview, and `source`
 /// points at the `.rs` file that produced `view`.
-pub trait Experiment: Send {
+pub trait Experiment: ExperimentClone + Send {
     /// Short display name shown in the sidebar.
     fn name(&self) -> &'static str;
 
@@ -49,6 +49,25 @@ pub trait Experiment: Send {
     /// considered dirty. The default is "ignore".
     fn update(&mut self, _event: &Event) -> bool {
         false
+    }
+}
+
+pub trait ExperimentClone {
+    fn clone_box(&self) -> Box<dyn Experiment>;
+}
+
+impl<T> ExperimentClone for T
+where
+    T: Experiment + Clone + 'static,
+{
+    fn clone_box(&self) -> Box<dyn Experiment> {
+        Box::new(self.clone())
+    }
+}
+
+impl Clone for Box<dyn Experiment> {
+    fn clone(&self) -> Self {
+        self.clone_box()
     }
 }
 

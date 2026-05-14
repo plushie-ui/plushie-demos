@@ -1,5 +1,7 @@
 /gleam/*/build/
 /gleam/*/dist/
+/rust/*/.cargo/
+/rust/*/dist/
 
 elixir/plushie_pad/bin/
 elixir/plushie_pad/priv/experiments/

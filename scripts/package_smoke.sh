@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DEFAULT_PLUSHIE_RUST_SOURCE_PATH="$(cd "$ROOT/../plushie-rust" 2>/dev/null && pwd || true)"
 LANGUAGE="${1:-all}"
 SMOKE_TIMEOUT="${PACKAGE_SMOKE_TIMEOUT:-10}"
 BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
@@ -18,6 +19,12 @@ HEADLESS_WESTON_SOCKET_PATH=""
 
 # shellcheck source=package_lib.sh
 source "$ROOT/scripts/package_lib.sh"
+
+if [ -z "${PLUSHIE_RUST_SOURCE_PATH:-}" ] &&
+  [ -n "$DEFAULT_PLUSHIE_RUST_SOURCE_PATH" ] &&
+  [ -f "$DEFAULT_PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+  export PLUSHIE_RUST_SOURCE_PATH="$DEFAULT_PLUSHIE_RUST_SOURCE_PATH"
+fi
 
 cleanup_headless_weston() {
   if [ -n "$HEADLESS_WESTON_PID" ] && kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1; then
@@ -743,6 +750,9 @@ host_sdk_dependency() {
         process.stdout.write(deps.plushie || "");
       ' "$root/package.json" 2>/dev/null
       ;;
+    rust)
+      awk '/plushie = / { print; exit }' "$root/Cargo.toml" 2>/dev/null
+      ;;
   esac
 }
 
@@ -810,6 +820,9 @@ expected_host_sdk_version() {
         const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
         process.stdout.write(pkg.version || "");
       ' "$sdk_root/package.json" 2>/dev/null
+      ;;
+    rust)
+      expected_plushie_rust_version
       ;;
   esac
 }
@@ -957,6 +970,12 @@ build_payloads_for_language() {
       done < <(find "$ROOT/$language" -path '*/scripts/package.sh' -type f | sort)
       assert_native_package_rejects_missing_widget "$language"
       ;;
+    rust)
+      while IFS= read -r script; do
+        echo "==> build ${script#$ROOT/}"
+        (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh </dev/null)
+      done < <(find "$ROOT/rust" -path '*/scripts/package.sh' -type f | sort)
+      ;;
   esac
 }
 
@@ -974,7 +993,7 @@ manifests_for_language() {
       find "$ROOT/typescript" -path '*/dist/shared-launcher/plushie-package.toml' -type f | sort
       ;;
     rust)
-      true
+      find "$ROOT/rust" -path '*/dist/plushie-package.toml' -type f | sort
       ;;
   esac
 }
@@ -982,11 +1001,6 @@ manifests_for_language() {
 smoke_language() {
   local language="$1"
   local count=0
-
-  if [ "$language" = "rust" ]; then
-    (cd "$ROOT/rust" && just package-smoke)
-    return 0
-  fi
 
   build_payloads_for_language "$language"
 
@@ -1000,6 +1014,10 @@ smoke_language() {
     echo "==> smoke $rel"
     assert_version_alignment "$manifest"
     run_package_command "$manifest" "$out"
+    if [ "$language" = "rust" ] && [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
+      echo "failed: rust package smoke could not run cargo plushie package --smoke" >&2
+      return 1
+    fi
     run_artifact_command "$out" "$manifest"
   done < <(manifests_for_language "$language")
 

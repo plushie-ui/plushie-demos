@@ -5,8 +5,17 @@ edition = "2024"
 publish = false
 description = "Experiment gallery anchor pad for the Plushie Rust SDK"
 
+[features]
+default = ["direct"]
+direct = ["plushie/direct"]
+wire = ["plushie/wire"]
+
+[package.metadata.plushie.package]
+app_id = "dev.plushie.demos.rust.plushie-pad"
+app_name = "Plushie Pad"
+
 [dependencies]
-plushie = "0.7.1"
+plushie = { version = "0.7.1", default-features = false }
 
 [dev-dependencies]
 serde_json = "1"

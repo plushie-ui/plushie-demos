@@ -8,7 +8,7 @@ use plushie::prelude::*;
 
 use super::Experiment;
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Hello {
     waves: u32,
 }
@@ -69,9 +69,10 @@ mod tests {
             (Hello::default(), Command::none())
         }
 
-        fn update(model: &mut Self::Model, event: Event) -> Command {
+        fn update(model: &Self::Model, event: Event) -> (Self::Model, Command) {
+            let mut model = model.clone();
             model.update(&event);
-            Command::none()
+            (model, Command::none())
         }
 
         fn view(model: &Self::Model, _w: &mut WidgetRegistrar) -> ViewList {
