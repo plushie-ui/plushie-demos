@@ -8,6 +8,8 @@ PLUSHIE_RUBY_DIR="${PLUSHIE_RUBY_DIR:-$DEFAULT_PLUSHIE_RUBY_DIR}"
 
 cd "$PROJECT_DIR"
 
+bundle check || bundle install
+
 cmd=(bundle exec ruby)
 args=(
   --app-id dev.plushie.demos.ruby.notes

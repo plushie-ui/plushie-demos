@@ -1,9 +1,11 @@
 /_build/
+/.bundle/
 /build/
 /dist/
 /doc/
 /.yardoc/
 /tmp/
+/vendor/
 *.gem
 Gemfile.lock
 Cargo.lock
