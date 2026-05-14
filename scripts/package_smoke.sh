@@ -504,6 +504,11 @@ smoke_language() {
   local language="$1"
   local count=0
 
+  if [ "$language" = "rust" ]; then
+    (cd "$ROOT/rust" && just package-smoke)
+    return 0
+  fi
+
   build_payloads_for_language "$language"
 
   while IFS= read -r manifest; do

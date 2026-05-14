@@ -23,11 +23,27 @@ cargo run
 The pad uses a path dependency on the sibling plushie-rust checkout:
 
 ```toml
-plushie = { path = "../../../plushie-rust/crates/plushie" }
+plushie = "0.7.1"
 ```
 
-Point that at wherever your `plushie-rust` lives if the relative path
-doesn't match.
+For local SDK development, temporarily point that dependency at a
+sibling `plushie-rust` checkout.
+
+## Standalone smoke
+
+Rust direct mode links the renderer into the app process, so a release
+build is already the standalone runtime artifact for this demo. The
+language-level package smoke builds the release binary, starts headless
+Weston when no display is available, and runs the app from a temporary
+working directory:
+
+```sh
+cd ..
+just package-smoke
+```
+
+The current pad embeds its source snippets with `include_str!` and does
+not need adjacent runtime assets.
 
 ## Why a gallery and not a live editor?
 

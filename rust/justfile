@@ -16,4 +16,4 @@ preflight:
     done
 
 package-smoke:
-    ../scripts/package_smoke.sh rust
+    ./scripts/direct_smoke.sh
