@@ -408,6 +408,17 @@ assert_native_package_requires_custom_renderer() {
         return 1
       fi
       ;;
+    gleam)
+      echo "==> assert gleam/gauge-demo rejects stock renderer packaging"
+      if (
+        cd "$ROOT/gleam/gauge-demo"
+        run_with_language_mise_config gleam \
+          env PLUSHIE_PACKAGE_RENDERER_KIND=stock ./scripts/package.sh </dev/null
+      ); then
+        echo "failed: gleam/gauge-demo package accepted a stock renderer for native widgets" >&2
+        return 1
+      fi
+      ;;
   esac
 }
 

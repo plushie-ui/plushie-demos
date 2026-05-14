@@ -27,6 +27,12 @@ the gauge widget compiled in.
 gleam run -m gauge_demo
 ```
 
+Renderer-parent startup for standalone packaging:
+
+```bash
+plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg gauge_demo/connect
+```
+
 ## Test
 
 Tests cover the native widget definition, widget builder, commands,
@@ -35,6 +41,25 @@ binary needed; all tests exercise pure Gleam code.
 
 ```bash
 gleam test
+```
+
+## Package proof
+
+Build the custom renderer, host shipment payload, and package manifest:
+
+```bash
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh
+```
+
+The script writes `dist/payload.tar.zst` and
+`dist/plushie-package.toml`. The payload contains a renderer rebuilt
+with the `native/gauge` Rust crate linked in, and the manifest records
+`renderer.kind = "custom"` with `renderer.source = "local-build"`.
+
+Build the standalone launcher with:
+
+```bash
+cargo plushie package --manifest dist/plushie-package.toml --release
 ```
 
 ## How it works
@@ -102,6 +127,8 @@ native/gauge/
   src/lib.rs                  # WidgetExtension implementation
 bin/
   preflight                   # CI checks (format, build, test)
+scripts/
+  package.sh                  # Custom-renderer standalone package proof
 ```
 
 ## Cross-language comparison
