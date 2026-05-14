@@ -45,6 +45,7 @@ Bundle the app into a single file that runs without Node.js or npm:
 ```
 
 This produces `dist/data-explorer` (~60 MB) containing:
+
 - The bundled TypeScript app
 - The Node.js runtime
 - The plushie renderer binary (as a SEA asset)
@@ -65,19 +66,22 @@ Copy it to another machine; no installation needed.
 
 1. **Bundle** - esbuild compiles the TSX app + dependencies into
    a single CJS file
-2. **SEA config** - declares the JS blob and plushie binary as
-   embedded assets
-3. **Prepare** - `node --experimental-sea-config` creates the blob
-4. **Inject** - `postject` embeds the blob into a copy of the node
+2. **SDK package command** - `npx plushie package` builds the SEA
+   executables, copies the renderer into the shared-launcher payload,
+   and writes the manifest
+3. **SEA config** - declares the JS blob and, for `dist/data-explorer`,
+   the plushie binary as an embedded asset
+4. **Prepare** - `node --experimental-sea-config` creates the blob
+5. **Inject** - `postject` embeds the blob into a copy of the node
    binary
-5. **Result** - a single executable that, at runtime, extracts the
+6. **Result** - a single executable that, at runtime, extracts the
    plushie binary to a temp file and spawns it normally
 
 ### Shared launcher payload
 
 The shared Plushie launcher expects the renderer to be a payload file
-that it can start with `--listen --exec-bin`. For that path, the
-script builds a host-only SEA at `bin/data-explorer-host` and stores
+that it can start with `--listen --exec-bin`. For that path, the SDK
+command builds a host-only SEA at `bin/data-explorer-host` and stores
 the renderer separately at `bin/plushie-renderer...` inside
 `payload.tar.zst`.
 
