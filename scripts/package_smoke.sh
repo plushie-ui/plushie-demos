@@ -16,6 +16,9 @@ HEADLESS_WESTON_RUNTIME_DIR=""
 HEADLESS_WESTON_LOG=""
 HEADLESS_WESTON_SOCKET_PATH=""
 
+# shellcheck source=package_lib.sh
+source "$ROOT/scripts/package_lib.sh"
+
 cleanup_headless_weston() {
   if [ -n "$HEADLESS_WESTON_PID" ] && kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1; then
     kill "$HEADLESS_WESTON_PID" >/dev/null 2>&1 || true
@@ -331,6 +334,151 @@ run_package_command() {
   PACKAGE_COMMAND_BUILT=1
 }
 
+extract_payload_archive() {
+  local archive="$1"
+  local out_dir="$2"
+  local tar_bin
+
+  tar_bin="$(archive_tar_command)"
+  mkdir -p "$out_dir"
+
+  if archive_tar_supports_gnu_flags && "$tar_bin" --help 2>/dev/null | grep -q -- '--zstd'; then
+    "$tar_bin" -C "$out_dir" --zstd -xf "$archive"
+  else
+    if ! command -v zstd >/dev/null 2>&1; then
+      echo "Missing required command: zstd" >&2
+      return 1
+    fi
+
+    zstd -dc "$archive" | "$tar_bin" -C "$out_dir" -xf -
+  fi
+}
+
+resolve_stock_renderer_for_negative_smoke() {
+  if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+    cargo build --release -p plushie-renderer --manifest-path "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml"
+    printf '%s\n' "$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer"
+  elif command -v plushie-renderer >/dev/null 2>&1; then
+    command -v plushie-renderer
+  else
+    return 2
+  fi
+}
+
+write_native_negative_manifest() {
+  local input="$1"
+  local output="$2"
+  local payload_hash="$3"
+  local payload_size="$4"
+  local line
+
+  while IFS= read -r line; do
+    case "$line" in
+      'hash = '*)
+        printf 'hash = "sha256:%s"\n' "$payload_hash"
+        ;;
+      'size = '*)
+        printf 'size = %s\n' "$payload_size"
+        ;;
+      'kind = "custom"')
+        printf 'kind = "stock"\n'
+        ;;
+      'source = "local-build"')
+        printf 'source = "negative-smoke"\n'
+        ;;
+      *)
+        printf '%s\n' "$line"
+        ;;
+    esac
+  done < "$input" > "$output"
+}
+
+assert_native_package_requires_custom_renderer() {
+  local language="$1"
+
+  case "$language" in
+    elixir)
+      echo "==> assert elixir/gauge-demo rejects stock renderer packaging"
+      if (
+        cd "$ROOT/elixir/gauge-demo"
+        run_with_language_mise_config elixir \
+          env PLUSHIE_PACKAGE_RENDERER_KIND=stock ./scripts/package.sh </dev/null
+      ); then
+        echo "failed: elixir/gauge-demo package accepted a stock renderer for native widgets" >&2
+        return 1
+      fi
+      ;;
+  esac
+}
+
+assert_native_package_rejects_missing_widget() {
+  local language="$1"
+  local manifest="$ROOT/elixir/gauge-demo/dist/plushie-package.toml"
+  local archive="$ROOT/elixir/gauge-demo/dist/payload.tar.zst"
+  local tmp
+  local stock_renderer
+  local payload_hash
+  local payload_size
+  local out
+  local display_status
+
+  if [ "$language" != "elixir" ] || [ "$RUN_ARTIFACTS" != "1" ]; then
+    return 0
+  fi
+
+  if [ ! -f "$manifest" ] || [ ! -f "$archive" ]; then
+    return 0
+  fi
+
+  if ensure_display_env; then
+    display_status=0
+  else
+    display_status=$?
+  fi
+
+  case "$display_status" in
+    0) ;;
+    2) return 0 ;;
+    *) return "$display_status" ;;
+  esac
+
+  if stock_renderer="$(resolve_stock_renderer_for_negative_smoke)"; then
+    :
+  else
+    case "$?" in
+      2)
+        echo "skip: native widget negative smoke - no stock renderer available" >&2
+        return 0
+        ;;
+      *) return 1 ;;
+    esac
+  fi
+
+  tmp="$(mktemp -d "${TMPDIR:-/tmp}/plushie-native-negative.XXXXXXXXXX")"
+  mkdir -p "$tmp/dist"
+
+  extract_payload_archive "$archive" "$tmp/payload"
+  cp "$stock_renderer" "$tmp/payload/bin/gauge-demo-plushie"
+  chmod +x "$tmp/payload/bin/gauge-demo-plushie"
+  archive_payload "$tmp/payload" "$tmp/dist/payload.tar.zst"
+  payload_hash="$(hash_file "$tmp/dist/payload.tar.zst")"
+  payload_size="$(file_size "$tmp/dist/payload.tar.zst")"
+  write_native_negative_manifest "$manifest" "$tmp/dist/plushie-package.toml" "$payload_hash" "$payload_size"
+
+  out="$tmp/dist/package-smoke/elixir-gauge-demo-stock-renderer"
+  echo "==> assert elixir/gauge-demo rejects renderer without gauge widget"
+  run_package_command "$tmp/dist/plushie-package.toml" "$out"
+
+  if run_artifact_command "$out"; then
+    echo "failed: elixir/gauge-demo ran with a renderer missing the gauge widget" >&2
+    rm -rf "$tmp"
+    return 1
+  fi
+
+  echo "ok: elixir/gauge-demo rejected renderer without gauge widget"
+  rm -rf "$tmp"
+}
+
 run_artifact_command() {
   local artifact="$1"
   local artifact_path
@@ -431,6 +579,14 @@ run_artifact_command() {
     return 1
   fi
 
+  if grep -q "unknown node type" "$log"; then
+    echo "failed: artifact renderer reported an unknown widget type" >&2
+    print_artifact_log "$log"
+    rm -f "$log"
+    rm -rf "$cache_dir"
+    return 1
+  fi
+
   case "$status" in
     0)
       if ! grep -q "plushie launcher: renderer exited" "$log"; then
@@ -471,12 +627,15 @@ build_payloads_for_language() {
     return 0
   fi
 
+  assert_native_package_requires_custom_renderer "$language"
+
   case "$language" in
     elixir|gleam|python|ruby|typescript)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
         (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh </dev/null)
       done < <(find "$ROOT/$language" -path '*/scripts/package.sh' -type f | sort)
+      assert_native_package_rejects_missing_widget "$language"
       ;;
   esac
 }

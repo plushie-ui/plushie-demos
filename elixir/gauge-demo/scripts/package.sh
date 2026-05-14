@@ -10,6 +10,7 @@ RELEASE_DIR="$PROJECT_DIR/_build/prod/rel/gauge_demo"
 CUSTOM_RENDERER="$PROJECT_DIR/_build/plushie/package/gauge-demo-plushie"
 DEFAULT_PLUSHIE_ELIXIR_DIR="$(cd "$PROJECT_DIR/../../../plushie-elixir" 2>/dev/null && pwd || true)"
 PLUSHIE_ELIXIR_DIR="${PLUSHIE_ELIXIR_DIR:-$DEFAULT_PLUSHIE_ELIXIR_DIR}"
+RENDERER_KIND="${PLUSHIE_PACKAGE_RENDERER_KIND:-custom}"
 
 # shellcheck source=../../../scripts/package_lib.sh
 source "$ROOT_DIR/scripts/package_lib.sh"
@@ -25,6 +26,11 @@ require_command() {
 
 require_command mix
 require_command tar
+
+if [ "$RENDERER_KIND" != "custom" ]; then
+  echo "Native widget packaging requires a custom renderer; requested renderer kind: $RENDERER_KIND" >&2
+  exit 1
+fi
 
 if [ -z "$PLUSHIE_ELIXIR_DIR" ] || [ ! -f "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION" ]; then
   echo "Set PLUSHIE_ELIXIR_DIR to a plushie-elixir checkout before packaging this demo." >&2

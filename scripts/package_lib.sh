@@ -63,6 +63,12 @@ validate_payload_archive_inputs() {
     echo "Payload contains unsupported special file: ${invalid#$payload_dir/}" >&2
     return 1
   fi
+
+  invalid="$(find "$payload_dir" -type f -links +1 -print -quit)"
+  if [ -n "$invalid" ]; then
+    echo "Payload contains unsupported hard-linked file: ${invalid#$payload_dir/}" >&2
+    return 1
+  fi
 }
 
 dereference_payload_symlinks() {
@@ -104,7 +110,7 @@ archive_payload() {
   local archive_path="$2"
   local tar_bin
 
-  validate_payload_archive_inputs "$payload_dir"
+  validate_payload_archive_inputs "$payload_dir" || return
   tar_bin="$(archive_tar_command)"
 
   if archive_tar_supports_gnu_flags && "$tar_bin" --help 2>/dev/null | grep -q -- '--zstd'; then
@@ -119,11 +125,7 @@ archive_payload() {
     "$tar_bin" -C "$payload_dir" --sort=name --mtime='UTC 1970-01-01' \
       --owner=0 --group=0 --numeric-owner -cf - . | zstd -q -o "$archive_path"
   else
-    if ! command -v zstd >/dev/null 2>&1; then
-      echo "Missing required command: zstd" >&2
-      return 1
-    fi
-
-    "$tar_bin" -C "$payload_dir" -cf - . | zstd -q -o "$archive_path"
+    echo "GNU tar or gtar is required for deterministic payload archives." >&2
+    return 1
   fi
 }
