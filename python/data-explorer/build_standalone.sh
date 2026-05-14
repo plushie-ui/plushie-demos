@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEFAULT_PLUSHIE_PYTHON_DIR="$(cd "$SCRIPT_DIR/../../../plushie-python" 2>/dev/null && pwd || true)"
+PLUSHIE_PYTHON_DIR="${PLUSHIE_PYTHON_DIR:-$DEFAULT_PLUSHIE_PYTHON_DIR}"
+
+if [ -n "$PLUSHIE_PYTHON_DIR" ] && [ -d "$PLUSHIE_PYTHON_DIR/src/plushie" ]; then
+    echo "==> Installing local plushie SDK..."
+    python -m pip install -e "$PLUSHIE_PYTHON_DIR"
+fi
+
 echo "==> Downloading plushie binary..."
-python -m plushie download
+if [ -z "${PLUSHIE_BINARY_PATH:-}" ]; then
+    python -m plushie download
+else
+    echo "    Using PLUSHIE_BINARY_PATH=$PLUSHIE_BINARY_PATH"
+fi
 
 echo "==> Finding binary path..."
 BINARY=$(python -c "from plushie.binary import resolve; print(resolve())")
@@ -16,10 +29,10 @@ chmod +x "$STAGED_RENDERER"
 echo "    Bundled name: $STAGED_RENDERER"
 
 echo "==> Installing PyInstaller..."
-pip install pyinstaller
+python -m pip install pyinstaller
 
 echo "==> Building standalone app..."
-pyinstaller \
+python -m PyInstaller \
     --name "DataExplorer" \
     --add-binary "$STAGED_RENDERER:." \
     --add-data "sample_data:sample_data" \
