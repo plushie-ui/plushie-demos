@@ -8,6 +8,7 @@ BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
 RUN_ARTIFACTS="${PACKAGE_SMOKE_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
 ARTIFACT_READY_MARKER="${PACKAGE_ARTIFACT_READY_MARKER:-plushie renderer-parent: ready}"
+ARTIFACT_RUNTIME_PATH="${PACKAGE_ARTIFACT_RUNTIME_PATH:-}"
 PACKAGE_COMMAND_BUILT=0
 HEADLESS_WESTON_STARTED=0
 HEADLESS_WESTON_PID=""
@@ -191,6 +192,106 @@ run_clean_from_temp_cwd() {
   return "$status"
 }
 
+default_artifact_runtime_path() {
+  local path=""
+  local dir
+
+  for dir in /usr/bin /bin /usr/sbin /sbin; do
+    if [ -d "$dir" ]; then
+      if [ -z "$path" ]; then
+        path="$dir"
+      else
+        path="$path:$dir"
+      fi
+    fi
+  done
+
+  printf '%s\n' "$path"
+}
+
+artifact_runtime_path() {
+  if [ -n "$ARTIFACT_RUNTIME_PATH" ]; then
+    printf '%s\n' "$ARTIFACT_RUNTIME_PATH"
+  else
+    default_artifact_runtime_path
+  fi
+}
+
+run_artifact_from_temp_cwd() {
+  local scrubbed_env_args=()
+  local smoke_cwd
+  local status
+
+  while IFS='=' read -r name _; do
+    case "$name" in
+      PLUSHIE_CACHE_DIR) ;;
+      PLUSHIE_* | \
+        MISE* | \
+        ASDF* | \
+        RBENV* | \
+        RVM* | \
+        PYENV* | \
+        NVM* | \
+        BUNDLE_* | \
+        GEM_HOME | \
+        GEM_PATH | \
+        RUBYLIB | \
+        RUBYOPT | \
+        NODE_OPTIONS | \
+        NODE_PATH | \
+        PYTHONHOME | \
+        PYTHONPATH | \
+        MIX_ENV | \
+        ERL_* | \
+        ERLROOTDIR | \
+        ERL_ROOTDIR)
+        scrubbed_env_args+=("-u" "$name")
+        ;;
+    esac
+  done < <(env)
+
+  smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cwd.XXXXXXXXXX")"
+
+  if (
+    set -e
+    cd "$smoke_cwd"
+
+    env "${scrubbed_env_args[@]}" PATH="$ARTIFACT_LAUNCH_PATH" "$@"
+  ); then
+    status=0
+  else
+    status=$?
+  fi
+
+  rm -rf "$smoke_cwd"
+  return "$status"
+}
+
+run_with_language_mise_config() {
+  local language="$1"
+  local config="$ROOT/$language/mise.toml"
+  local trusted_paths
+
+  shift
+
+  if [ ! -f "$config" ]; then
+    "$@"
+    return
+  fi
+
+  if [ -n "${MISE_TRUSTED_CONFIG_PATHS:-}" ]; then
+    trusted_paths="$MISE_TRUSTED_CONFIG_PATHS:$config"
+  else
+    trusted_paths="$config"
+  fi
+
+  if command -v mise >/dev/null 2>&1; then
+    MISE_TRUSTED_CONFIG_PATHS="$trusted_paths" mise exec -- "$@"
+  else
+    MISE_TRUSTED_CONFIG_PATHS="$trusted_paths" "$@"
+  fi
+}
+
 run_package_command() {
   local manifest="$1"
   local out="$2"
@@ -232,10 +333,12 @@ run_package_command() {
 
 run_artifact_command() {
   local artifact="$1"
+  local artifact_path
   local cache_dir
   local display_status
   local log
   local status
+  local timeout_bin
   local timeout_args
 
   if [ "$RUN_ARTIFACTS" != "1" ]; then
@@ -268,6 +371,7 @@ run_artifact_command() {
     echo "skip: package artifact smoke - timeout is unavailable" >&2
     return 0
   fi
+  timeout_bin="$(command -v timeout)"
 
   if [ ! -x "$artifact" ]; then
     echo "failed: package artifact smoke - launcher is not executable: $artifact" >&2
@@ -276,19 +380,22 @@ run_artifact_command() {
 
   log="$(mktemp "${TMPDIR:-/tmp}/plushie-package-artifact.XXXXXXXXXX")"
   cache_dir="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cache.XXXXXXXXXX")"
+  artifact_path="$(artifact_runtime_path)"
 
   echo "==> artifact ${artifact#$ROOT/}"
+  echo "    PATH=$artifact_path"
 
   timeout_args=("$ARTIFACT_TIMEOUT" "$artifact")
-  if timeout --help 2>&1 | grep -q -- '--kill-after'; then
+  if "$timeout_bin" --help 2>&1 | grep -q -- '--kill-after'; then
     timeout_args=(--kill-after=2s "$ARTIFACT_TIMEOUT" "$artifact")
   fi
 
   set +e
   (
     export PLUSHIE_CACHE_DIR="$cache_dir"
-    run_clean_from_temp_cwd \
-      timeout "${timeout_args[@]}"
+    export ARTIFACT_LAUNCH_PATH="$artifact_path"
+    run_artifact_from_temp_cwd \
+      "$timeout_bin" "${timeout_args[@]}"
   ) >"$log" 2>&1
   status=$?
   set -e
@@ -368,13 +475,13 @@ build_payloads_for_language() {
     elixir|gleam|ruby|typescript)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
-        (cd "$(dirname "$script")/.." && ./scripts/package.sh)
+        (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh)
       done < <(find "$ROOT/$language" -path '*/scripts/package.sh' -type f | sort)
       ;;
     python)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
-        (cd "$(dirname "$script")" && ./build_standalone.sh)
+        (cd "$(dirname "$script")" && run_with_language_mise_config "$language" ./build_standalone.sh)
       done < <(find "$ROOT/python" -name build_standalone.sh -type f | sort)
       ;;
   esac
