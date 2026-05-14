@@ -472,17 +472,11 @@ build_payloads_for_language() {
   fi
 
   case "$language" in
-    elixir|gleam|ruby|typescript)
+    elixir|gleam|python|ruby|typescript)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
-        (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh)
+        (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh </dev/null)
       done < <(find "$ROOT/$language" -path '*/scripts/package.sh' -type f | sort)
-      ;;
-    python)
-      while IFS= read -r script; do
-        echo "==> build ${script#$ROOT/}"
-        (cd "$(dirname "$script")" && run_with_language_mise_config "$language" ./build_standalone.sh)
-      done < <(find "$ROOT/python" -name build_standalone.sh -type f | sort)
       ;;
   esac
 }

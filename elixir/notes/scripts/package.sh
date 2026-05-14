@@ -3,11 +3,15 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$PROJECT_DIR/../.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 PAYLOAD_DIR="$DIST_DIR/payload"
 RELEASE_DIR="$PROJECT_DIR/_build/prod/rel/notes"
 DEFAULT_PLUSHIE_ELIXIR_DIR="$(cd "$PROJECT_DIR/../../../plushie-elixir" 2>/dev/null && pwd || true)"
 PLUSHIE_ELIXIR_DIR="${PLUSHIE_ELIXIR_DIR:-$DEFAULT_PLUSHIE_ELIXIR_DIR}"
+
+# shellcheck source=../../../scripts/package_lib.sh
+source "$ROOT_DIR/scripts/package_lib.sh"
 
 cd "$PROJECT_DIR"
 
@@ -18,45 +22,24 @@ require_command() {
   fi
 }
 
-hash_file() {
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$1" | awk '{print $1}'
-  else
-    shasum -a 256 "$1" | awk '{print $1}'
-  fi
-}
-
-package_target() {
-  local os
-  local arch
-
-  os="$(uname -s | tr '[:upper:]' '[:lower:]')"
-  case "$os" in
-    linux*) os="linux" ;;
-    darwin*) os="darwin" ;;
-    msys*|mingw*|cygwin*) os="windows" ;;
-    *)
-      echo "Unsupported package OS: $os" >&2
-      exit 1
-      ;;
-  esac
-
-  arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
-  case "$arch" in
-    amd64|x86_64) arch="x86_64" ;;
-    arm64|aarch64) arch="aarch64" ;;
-    *)
-      echo "Unsupported package architecture: $arch" >&2
-      exit 1
-      ;;
-  esac
-
-  printf '%s-%s\n' "$os" "$arch"
-}
-
 resolve_renderer() {
   if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
+    if [ ! -x "$PLUSHIE_BINARY_PATH" ]; then
+      echo "PLUSHIE_BINARY_PATH is not executable: $PLUSHIE_BINARY_PATH" >&2
+      exit 1
+    fi
+
     printf '%s\n' "$PLUSHIE_BINARY_PATH"
+  elif [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then
+    if [ ! -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+      echo "PLUSHIE_RUST_SOURCE_PATH does not look like a Rust workspace: $PLUSHIE_RUST_SOURCE_PATH" >&2
+      exit 1
+    fi
+
+    require_command cargo
+    echo "Building plushie-renderer from $PLUSHIE_RUST_SOURCE_PATH" >&2
+    (cd "$PLUSHIE_RUST_SOURCE_PATH" && cargo build --release -p plushie-renderer)
+    printf '%s\n' "$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer"
   elif [ -x "$PROJECT_DIR/_build/plushie/bin/plushie-renderer" ]; then
     printf '%s\n' "$PROJECT_DIR/_build/plushie/bin/plushie-renderer"
   elif command -v plushie-renderer >/dev/null 2>&1; then
@@ -84,7 +67,7 @@ target="$(package_target)"
 
 echo "Building release..."
 MIX_ENV=prod mix deps.get --only prod
-MIX_ENV=prod mix deps.compile plushie --force
+MIX_ENV=prod mix deps.compile --force
 plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(tr -d '\n' < "$PLUSHIE_ELIXIR_DIR/PLUSHIE_RUST_VERSION")}"
 MIX_ENV=prod mix release --overwrite
 
@@ -104,8 +87,9 @@ SH
 chmod +x "$PAYLOAD_DIR/bin/connect"
 
 echo "Writing archive..."
-(cd "$PAYLOAD_DIR" && tar --zstd -cf "$DIST_DIR/payload.tar.zst" .)
+archive_payload "$PAYLOAD_DIR" "$DIST_DIR/payload.tar.zst"
 payload_hash="$(hash_file "$DIST_DIR/payload.tar.zst")"
+payload_size="$(file_size "$DIST_DIR/payload.tar.zst")"
 
 cat > "$DIST_DIR/plushie-package.toml" <<EOF
 schema_version = 1
@@ -127,6 +111,7 @@ source = "local-resolve"
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"
+size = $payload_size
 EOF
 
 echo "Wrote $DIST_DIR/payload.tar.zst"

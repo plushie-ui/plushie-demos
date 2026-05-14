@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$PROJECT_DIR/../.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 BUILD_DIR="$PROJECT_DIR/build/package"
 PAYLOAD_DIR="$DIST_DIR/payload"
@@ -11,6 +12,9 @@ RUBY_DIR="$PAYLOAD_DIR/ruby"
 DEFAULT_PLUSHIE_RUBY_DIR="$(cd "$PROJECT_DIR/../../../plushie-ruby" 2>/dev/null && pwd || true)"
 PLUSHIE_RUBY_DIR="${PLUSHIE_RUBY_DIR:-$DEFAULT_PLUSHIE_RUBY_DIR}"
 
+# shellcheck source=../../../scripts/package_lib.sh
+source "$ROOT_DIR/scripts/package_lib.sh"
+
 cd "$PROJECT_DIR"
 
 require_command() {
@@ -18,18 +22,6 @@ require_command() {
     echo "Missing required command: $1" >&2
     exit 1
   fi
-}
-
-hash_file() {
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$1" | awk '{print $1}'
-  else
-    shasum -a 256 "$1" | awk '{print $1}'
-  fi
-}
-
-file_size() {
-  ruby -e 'print File.size(ARGV.fetch(0))' "$1"
 }
 
 ruby_config() {
@@ -61,64 +53,6 @@ resolve_renderer() {
   fi
 }
 
-package_target() {
-  ruby -rrbconfig -e '
-    host_os = RbConfig::CONFIG.fetch("host_os")
-    host_cpu = RbConfig::CONFIG.fetch("host_cpu")
-
-    os = case host_os
-    when /linux/i
-      "linux"
-    when /darwin/i
-      "darwin"
-    when /mswin|mingw|cygwin/i
-      "windows"
-    else
-      abort "Unsupported package OS: #{host_os}"
-    end
-
-    arch = case host_cpu
-    when /x86_64|amd64|x64/i
-      "x86_64"
-    when /aarch64|arm64/i
-      "aarch64"
-    else
-      abort "Unsupported package architecture: #{host_cpu}"
-    end
-
-    print "#{os}-#{arch}"
-  '
-}
-
-archive_payload() {
-  if tar --help 2>/dev/null | grep -q -- '--zstd'; then
-    (cd "$PAYLOAD_DIR" && tar --zstd -cf "$DIST_DIR/payload.tar.zst" .)
-  else
-    require_command zstd
-    (cd "$PAYLOAD_DIR" && tar -cf - . | zstd -q -o "$DIST_DIR/payload.tar.zst")
-  fi
-}
-
-dereference_payload_symlinks() {
-  local link
-  local symlink_target
-  local tmp
-
-  while IFS= read -r -d '' link; do
-    symlink_target="$(ruby -e 'print File.realpath(ARGV.fetch(0))' "$link")"
-    tmp="$link.deref.$$"
-
-    if [ -d "$symlink_target" ]; then
-      cp -R "$symlink_target" "$tmp"
-    else
-      cp "$symlink_target" "$tmp"
-    fi
-
-    rm "$link"
-    mv "$tmp" "$link"
-  done < <(find "$PAYLOAD_DIR" -type l -print0)
-}
-
 require_command bundle
 require_command ruby
 require_command tar
@@ -133,7 +67,7 @@ renderer="$(resolve_renderer)"
 ruby_prefix="$(ruby_config prefix)"
 ruby_install_name="$(ruby_config ruby_install_name)"
 ruby_exeext="$(ruby_config EXEEXT)"
-target="$(package_target)"
+target="$(normalize_package_target "$(ruby_config host_os)" "$(ruby_config host_cpu)")"
 
 echo "Preparing payload..."
 rm -rf "$DIST_DIR" "$BUILD_DIR"
@@ -172,7 +106,7 @@ echo "Installing runtime gems..."
 cp "$renderer" "$PAYLOAD_DIR/bin/plushie-renderer"
 chmod +x "$PAYLOAD_DIR/bin/plushie-renderer"
 
-dereference_payload_symlinks
+dereference_payload_symlinks "$PAYLOAD_DIR"
 
 metadata="$(
   cd "$APP_DIR"
@@ -187,7 +121,7 @@ plushie_rust_version="$(printf '%s\n' "$metadata" | sed -n '2p')"
 protocol_version="$(printf '%s\n' "$metadata" | sed -n '3p')"
 
 echo "Writing archive..."
-archive_payload
+archive_payload "$PAYLOAD_DIR" "$DIST_DIR/payload.tar.zst"
 payload_hash="$(hash_file "$DIST_DIR/payload.tar.zst")"
 payload_size="$(file_size "$DIST_DIR/payload.tar.zst")"
 

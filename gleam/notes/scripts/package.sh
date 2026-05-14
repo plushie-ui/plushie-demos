@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$PROJECT_DIR/../.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 PAYLOAD_DIR="$DIST_DIR/payload"
 SHIPMENT_DIR="$PROJECT_DIR/build/erlang-shipment"
@@ -10,47 +11,14 @@ BUNDLE_ERLANG="${PLUSHIE_BUNDLE_ERLANG:-1}"
 
 cd "$PROJECT_DIR"
 
+# shellcheck source=../../../scripts/package_lib.sh
+source "$ROOT_DIR/scripts/package_lib.sh"
+
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
     echo "Missing required command: $1" >&2
     exit 1
   fi
-}
-
-hash_file() {
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$1" | awk '{print $1}'
-  else
-    shasum -a 256 "$1" | awk '{print $1}'
-  fi
-}
-
-package_target() {
-  local os
-  local arch
-
-  os="$(uname -s | tr '[:upper:]' '[:lower:]')"
-  case "$os" in
-    linux*) os="linux" ;;
-    darwin*) os="darwin" ;;
-    msys*|mingw*|cygwin*) os="windows" ;;
-    *)
-      echo "Unsupported package OS: $os" >&2
-      exit 1
-      ;;
-  esac
-
-  arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
-  case "$arch" in
-    amd64|x86_64) arch="x86_64" ;;
-    arm64|aarch64) arch="aarch64" ;;
-    *)
-      echo "Unsupported package architecture: $arch" >&2
-      exit 1
-      ;;
-  esac
-
-  printf '%s-%s\n' "$os" "$arch"
 }
 
 resolve_renderer() {
@@ -139,15 +107,6 @@ copy_erlang_runtime() {
     -eval 'ok = application:ensure_started(crypto), halt().'
 }
 
-validate_payload_archive_inputs() {
-  link="$(find "$PAYLOAD_DIR" -type l -print -quit)"
-
-  if [ -n "$link" ]; then
-    echo "Payload contains unsupported symlink: ${link#$PAYLOAD_DIR/}" >&2
-    exit 1
-  fi
-}
-
 require_command gleam
 require_command tar
 
@@ -198,9 +157,9 @@ SH
 chmod +x "$PAYLOAD_DIR/bin/connect"
 
 echo "Writing archive..."
-validate_payload_archive_inputs
-(cd "$PAYLOAD_DIR" && tar --zstd -cf "$DIST_DIR/payload.tar.zst" .)
+archive_payload "$PAYLOAD_DIR" "$DIST_DIR/payload.tar.zst"
 payload_hash="$(hash_file "$DIST_DIR/payload.tar.zst")"
+payload_size="$(file_size "$DIST_DIR/payload.tar.zst")"
 
 cat > "$DIST_DIR/plushie-package.toml" <<EOF
 schema_version = 1
@@ -222,6 +181,7 @@ source = "local-resolve"
 [payload]
 archive = "payload.tar.zst"
 hash = "sha256:$payload_hash"
+size = $payload_size
 EOF
 
 echo "Wrote $DIST_DIR/payload.tar.zst"

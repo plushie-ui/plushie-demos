@@ -9,19 +9,24 @@
 #   dist/shared-launcher/plushie-package.toml
 #
 # Prerequisites:
-#   - Node.js 20+
+#   - Node.js 22+
 #   - pnpm install (for esbuild and postject)
-#   - plushie binary (npx plushie download or PLUSHIE_BINARY_PATH)
+#   - plushie binary from PLUSHIE_RUST_SOURCE_PATH, PLUSHIE_BINARY_PATH,
+#     or npx plushie download
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$PROJECT_DIR/../.." && pwd)"
 DIST_DIR="$PROJECT_DIR/dist"
 SHARED_DIR="$DIST_DIR/shared-launcher"
 PAYLOAD_ROOT="$SHARED_DIR/payload-root"
 
 cd "$PROJECT_DIR"
+
+# shellcheck source=../../../scripts/package_lib.sh
+source "$ROOT_DIR/scripts/package_lib.sh"
 
 node_eval() {
   node --input-type=module -e "$1"
@@ -53,21 +58,29 @@ package_field() {
   '
 }
 
-package_target() {
-  node_eval '
-    const osMap = { linux: "linux", darwin: "darwin", win32: "windows" }
-    const archMap = { x64: "x86_64", arm64: "aarch64" }
-    const os = osMap[process.platform]
-    const arch = archMap[process.arch]
-    if (!os) throw new Error(`Unsupported package OS: ${process.platform}`)
-    if (!arch) throw new Error(`Unsupported package architecture: ${process.arch}`)
-    console.log(`${os}-${arch}`)
-  '
-}
-
 resolve_plushie_binary() {
   if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
+    if [ ! -x "$PLUSHIE_BINARY_PATH" ]; then
+      echo "PLUSHIE_BINARY_PATH is not executable: $PLUSHIE_BINARY_PATH" >&2
+      exit 1
+    fi
+
     printf '%s\n' "$PLUSHIE_BINARY_PATH"
+    return
+  fi
+
+  if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then
+    if [ ! -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+      echo "PLUSHIE_RUST_SOURCE_PATH does not look like a Rust workspace: $PLUSHIE_RUST_SOURCE_PATH" >&2
+      exit 1
+    fi
+
+    echo "Building plushie-renderer from $PLUSHIE_RUST_SOURCE_PATH" >&2
+    (cd "$PLUSHIE_RUST_SOURCE_PATH" && cargo build --release -p plushie-renderer)
+    case "$(uname -s)" in
+      MINGW*|MSYS*|CYGWIN*) printf '%s\n' "$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer.exe" ;;
+      *) printf '%s\n' "$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer" ;;
+    esac
     return
   fi
 
@@ -129,14 +142,6 @@ build_sea() {
   rm -f "$DIST_DIR/sea-config.json" "$DIST_DIR/sea-prep.blob"
 }
 
-sha256_file() {
-  if command -v sha256sum >/dev/null 2>&1; then
-    sha256sum "$1" | cut -d ' ' -f1
-  else
-    shasum -a 256 "$1" | cut -d ' ' -f1
-  fi
-}
-
 write_shared_launcher_payload() {
   local binary_path="$1"
   local app_version="$2"
@@ -155,13 +160,12 @@ write_shared_launcher_payload() {
   cp "$binary_path" "$PAYLOAD_ROOT/bin/$renderer_name"
 
   echo "Compressing shared launcher payload..."
-  tar -C "$PAYLOAD_ROOT" --sort=name --mtime='UTC 1970-01-01' \
-    --owner=0 --group=0 --numeric-owner -cf - . | zstd -q -19 -T0 -o "$SHARED_DIR/payload.tar.zst"
+  archive_payload "$PAYLOAD_ROOT" "$SHARED_DIR/payload.tar.zst"
 
   local payload_hash
-  payload_hash="$(sha256_file "$SHARED_DIR/payload.tar.zst")"
+  payload_hash="$(hash_file "$SHARED_DIR/payload.tar.zst")"
   local payload_size
-  payload_size="$(wc -c < "$SHARED_DIR/payload.tar.zst" | tr -d ' ')"
+  payload_size="$(file_size "$SHARED_DIR/payload.tar.zst")"
 
   cat > "$SHARED_DIR/plushie-package.toml" << EOF
 schema_version = 1
@@ -191,6 +195,12 @@ EOF
   rm -rf "$PAYLOAD_ROOT"
 }
 
+package_target_from_node() {
+  normalize_package_target \
+    "$(node_eval 'console.log(process.platform)')" \
+    "$(node_eval 'console.log(process.arch)')"
+}
+
 echo "Bundling app..."
 node scripts/bundle.mjs
 
@@ -202,7 +212,7 @@ HOST_SDK_VERSION="$(node_eval '
   console.log(pkg.version)
 ')"
 RUST_VERSION="$(plushie_rust_version)"
-TARGET="$(package_target)"
+TARGET="$(package_target_from_node)"
 RENDERER_NAME="$(basename "$BINARY_PATH")"
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*) HOST_NAME="data-explorer-host.exe" ;;

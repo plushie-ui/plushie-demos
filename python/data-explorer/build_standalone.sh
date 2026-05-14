@@ -2,19 +2,35 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DEFAULT_PLUSHIE_PYTHON_DIR="$(cd "$SCRIPT_DIR/../../../plushie-python" 2>/dev/null && pwd || true)"
 PLUSHIE_PYTHON_DIR="${PLUSHIE_PYTHON_DIR:-$DEFAULT_PLUSHIE_PYTHON_DIR}"
+
+# shellcheck source=../../scripts/package_lib.sh
+source "$ROOT_DIR/scripts/package_lib.sh"
 
 if [ -n "$PLUSHIE_PYTHON_DIR" ] && [ -d "$PLUSHIE_PYTHON_DIR/src/plushie" ]; then
     echo "==> Installing local plushie SDK..."
     python -m pip install -e "$PLUSHIE_PYTHON_DIR"
 fi
 
-echo "==> Downloading plushie binary..."
-if [ -z "${PLUSHIE_BINARY_PATH:-}" ]; then
-    python -m plushie download
-else
+echo "==> Installing app dependencies..."
+python -m pip install -e .
+
+echo "==> Resolving plushie binary..."
+if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
     echo "    Using PLUSHIE_BINARY_PATH=$PLUSHIE_BINARY_PATH"
+elif [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then
+    if [ ! -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+        echo "PLUSHIE_RUST_SOURCE_PATH does not look like a Rust workspace: $PLUSHIE_RUST_SOURCE_PATH" >&2
+        exit 1
+    fi
+
+    echo "    Building plushie-renderer from $PLUSHIE_RUST_SOURCE_PATH"
+    (cd "$PLUSHIE_RUST_SOURCE_PATH" && cargo build --release -p plushie-renderer)
+    export PLUSHIE_BINARY_PATH="$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer"
+else
+    python -m plushie download
 fi
 
 echo "==> Finding binary path..."
@@ -50,33 +66,7 @@ PAYLOAD_ARCHIVE="$PACKAGE_DIR/payload.tar.zst"
 MANIFEST="$PACKAGE_DIR/plushie-package.toml"
 PAYLOAD_RENDERER=$(python -c 'import sys; print("bin/plushie-renderer.exe" if sys.platform in ("win32", "cygwin") else "bin/plushie-renderer")')
 HOST_EXE=$(python -c 'import sys; print("host/DataExplorer/DataExplorer.exe" if sys.platform in ("win32", "cygwin") else "host/DataExplorer/DataExplorer")')
-TARGET=$(python - <<'PY'
-import platform
-import sys
-
-os_map = {
-    "linux": "linux",
-    "darwin": "darwin",
-    "win32": "windows",
-    "cygwin": "windows",
-}
-arch_map = {
-    "x86_64": "x86_64",
-    "amd64": "x86_64",
-    "aarch64": "aarch64",
-    "arm64": "aarch64",
-}
-
-os_name = os_map.get(sys.platform)
-arch = arch_map.get(platform.machine().lower())
-if os_name is None:
-    raise SystemExit(f"Unsupported package OS: {sys.platform}")
-if arch is None:
-    raise SystemExit(f"Unsupported package architecture: {platform.machine()}")
-
-print(f"{os_name}-{arch}")
-PY
-)
+TARGET="$(normalize_package_target "$(python -c 'import sys; print(sys.platform)')" "$(python -c 'import platform; print(platform.machine())')")"
 APP_VERSION=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
 SDK_VERSION=$(python -c 'import plushie; print(plushie.__version__)')
 RUST_VERSION=$(python -c 'from plushie.binary import PLUSHIE_RUST_VERSION; print(PLUSHIE_RUST_VERSION)')
@@ -90,9 +80,10 @@ cp -R "dist/DataExplorer" "$PAYLOAD_ROOT/host/DataExplorer"
 find "$PAYLOAD_ROOT/host/DataExplorer" -maxdepth 2 -type f \
     \( -name "plushie-renderer" -o -name "plushie-renderer.exe" \) -delete
 
-(cd "$PAYLOAD_ROOT" && tar --dereference --hard-dereference --zstd -cf "../payload.tar.zst" .)
-PAYLOAD_HASH=$(python -c 'import hashlib, sys; print(hashlib.sha256(open(sys.argv[1], "rb").read()).hexdigest())' "$PAYLOAD_ARCHIVE")
-PAYLOAD_SIZE=$(python -c 'import os, sys; print(os.path.getsize(sys.argv[1]))' "$PAYLOAD_ARCHIVE")
+dereference_payload_symlinks "$PAYLOAD_ROOT"
+archive_payload "$PAYLOAD_ROOT" "$PAYLOAD_ARCHIVE"
+PAYLOAD_HASH="$(hash_file "$PAYLOAD_ARCHIVE")"
+PAYLOAD_SIZE="$(file_size "$PAYLOAD_ARCHIVE")"
 
 cat > "$MANIFEST" <<EOF
 schema_version = 1
