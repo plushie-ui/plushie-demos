@@ -81,7 +81,9 @@ for the demo repo. It proves that the package payload contains a
 renderer rebuilt with the `native/gauge` Rust crate linked in, not a
 stock downloaded renderer.
 
-Build the custom renderer, host release payload, and package manifest:
+Build the custom renderer, host release payload, and package manifest.
+The script delegates the Elixir-specific package work to
+`mix plushie.package`:
 
 ```sh
 PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh

@@ -58,7 +58,8 @@ undo/redo, search/sort, keyboard shortcuts, and view tree structure.
 
 ## Package proof
 
-Build the host release payload and package manifest:
+Build the host release payload and package manifest. The script delegates
+the Elixir-specific package work to `mix plushie.package`:
 
 ```sh
 PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
