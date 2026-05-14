@@ -7,6 +7,7 @@ SMOKE_TIMEOUT="${PACKAGE_SMOKE_TIMEOUT:-10}"
 BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
 RUN_ARTIFACTS="${PACKAGE_SMOKE_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
+ARTIFACT_READY_MARKER="${PACKAGE_ARTIFACT_READY_MARKER:-plushie renderer-parent: ready}"
 PACKAGE_COMMAND_BUILT=0
 HEADLESS_WESTON_STARTED=0
 HEADLESS_WESTON_PID=""
@@ -66,6 +67,13 @@ headless_weston_alive() {
     kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1 &&
     [ -n "$HEADLESS_WESTON_SOCKET_PATH" ] &&
     [ -S "$HEADLESS_WESTON_SOCKET_PATH" ]
+}
+
+print_artifact_log() {
+  local log="$1"
+
+  echo "artifact log excerpt:" >&2
+  sed -n '1,120p' "$log" >&2
 }
 
 ensure_display_env() {
@@ -239,6 +247,11 @@ run_artifact_command() {
     return 0
   fi
 
+  if [ -z "$ARTIFACT_READY_MARKER" ]; then
+    echo "failed: package artifact smoke - PACKAGE_ARTIFACT_READY_MARKER must not be empty" >&2
+    return 1
+  fi
+
   if ensure_display_env; then
     display_status=0
   else
@@ -282,7 +295,7 @@ run_artifact_command() {
 
   if grep -q "plushie launcher: smoke ok" "$log"; then
     echo "failed: artifact used launcher smoke mode" >&2
-    sed -n '1,120p' "$log" >&2
+    print_artifact_log "$log"
     rm -f "$log"
     rm -rf "$cache_dir"
     return 1
@@ -290,7 +303,22 @@ run_artifact_command() {
 
   if ! grep -q "plushie launcher: app=" "$log"; then
     echo "failed: artifact did not emit launcher diagnostics" >&2
-    sed -n '1,120p' "$log" >&2
+    print_artifact_log "$log"
+    rm -f "$log"
+    rm -rf "$cache_dir"
+    return 1
+  fi
+
+  if ! grep -Fq "$ARTIFACT_READY_MARKER" "$log"; then
+    case "$status" in
+      124|137)
+        echo "failed: artifact timed out before renderer-parent was ready" >&2
+        ;;
+      *)
+        echo "failed: artifact exited before renderer-parent was ready" >&2
+        ;;
+    esac
+    print_artifact_log "$log"
     rm -f "$log"
     rm -rf "$cache_dir"
     return 1
@@ -300,7 +328,7 @@ run_artifact_command() {
     0)
       if ! grep -q "plushie launcher: renderer exited" "$log"; then
         echo "failed: artifact exited before renderer shutdown" >&2
-        sed -n '1,120p' "$log" >&2
+        print_artifact_log "$log"
         rm -f "$log"
         rm -rf "$cache_dir"
         return 1
@@ -308,11 +336,11 @@ run_artifact_command() {
       echo "ok: artifact exited cleanly"
       ;;
     124|137)
-      echo "ok: artifact stayed alive until timeout"
+      echo "ok: artifact reached renderer-parent ready and stayed alive until timeout"
       ;;
     *)
       echo "failed: artifact exit status $status" >&2
-      sed -n '1,120p' "$log" >&2
+      print_artifact_log "$log"
       rm -f "$log"
       rm -rf "$cache_dir"
       return "$status"
