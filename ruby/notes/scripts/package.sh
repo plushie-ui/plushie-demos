@@ -51,17 +51,27 @@ resolve_renderer() {
 
 package_target() {
   ruby -rrbconfig -e '
-    os = case RbConfig::CONFIG.fetch("host_os")
-    when /linux/i then "linux"
-    when /darwin/i then "darwin"
-    when /mswin|mingw|cygwin/i then "windows"
-    else RbConfig::CONFIG.fetch("host_os")
+    host_os = RbConfig::CONFIG.fetch("host_os")
+    host_cpu = RbConfig::CONFIG.fetch("host_cpu")
+
+    os = case host_os
+    when /linux/i
+      "linux"
+    when /darwin/i
+      "darwin"
+    when /mswin|mingw|cygwin/i
+      "windows"
+    else
+      abort "Unsupported package OS: #{host_os}"
     end
 
-    arch = case RbConfig::CONFIG.fetch("host_cpu")
-    when /x86_64|amd64/i then "x86_64"
-    when /aarch64|arm64/i then "aarch64"
-    else RbConfig::CONFIG.fetch("host_cpu")
+    arch = case host_cpu
+    when /x86_64|amd64|x64/i
+      "x86_64"
+    when /aarch64|arm64/i
+      "aarch64"
+    else
+      abort "Unsupported package architecture: #{host_cpu}"
     end
 
     print "#{os}-#{arch}"
@@ -78,14 +88,18 @@ archive_payload() {
 }
 
 dereference_payload_symlinks() {
+  local link
+  local symlink_target
+  local tmp
+
   while IFS= read -r -d '' link; do
-    target="$(ruby -e 'print File.realpath(ARGV.fetch(0))' "$link")"
+    symlink_target="$(ruby -e 'print File.realpath(ARGV.fetch(0))' "$link")"
     tmp="$link.deref.$$"
 
-    if [ -d "$target" ]; then
-      cp -R "$target" "$tmp"
+    if [ -d "$symlink_target" ]; then
+      cp -R "$symlink_target" "$tmp"
     else
-      cp "$target" "$tmp"
+      cp "$symlink_target" "$tmp"
     fi
 
     rm "$link"

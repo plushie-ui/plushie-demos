@@ -37,7 +37,33 @@ PAYLOAD_ARCHIVE="$PACKAGE_DIR/payload.tar.zst"
 MANIFEST="$PACKAGE_DIR/plushie-package.toml"
 PAYLOAD_RENDERER=$(python -c 'import sys; print("bin/plushie-renderer.exe" if sys.platform in ("win32", "cygwin") else "bin/plushie-renderer")')
 HOST_EXE=$(python -c 'import sys; print("host/DataExplorer/DataExplorer.exe" if sys.platform in ("win32", "cygwin") else "host/DataExplorer/DataExplorer")')
-TARGET=$(python -c 'import platform, sys; os_name = "windows" if sys.platform in ("win32", "cygwin") else ("darwin" if sys.platform == "darwin" else "linux"); arch = "aarch64" if platform.machine().lower() in ("aarch64", "arm64") else "x86_64"; print(f"{os_name}-{arch}")')
+TARGET=$(python - <<'PY'
+import platform
+import sys
+
+os_map = {
+    "linux": "linux",
+    "darwin": "darwin",
+    "win32": "windows",
+    "cygwin": "windows",
+}
+arch_map = {
+    "x86_64": "x86_64",
+    "amd64": "x86_64",
+    "aarch64": "aarch64",
+    "arm64": "aarch64",
+}
+
+os_name = os_map.get(sys.platform)
+arch = arch_map.get(platform.machine().lower())
+if os_name is None:
+    raise SystemExit(f"Unsupported package OS: {sys.platform}")
+if arch is None:
+    raise SystemExit(f"Unsupported package architecture: {platform.machine()}")
+
+print(f"{os_name}-{arch}")
+PY
+)
 APP_VERSION=$(python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')
 SDK_VERSION=$(python -c 'import plushie; print(plushie.__version__)')
 RUST_VERSION=$(python -c 'from plushie.binary import PLUSHIE_RUST_VERSION; print(PLUSHIE_RUST_VERSION)')

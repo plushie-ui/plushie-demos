@@ -53,6 +53,18 @@ package_field() {
   '
 }
 
+package_target() {
+  node_eval '
+    const osMap = { linux: "linux", darwin: "darwin", win32: "windows" }
+    const archMap = { x64: "x86_64", arm64: "aarch64" }
+    const os = osMap[process.platform]
+    const arch = archMap[process.arch]
+    if (!os) throw new Error(`Unsupported package OS: ${process.platform}`)
+    if (!arch) throw new Error(`Unsupported package architecture: ${process.arch}`)
+    console.log(`${os}-${arch}`)
+  '
+}
+
 resolve_plushie_binary() {
   if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
     printf '%s\n' "$PLUSHIE_BINARY_PATH"
@@ -190,7 +202,7 @@ HOST_SDK_VERSION="$(node_eval '
   console.log(pkg.version)
 ')"
 RUST_VERSION="$(plushie_rust_version)"
-TARGET="$(node_eval 'console.log(`${process.platform}-${process.arch}`)')"
+TARGET="$(package_target)"
 RENDERER_NAME="$(basename "$BINARY_PATH")"
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*) HOST_NAME="data-explorer-host.exe" ;;

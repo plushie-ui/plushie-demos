@@ -24,6 +24,34 @@ hash_file() {
   fi
 }
 
+package_target() {
+  local os
+  local arch
+
+  os="$(uname -s | tr '[:upper:]' '[:lower:]')"
+  case "$os" in
+    linux*) os="linux" ;;
+    darwin*) os="darwin" ;;
+    msys*|mingw*|cygwin*) os="windows" ;;
+    *)
+      echo "Unsupported package OS: $os" >&2
+      exit 1
+      ;;
+  esac
+
+  arch="$(uname -m | tr '[:upper:]' '[:lower:]')"
+  case "$arch" in
+    amd64|x86_64) arch="x86_64" ;;
+    arm64|aarch64) arch="aarch64" ;;
+    *)
+      echo "Unsupported package architecture: $arch" >&2
+      exit 1
+      ;;
+  esac
+
+  printf '%s-%s\n' "$os" "$arch"
+}
+
 resolve_renderer() {
   if [ -n "${PLUSHIE_BINARY_PATH:-}" ]; then
     printf '%s\n' "$PLUSHIE_BINARY_PATH"
@@ -43,6 +71,7 @@ require_command mix
 require_command tar
 
 renderer="$(resolve_renderer)"
+target="$(package_target)"
 
 echo "Building release..."
 MIX_ENV=prod mix deps.get --only prod
@@ -72,6 +101,7 @@ cat > "$DIST_DIR/plushie-package.toml" <<EOF
 schema_version = 1
 app_id = "dev.plushie.demos.elixir.notes"
 app_version = "0.1.0"
+target = "$target"
 host_sdk = "elixir"
 plushie_rust_version = "$plushie_rust_version"
 protocol_version = 1
