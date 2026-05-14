@@ -8,10 +8,163 @@ BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
 RUN_ARTIFACTS="${PACKAGE_SMOKE_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
 PACKAGE_COMMAND_BUILT=0
+HEADLESS_WESTON_STARTED=0
+HEADLESS_WESTON_PID=""
+HEADLESS_WESTON_RUNTIME_DIR=""
+HEADLESS_WESTON_LOG=""
+HEADLESS_WESTON_SOCKET_PATH=""
+
+cleanup_headless_weston() {
+  if [ -n "$HEADLESS_WESTON_PID" ] && kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1; then
+    kill "$HEADLESS_WESTON_PID" >/dev/null 2>&1 || true
+    wait "$HEADLESS_WESTON_PID" >/dev/null 2>&1 || true
+  fi
+
+  if [ "$HEADLESS_WESTON_STARTED" = "1" ]; then
+    echo "==> stopped headless weston"
+    echo "    XDG_RUNTIME_DIR=$HEADLESS_WESTON_RUNTIME_DIR"
+    echo "    WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-}"
+  fi
+
+  [ -z "$HEADLESS_WESTON_RUNTIME_DIR" ] || rm -rf "$HEADLESS_WESTON_RUNTIME_DIR"
+  [ -z "$HEADLESS_WESTON_LOG" ] || rm -f "$HEADLESS_WESTON_LOG"
+}
+
+trap cleanup_headless_weston EXIT
+
+has_display_env() {
+  local socket_path
+
+  if [ -n "${WAYLAND_SOCKET:-}" ]; then
+    case "$WAYLAND_SOCKET" in
+      *[!0-9]*) ;;
+      *)
+        if [ -S "/proc/$$/fd/$WAYLAND_SOCKET" ]; then
+          return 0
+        fi
+        ;;
+    esac
+  fi
+
+  if [ -n "${WAYLAND_DISPLAY:-}" ] && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+    case "$WAYLAND_DISPLAY" in
+      /*) socket_path="$WAYLAND_DISPLAY" ;;
+      *) socket_path="$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ;;
+    esac
+
+    if [ -S "$socket_path" ]; then
+      return 0
+    fi
+  fi
+
+  [ -n "${DISPLAY:-}" ]
+}
+
+headless_weston_alive() {
+  [ "$HEADLESS_WESTON_STARTED" = "1" ] &&
+    [ -n "$HEADLESS_WESTON_PID" ] &&
+    kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1 &&
+    [ -n "$HEADLESS_WESTON_SOCKET_PATH" ] &&
+    [ -S "$HEADLESS_WESTON_SOCKET_PATH" ]
+}
+
+ensure_display_env() {
+  local display_status
+
+  if [ "$HEADLESS_WESTON_STARTED" = "1" ]; then
+    if headless_weston_alive; then
+      return 0
+    fi
+
+    echo "failed: package artifact smoke - headless weston stopped before artifact run" >&2
+    [ -z "$HEADLESS_WESTON_LOG" ] || sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
+    return 1
+  fi
+
+  if has_display_env; then
+    return 0
+  fi
+
+  if start_headless_weston; then
+    display_status=0
+  else
+    display_status=$?
+  fi
+
+  case "$display_status" in
+    0) return 0 ;;
+    2) return 2 ;;
+    *) return "$display_status" ;;
+  esac
+}
+
+start_headless_weston() {
+  local socket_name
+  local socket_path
+  local attempt
+
+  if has_display_env; then
+    return 0
+  fi
+
+  if [ "$HEADLESS_WESTON_STARTED" = "1" ]; then
+    return 0
+  fi
+
+  if ! command -v weston >/dev/null 2>&1; then
+    echo "skip: package artifact smoke - no display server is available and weston is unavailable" >&2
+    return 2
+  fi
+
+  HEADLESS_WESTON_RUNTIME_DIR="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-weston.XXXXXXXXXX")"
+  HEADLESS_WESTON_LOG="$(mktemp "${TMPDIR:-/tmp}/plushie-package-weston-log.XXXXXXXXXX")"
+  chmod 700 "$HEADLESS_WESTON_RUNTIME_DIR"
+
+  socket_name="plushie-package-smoke-$$"
+  socket_path="$HEADLESS_WESTON_RUNTIME_DIR/$socket_name"
+  HEADLESS_WESTON_SOCKET_PATH="$socket_path"
+
+  XDG_RUNTIME_DIR="$HEADLESS_WESTON_RUNTIME_DIR" \
+    weston -B headless --socket="$socket_name" >"$HEADLESS_WESTON_LOG" 2>&1 &
+  HEADLESS_WESTON_PID=$!
+
+  for attempt in {1..50}; do
+    if [ -S "$socket_path" ]; then
+      export XDG_RUNTIME_DIR="$HEADLESS_WESTON_RUNTIME_DIR"
+      export WAYLAND_DISPLAY="$socket_name"
+      unset WAYLAND_SOCKET
+      HEADLESS_WESTON_STARTED=1
+      echo "==> started headless weston for artifact smoke"
+      echo "    XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
+      echo "    WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
+      return 0
+    fi
+
+    if ! kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1; then
+      echo "failed: package artifact smoke - headless weston exited before creating $socket_name" >&2
+      sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
+      return 1
+    fi
+
+    sleep 0.1
+  done
+
+  echo "failed: package artifact smoke - timed out waiting for headless weston socket $socket_name" >&2
+  sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
+  return 1
+}
 
 run_clean_from_temp_cwd() {
+  local scrubbed_env_args=()
   local smoke_cwd
   local status
+
+  while IFS='=' read -r name _; do
+    case "$name" in
+      PLUSHIE_CACHE_DIR) ;;
+      PLUSHIE_*) scrubbed_env_args+=("-u" "$name") ;;
+    esac
+  done < <(env)
 
   smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-smoke-cwd.XXXXXXXXXX")"
 
@@ -19,13 +172,7 @@ run_clean_from_temp_cwd() {
     set -e
     cd "$smoke_cwd"
 
-    env -u PLUSHIE_BINARY_PATH \
-      -u PLUSHIE_RENDERER_BINARY \
-      -u PLUSHIE_RUST_SOURCE_PATH \
-      -u PLUSHIE_TEST_BACKEND \
-      -u PLUSHIE_PACKAGE_SMOKE \
-      -u PLUSHIE_PACKAGE_DIR \
-      "$@"
+    env "${scrubbed_env_args[@]}" "$@"
   ); then
     status=0
   else
@@ -78,6 +225,7 @@ run_package_command() {
 run_artifact_command() {
   local artifact="$1"
   local cache_dir
+  local display_status
   local log
   local status
   local timeout_args
@@ -86,15 +234,22 @@ run_artifact_command() {
     return 0
   fi
 
-  if [ -z "${WAYLAND_DISPLAY:-}${WAYLAND_SOCKET:-}${DISPLAY:-}" ]; then
-    echo "skip: package artifact smoke - no display server is available" >&2
-    return 0
-  fi
-
   if [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
     echo "skip: package artifact smoke - launcher was not built in this run" >&2
     return 0
   fi
+
+  if ensure_display_env; then
+    display_status=0
+  else
+    display_status=$?
+  fi
+
+  case "$display_status" in
+    0) ;;
+    2) return 0 ;;
+    *) return "$display_status" ;;
+  esac
 
   if ! command -v timeout >/dev/null 2>&1; then
     echo "skip: package artifact smoke - timeout is unavailable" >&2
