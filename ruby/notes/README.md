@@ -55,6 +55,18 @@ The script writes `dist/payload.tar.zst` and
 
     cargo plushie package --manifest dist/plushie-package.toml --release
 
+`just package-artifact-smoke` writes a package-smoke report with the
+payload archive size from the manifest and the generated executable
+size. The script dereferences runtime symlinks before archiving and the
+shared archive helper rejects symlinks, hard links, and special files.
+
+This is a prototype runtime bundle, not a minimized Ruby distribution.
+It copies the active Ruby prefix and then installs production gems into
+the payload. Obvious pruning is intentionally limited to dependency
+groups and local SDK repository metadata so the proof does not remove
+runtime files, native extensions, licenses, or notices that the active
+Ruby installation may need.
+
 ## Keyboard shortcuts
 
 | Shortcut | Action |

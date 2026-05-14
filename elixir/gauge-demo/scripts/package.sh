@@ -40,6 +40,7 @@ fi
 export PLUSHIE_ELIXIR_DIR
 
 target="$(package_target)"
+host_sdk_version="$(awk -F '"' '/@version / { print $2; exit }' "$PLUSHIE_ELIXIR_DIR/mix.exs")"
 
 echo "Building custom gauge renderer..."
 mkdir -p "$(dirname "$CUSTOM_RENDERER")"
@@ -81,6 +82,7 @@ app_id = "dev.plushie.demos.elixir.gauge"
 app_version = "0.1.0"
 target = "$target"
 host_sdk = "elixir"
+host_sdk_version = "$host_sdk_version"
 plushie_rust_version = "$plushie_rust_version"
 protocol_version = 1
 renderer_path = "bin/gauge-demo-plushie"

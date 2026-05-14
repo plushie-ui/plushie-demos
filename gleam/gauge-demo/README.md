@@ -55,6 +55,21 @@ The script writes `dist/payload.tar.zst` and
 `dist/plushie-package.toml`. The payload contains a renderer rebuilt
 with the `native/gauge` Rust crate linked in, and the manifest records
 `renderer.kind = "custom"` with `renderer.source = "local-build"`.
+By default it also copies a payload-local Erlang runtime so the
+generated `bin/connect` wrapper can start without relying on plain
+`erl` on `PATH` at runtime. Use `PLUSHIE_ERLANG_ROOT=/path/to/otp` to
+choose a specific Erlang install. Use `PLUSHIE_BUNDLE_ERLANG=0` to skip
+the runtime copy and keep the PATH-based behavior.
+
+This is a prototype runtime bundle, not a full OTP release. It copies
+the local ERTS plus `kernel`, `stdlib`, `sasl`, and `crypto`, which is
+enough for this demo's shipment. `just package-artifact-smoke` writes a
+package-smoke report with the payload archive size from the manifest and
+the generated executable size. The shared archive helper rejects
+symlinks, hard links, and special files before archiving. Runtime
+pruning keeps OTP application directories intact, including licenses and
+notices, and only narrows the copy to applications proven necessary for
+the shipment.
 
 Build the standalone launcher with:
 

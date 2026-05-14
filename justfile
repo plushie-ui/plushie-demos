@@ -6,6 +6,7 @@ default:
     just --list
 
 preflight:
+    ./scripts/package_lib_test.sh
     for dir in {{languages}}; do \
       if [ -d "$dir" ]; then \
         echo "==> $dir"; \
@@ -16,6 +17,9 @@ preflight:
 
 package-smoke:
     ./scripts/package_smoke.sh
+
+package-lib-test:
+    ./scripts/package_lib_test.sh
 
 package-artifact-smoke:
     PACKAGE_SMOKE_BUILD=1 PACKAGE_SMOKE_RUN_ARTIFACTS=1 ./scripts/package_smoke.sh

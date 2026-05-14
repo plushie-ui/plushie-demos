@@ -64,6 +64,7 @@ export PLUSHIE_ELIXIR_DIR
 
 renderer="$(resolve_renderer)"
 target="$(package_target)"
+host_sdk_version="$(awk -F '"' '/@version / { print $2; exit }' "$PLUSHIE_ELIXIR_DIR/mix.exs")"
 
 echo "Building release..."
 MIX_ENV=prod mix deps.get --only prod
@@ -97,6 +98,7 @@ app_id = "dev.plushie.demos.elixir.notes"
 app_version = "0.1.0"
 target = "$target"
 host_sdk = "elixir"
+host_sdk_version = "$host_sdk_version"
 plushie_rust_version = "$plushie_rust_version"
 protocol_version = 1
 renderer_path = "bin/plushie-renderer"

@@ -61,8 +61,10 @@ resolve_erlang_root() {
 }
 
 find_runtime_dir() {
-  root="$1"
-  pattern="$2"
+  local root="$1"
+  local pattern="$2"
+  local dir
+
   dir="$(find "$root" -maxdepth 1 -type d -name "$pattern" | sort | tail -n 1)"
 
   if [ -z "$dir" ]; then
@@ -74,8 +76,15 @@ find_runtime_dir() {
 }
 
 copy_erlang_runtime() {
+  local root
+  local runtime_dir="$PAYLOAD_DIR/runtime/erlang"
+  local erts_dir
+  local crypto_dir
+  local kernel_dir
+  local sasl_dir
+  local stdlib_dir
+
   root="$(resolve_erlang_root)"
-  runtime_dir="$PAYLOAD_DIR/runtime/erlang"
   erts_dir="$(find_runtime_dir "$root" 'erts-*')"
   crypto_dir="$(find_runtime_dir "$root/lib" 'crypto-*')"
   kernel_dir="$(find_runtime_dir "$root/lib" 'kernel-*')"
@@ -107,11 +116,22 @@ copy_erlang_runtime() {
     -eval 'ok = application:ensure_started(crypto), halt().'
 }
 
+resolve_host_sdk_version() {
+  local sdk_toml="$PROJECT_DIR/../../../plushie-gleam/gleam.toml"
+
+  if [ -f "$sdk_toml" ]; then
+    awk -F '"' '/^version = / { print $2; exit }' "$sdk_toml"
+  else
+    awk -F '"' '/name = "plushie_gleam"/ { print $4; exit }' manifest.toml
+  fi
+}
+
 require_command gleam
 require_command tar
 
 renderer="$(resolve_renderer)"
 target="$(package_target)"
+host_sdk_version="$(resolve_host_sdk_version)"
 plushie_rust_version="${PLUSHIE_RUST_VERSION:-$(awk -F '"' '/^plushie_rust_version = / { print $2 }' gleam.toml)}"
 
 echo "Building shipment..."
@@ -160,6 +180,7 @@ echo "Writing archive..."
 archive_payload "$PAYLOAD_DIR" "$DIST_DIR/payload.tar.zst"
 payload_hash="$(hash_file "$DIST_DIR/payload.tar.zst")"
 payload_size="$(file_size "$DIST_DIR/payload.tar.zst")"
+echo "Payload archive size: $payload_size bytes"
 
 cat > "$DIST_DIR/plushie-package.toml" <<EOF
 schema_version = 1
@@ -167,6 +188,7 @@ app_id = "dev.plushie.demos.gleam.notes"
 app_version = "0.1.0"
 target = "$target"
 host_sdk = "gleam"
+host_sdk_version = "$host_sdk_version"
 plushie_rust_version = "$plushie_rust_version"
 protocol_version = 1
 renderer_path = "bin/plushie-renderer"

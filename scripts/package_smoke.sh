@@ -769,6 +769,100 @@ native_widget_crates() {
   (IFS=','; printf '%s\n' "${output[*]}")
 }
 
+expected_plushie_rust_version() {
+  if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+    awk -F '"' '/^version = / { print $2; exit }' "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml"
+  fi
+}
+
+expected_host_sdk_version() {
+  local demo_dir="$1"
+  local language="${demo_dir%%/*}"
+  local sdk_root=""
+
+  case "$language" in
+    elixir)
+      sdk_root="${PLUSHIE_ELIXIR_DIR:-$ROOT/../plushie-elixir}"
+      [ -f "$sdk_root/mix.exs" ] || return 0
+      awk -F '"' '/@version / { print $2; exit }' "$sdk_root/mix.exs"
+      ;;
+    gleam)
+      sdk_root="${PLUSHIE_GLEAM_DIR:-$ROOT/../plushie-gleam}"
+      [ -f "$sdk_root/gleam.toml" ] || return 0
+      awk -F '"' '/^version = / { print $2; exit }' "$sdk_root/gleam.toml"
+      ;;
+    python)
+      sdk_root="${PLUSHIE_PYTHON_DIR:-$ROOT/../plushie-python}"
+      [ -f "$sdk_root/pyproject.toml" ] || return 0
+      awk -F '"' '/^version = / { print $2; exit }' "$sdk_root/pyproject.toml"
+      ;;
+    ruby)
+      sdk_root="${PLUSHIE_RUBY_DIR:-$ROOT/../plushie-ruby}"
+      [ -f "$sdk_root/lib/plushie/version.rb" ] || return 0
+      awk -F '"' '/VERSION = / { print $2; exit }' "$sdk_root/lib/plushie/version.rb"
+      ;;
+    typescript)
+      sdk_root="${PLUSHIE_TYPESCRIPT_DIR:-$ROOT/../plushie-typescript}"
+      [ -f "$sdk_root/package.json" ] || return 0
+      node -e '
+        const fs = require("fs");
+        const path = process.argv[1];
+        const pkg = JSON.parse(fs.readFileSync(path, "utf8"));
+        process.stdout.write(pkg.version || "");
+      ' "$sdk_root/package.json" 2>/dev/null
+      ;;
+  esac
+}
+
+assert_manifest_value_present() {
+  local manifest="$1"
+  local key="$2"
+  local value
+
+  value="$(manifest_value "$manifest" "$key")"
+  if [ -z "$value" ]; then
+    echo "failed: package manifest ${manifest#$ROOT/} is missing $key" >&2
+    return 1
+  fi
+}
+
+assert_version_alignment() {
+  local manifest="$1"
+  local demo_dir
+  local expected
+  local actual
+  local native_crates
+
+  demo_dir="$(demo_dir_for_manifest "$manifest")"
+
+  assert_manifest_value_present "$manifest" host_sdk
+  assert_manifest_value_present "$manifest" host_sdk_version
+  assert_manifest_value_present "$manifest" plushie_rust_version
+  assert_manifest_value_present "$manifest" protocol_version
+
+  expected="$(expected_plushie_rust_version)"
+  actual="$(manifest_value "$manifest" plushie_rust_version)"
+  if [ -n "$expected" ] && [ "$actual" != "$expected" ]; then
+    echo "failed: package manifest ${manifest#$ROOT/} has plushie_rust_version=$actual, expected $expected" >&2
+    return 1
+  fi
+
+  expected="$(expected_host_sdk_version "$demo_dir")"
+  actual="$(manifest_value "$manifest" host_sdk_version)"
+  if [ -n "$expected" ] && [ "$actual" != "$expected" ]; then
+    echo "failed: package manifest ${manifest#$ROOT/} has host_sdk_version=$actual, expected $expected" >&2
+    return 1
+  fi
+
+  if [ -d "$ROOT/$demo_dir/native" ]; then
+    native_crates="$(native_widget_crates "$demo_dir")"
+    if [ -z "$native_crates" ]; then
+      echo "failed: package manifest ${manifest#$ROOT/} has native widgets but no native crate versions could be recorded" >&2
+      return 1
+    fi
+  fi
+}
+
 should_run_language() {
   local candidate="$1"
 
@@ -833,6 +927,7 @@ smoke_language() {
     local out="$ROOT/$demo/dist/package-smoke/$safe"
 
     echo "==> smoke $rel"
+    assert_version_alignment "$manifest"
     run_package_command "$manifest" "$out"
     run_artifact_command "$out" "$manifest"
   done < <(manifests_for_language "$language")

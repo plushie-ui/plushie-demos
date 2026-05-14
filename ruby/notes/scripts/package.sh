@@ -124,6 +124,7 @@ echo "Writing archive..."
 archive_payload "$PAYLOAD_DIR" "$DIST_DIR/payload.tar.zst"
 payload_hash="$(hash_file "$DIST_DIR/payload.tar.zst")"
 payload_size="$(file_size "$DIST_DIR/payload.tar.zst")"
+echo "Payload archive size: $payload_size bytes"
 
 cat > "$DIST_DIR/plushie-package.toml" <<EOF
 schema_version = 1

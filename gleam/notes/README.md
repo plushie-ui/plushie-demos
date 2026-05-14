@@ -68,6 +68,13 @@ enough for this demo's shipment. Remaining gaps:
 - Demos that need additional OTP applications must extend the copied
   runtime set.
 
+`just package-artifact-smoke` writes a package-smoke report with the
+payload archive size from the manifest and the generated executable
+size. The shared archive helper rejects symlinks, hard links, and
+special files before archiving. Runtime pruning keeps OTP application
+directories intact, including licenses and notices, and only narrows the
+copy to applications proven necessary for the shipment.
+
 Build the standalone launcher with:
 
 ```bash
