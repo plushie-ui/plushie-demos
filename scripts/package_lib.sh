@@ -1,37 +1,5 @@
 #!/usr/bin/env bash
 
-normalize_package_target() {
-  local os="$1"
-  local arch="$2"
-
-  os="$(printf '%s' "$os" | tr '[:upper:]' '[:lower:]')"
-  case "$os" in
-    linux*) os="linux" ;;
-    darwin*) os="darwin" ;;
-    win32|windows|msys*|mingw*|cygwin*) os="windows" ;;
-    *)
-      echo "Unsupported package OS: $os" >&2
-      return 1
-      ;;
-  esac
-
-  arch="$(printf '%s' "$arch" | tr '[:upper:]' '[:lower:]')"
-  case "$arch" in
-    amd64|x64|x86_64) arch="x86_64" ;;
-    arm64|aarch64) arch="aarch64" ;;
-    *)
-      echo "Unsupported package architecture: $arch" >&2
-      return 1
-      ;;
-  esac
-
-  printf '%s-%s\n' "$os" "$arch"
-}
-
-package_target() {
-  normalize_package_target "$(uname -s)" "$(uname -m)"
-}
-
 sha256_file() {
   if command -v sha256sum >/dev/null 2>&1; then
     sha256sum "$1" | awk '{print $1}'
