@@ -29,4 +29,5 @@ node scripts/bundle.mjs
   --app-name "Data Explorer" \
   --main dist/app.cjs \
   --sea-output dist/data-explorer \
-  --output dist/shared-launcher
+  --output dist/shared-launcher \
+  --default-icon

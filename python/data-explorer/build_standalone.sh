@@ -72,6 +72,7 @@ PACKAGE_DIR="dist/package"
 PAYLOAD_ROOT="$PACKAGE_DIR/payload"
 PAYLOAD_ARCHIVE="$PACKAGE_DIR/payload.tar.zst"
 MANIFEST="$PACKAGE_DIR/plushie-package.toml"
+PLATFORM_ICON="assets/plushie-checkbox-512x512.png"
 PAYLOAD_RENDERER=$(python -c 'import sys; print("bin/plushie-renderer.exe" if sys.platform in ("win32", "cygwin") else "bin/plushie-renderer")')
 HOST_EXE=$(python -c 'import sys; print("host/DataExplorer/DataExplorer.exe" if sys.platform in ("win32", "cygwin") else "host/DataExplorer/DataExplorer")')
 
@@ -82,6 +83,12 @@ chmod +x "$PAYLOAD_ROOT/$PAYLOAD_RENDERER"
 cp -R "dist/DataExplorer" "$PAYLOAD_ROOT/host/DataExplorer"
 find "$PAYLOAD_ROOT/host/DataExplorer" -maxdepth 2 -type f \
     \( -name "plushie-renderer" -o -name "plushie-renderer.exe" \) -delete
+if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then
+    cargo run --manifest-path "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" \
+        -p cargo-plushie -- default-icons --out "$PAYLOAD_ROOT/assets"
+else
+    cargo-plushie default-icons --out "$PAYLOAD_ROOT/assets"
+fi
 
 dereference_payload_symlinks "$PAYLOAD_ROOT"
 archive_payload "$PAYLOAD_ROOT" "$PAYLOAD_ARCHIVE"
@@ -92,6 +99,7 @@ python -m plushie package \
     --renderer-source "$RENDERER_SOURCE" \
     --renderer-path "$PAYLOAD_RENDERER" \
     --payload-archive "$PAYLOAD_ARCHIVE" \
+    --platform-icon "$PLATFORM_ICON" \
     --output "$MANIFEST" \
     --host-command "$HOST_EXE"
 

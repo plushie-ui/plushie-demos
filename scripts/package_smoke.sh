@@ -826,6 +826,75 @@ assert_manifest_value_present() {
   fi
 }
 
+payload_archive_path() {
+  local manifest="$1"
+  local archive
+
+  archive="$(manifest_value "$manifest" archive)"
+  if [ -z "$archive" ]; then
+    archive="payload.tar.zst"
+  fi
+
+  case "$archive" in
+    /*) printf '%s\n' "$archive" ;;
+    *) printf '%s\n' "$(dirname "$manifest")/$archive" ;;
+  esac
+}
+
+payload_archive_contains() {
+  local archive="$1"
+  local payload_path="$2"
+  local listing
+  local tar_bin
+  local status
+
+  listing="$(mktemp "${TMPDIR:-/tmp}/plushie-payload-list.XXXXXXXXXX")"
+  tar_bin="$(archive_tar_command)"
+
+  if archive_tar_supports_gnu_flags && "$tar_bin" --help 2>/dev/null | grep -q -- '--zstd'; then
+    "$tar_bin" --zstd -tf "$archive" > "$listing"
+  else
+    if ! command -v zstd >/dev/null 2>&1; then
+      echo "Missing required command: zstd" >&2
+      rm -f "$listing"
+      return 1
+    fi
+
+    zstd -dc "$archive" | "$tar_bin" -tf - > "$listing"
+  fi
+
+  if grep -Fxq "$payload_path" "$listing" || grep -Fxq "./$payload_path" "$listing"; then
+    status=0
+  else
+    status=1
+  fi
+
+  rm -f "$listing"
+  return "$status"
+}
+
+assert_platform_icon() {
+  local manifest="$1"
+  local icon
+  local archive
+
+  assert_manifest_value_present "$manifest" icon
+
+  icon="$(manifest_value "$manifest" icon)"
+  case "$icon" in
+    /* | *../* | ../*)
+      echo "failed: package manifest ${manifest#$ROOT/} has non-payload icon path: $icon" >&2
+      return 1
+      ;;
+  esac
+
+  archive="$(payload_archive_path "$manifest")"
+  if ! payload_archive_contains "$archive" "$icon"; then
+    echo "failed: package payload ${archive#$ROOT/} is missing platform icon $icon" >&2
+    return 1
+  fi
+}
+
 assert_version_alignment() {
   local manifest="$1"
   local demo_dir
@@ -839,6 +908,7 @@ assert_version_alignment() {
   assert_manifest_value_present "$manifest" host_sdk_version
   assert_manifest_value_present "$manifest" plushie_rust_version
   assert_manifest_value_present "$manifest" protocol_version
+  assert_platform_icon "$manifest"
 
   expected="$(expected_plushie_rust_version)"
   actual="$(manifest_value "$manifest" plushie_rust_version)"
