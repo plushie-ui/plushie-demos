@@ -17,5 +17,8 @@ preflight:
 package-smoke:
     ./scripts/package_smoke.sh
 
+package-artifact-smoke:
+    PACKAGE_SMOKE_RUN_ARTIFACTS=1 ./scripts/package_smoke.sh
+
 renderer-parent-smoke:
     ./scripts/renderer_parent_smoke.sh
