@@ -25,4 +25,4 @@ preflight:
     done
 
 package-smoke:
-    ../scripts/package_smoke.sh typescript
+    PACKAGE_SMOKE_BUILD=1 ../scripts/package_smoke.sh typescript

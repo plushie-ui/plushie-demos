@@ -20,4 +20,4 @@ preflight:
     done
 
 package-smoke:
-    ../scripts/package_smoke.sh ruby
+    PACKAGE_SMOKE_BUILD=1 ../scripts/package_smoke.sh ruby

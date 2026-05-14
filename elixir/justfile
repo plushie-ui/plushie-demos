@@ -23,4 +23,4 @@ preflight:
     done
 
 package-smoke:
-    ../scripts/package_smoke.sh elixir
+    PACKAGE_SMOKE_BUILD=1 ../scripts/package_smoke.sh elixir

@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$SCRIPT_DIR"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DEFAULT_PLUSHIE_PYTHON_DIR="$(cd "$SCRIPT_DIR/../../../plushie-python" 2>/dev/null && pwd || true)"
 PLUSHIE_PYTHON_DIR="${PLUSHIE_PYTHON_DIR:-$DEFAULT_PLUSHIE_PYTHON_DIR}"
@@ -45,7 +46,7 @@ BINARY=$(python -c "from plushie.binary import resolve; print(resolve())")
 echo "    Binary: $BINARY"
 
 echo "==> Staging bundled renderer..."
-STAGED_RENDERER=$(python -c 'import sys; from pathlib import Path; print(Path("build/standalone/renderer") / ("plushie-renderer.exe" if sys.platform in ("win32", "cygwin") else "plushie-renderer"))')
+STAGED_RENDERER=$(python -c 'import sys; from pathlib import Path; print((Path("build/standalone/renderer") / ("plushie-renderer.exe" if sys.platform in ("win32", "cygwin") else "plushie-renderer")).resolve())')
 mkdir -p "$(dirname "$STAGED_RENDERER")"
 cp "$BINARY" "$STAGED_RENDERER"
 chmod +x "$STAGED_RENDERER"
@@ -57,8 +58,9 @@ python -m pip install pyinstaller
 echo "==> Building standalone app..."
 python -m PyInstaller \
     --name "DataExplorer" \
+    --specpath "build/pyinstaller-spec" \
     --add-binary "$STAGED_RENDERER:." \
-    --add-data "sample_data:sample_data" \
+    --add-data "$PROJECT_DIR/sample_data:sample_data" \
     --hidden-import pandas \
     --hidden-import plushie \
     --collect-submodules plushie \

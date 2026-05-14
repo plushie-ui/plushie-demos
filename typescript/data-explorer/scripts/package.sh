@@ -17,6 +17,7 @@ plushie_cmd=(npx plushie)
 if [ -n "$PLUSHIE_TYPESCRIPT_DIR" ] && [ -f "$PLUSHIE_TYPESCRIPT_DIR/package.json" ]; then
   echo "Building local plushie SDK..."
   (cd "$PLUSHIE_TYPESCRIPT_DIR" && pnpm build)
+  pnpm install --frozen-lockfile --force
   plushie_cmd=(node "$PLUSHIE_TYPESCRIPT_DIR/dist/cli/index.js")
 fi
 

@@ -16,7 +16,7 @@ preflight:
     just renderer-parent-smoke
 
 package-smoke:
-    ./scripts/package_smoke.sh
+    PACKAGE_SMOKE_BUILD=1 ./scripts/package_smoke.sh
 
 package-lib-test:
     ./scripts/package_lib_test.sh
