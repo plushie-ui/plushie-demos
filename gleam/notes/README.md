@@ -45,10 +45,30 @@ Build the Erlang shipment payload and package manifest:
 
 ```bash
 PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
+# or
+PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh
 ```
 
 The script writes `dist/payload.tar.zst` and
-`dist/plushie-package.toml`. Build the standalone launcher with:
+`dist/plushie-package.toml`. By default it also copies a minimal
+payload-local Erlang runtime from the build machine so the generated
+`bin/connect` wrapper can start without relying on plain `erl` on
+`PATH` at runtime. Use `PLUSHIE_ERLANG_ROOT=/path/to/otp` to choose a
+specific Erlang install. Use `PLUSHIE_BUNDLE_ERLANG=0` to skip the
+runtime copy and keep the older PATH-based behavior.
+
+This is a prototype runtime bundle, not a full OTP release. It copies
+the local ERTS plus `kernel`, `stdlib`, and `sasl`, which is enough for
+this demo's shipment. Remaining gaps:
+
+- The copied runtime is OS and architecture specific.
+- System shared libraries used by ERTS are not vendored.
+- There is no relx-style boot pruning or generated release metadata for
+  the exact application graph.
+- Demos that need additional OTP applications must extend the copied
+  runtime set.
+
+Build the standalone launcher with:
 
 ```bash
 cargo plushie package --manifest dist/plushie-package.toml --release
