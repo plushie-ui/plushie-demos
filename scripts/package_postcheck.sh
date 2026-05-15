@@ -8,7 +8,6 @@ POSTCHECK_TIMEOUT="${PACKAGE_POSTCHECK_TIMEOUT:-10}"
 BUILD_PAYLOADS="${PACKAGE_POSTCHECK_BUILD:-0}"
 RUN_ARTIFACTS="${PACKAGE_POSTCHECK_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
-ARTIFACT_READY_MARKER="${PACKAGE_ARTIFACT_READY_MARKER:-plushie renderer-parent: ready}"
 ARTIFACT_RUNTIME_PATH="${PACKAGE_ARTIFACT_RUNTIME_PATH:-}"
 PACKAGE_COMMAND_BUILT=0
 HEADLESS_WESTON_STARTED=0
@@ -539,11 +538,6 @@ run_artifact_command() {
     return 0
   fi
 
-  if [ -z "$ARTIFACT_READY_MARKER" ]; then
-    echo "failed: package artifact postcheck - PACKAGE_ARTIFACT_READY_MARKER must not be empty" >&2
-    return 1
-  fi
-
   if ensure_display_env; then
     display_status=0
   else
@@ -608,21 +602,6 @@ run_artifact_command() {
     return 1
   fi
 
-  if ! grep -Fq "$ARTIFACT_READY_MARKER" "$log"; then
-    case "$status" in
-      124|137)
-        echo "failed: artifact timed out before renderer-parent was ready" >&2
-        ;;
-      *)
-        echo "failed: artifact exited before renderer-parent was ready" >&2
-        ;;
-    esac
-    print_artifact_log "$log"
-    rm -f "$log"
-    rm -rf "$cache_dir"
-    return 1
-  fi
-
   if grep -q "unknown node type" "$log"; then
     echo "failed: artifact renderer reported an unknown widget type" >&2
     print_artifact_log "$log"
@@ -633,8 +612,8 @@ run_artifact_command() {
 
   case "$status" in
     0)
-      if ! grep -q "plushie launcher: renderer exited" "$log"; then
-        echo "failed: artifact exited before renderer shutdown" >&2
+      if ! grep -q "plushie launcher: host exited" "$log"; then
+        echo "failed: artifact exited before host shutdown" >&2
         print_artifact_log "$log"
         rm -f "$log"
         rm -rf "$cache_dir"
@@ -643,7 +622,7 @@ run_artifact_command() {
       echo "ok: artifact exited cleanly"
       ;;
     124|137)
-      echo "ok: artifact reached renderer-parent ready and stayed alive until timeout"
+      echo "ok: artifact started and stayed alive until timeout"
       ;;
     *)
       echo "failed: artifact exit status $status" >&2
@@ -682,12 +661,14 @@ write_artifact_report() {
   local status="$5"
   local log="$6"
   local demo_dir
-  local ready="no"
+  local alive_until_timeout="no"
   local unknown_widget="no"
   local renderer_path=""
 
   demo_dir="$(demo_dir_for_manifest "$manifest")"
-  grep -Fq "$ARTIFACT_READY_MARKER" "$log" && ready="yes"
+  case "$status" in
+    124|137) alive_until_timeout="yes" ;;
+  esac
   grep -q "unknown node type" "$log" && unknown_widget="yes"
   renderer_path="$(sed -n 's/.* renderer=\([^ ]*\) .*/\1/p' "$log" | head -n 1)"
 
@@ -710,7 +691,7 @@ write_artifact_report() {
     printf 'artifact_size=%s\n' "$(file_size "$artifact")"
     printf 'runtime_path=%s\n' "$runtime_path"
     printf 'exit_status=%s\n' "$status"
-    printf 'ready_marker=%s\n' "$ready"
+    printf 'alive_until_timeout=%s\n' "$alive_until_timeout"
     printf 'unknown_widget=%s\n' "$unknown_widget"
     printf 'renderer_path=%s\n' "$renderer_path"
   } > "$report"

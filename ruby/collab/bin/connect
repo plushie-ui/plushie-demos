@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# Run the collab app over stdio transport.
+# Run the collab app from a standalone entry point.
 #
 # Used with structured renderer exec args for remote rendering:
 #   plushie --exec-bin bundle --exec-arg exec --exec-arg ruby --exec-arg bin/connect
@@ -11,4 +11,4 @@
 
 require_relative "../lib/collab"
 
-Plushie.run(Collab, transport: :stdio)
+Plushie.connect(Collab)

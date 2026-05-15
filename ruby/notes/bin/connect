@@ -12,8 +12,4 @@ require "notes"
 
 format = (ENV["PLUSHIE_FORMAT"] == "json") ? :json : :msgpack
 
-if ENV["PLUSHIE_SOCKET"] && !ENV["PLUSHIE_SOCKET"].empty?
-  Plushie.connect(Notes, format: format)
-else
-  Plushie.run(Notes, transport: :stdio, format: format)
-end
+Plushie.connect(Notes, format: format)
