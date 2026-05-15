@@ -15,14 +15,14 @@ preflight:
     done
     just renderer-parent-smoke
 
-package-smoke:
-    PACKAGE_SMOKE_BUILD=1 ./scripts/package_smoke.sh
+package-postcheck:
+    PACKAGE_POSTCHECK_BUILD=1 ./scripts/package_postcheck.sh
 
 package-lib-test:
     ./scripts/package_lib_test.sh
 
-package-artifact-smoke:
-    PACKAGE_SMOKE_BUILD=1 PACKAGE_SMOKE_RUN_ARTIFACTS=1 ./scripts/package_smoke.sh
+package-artifact-postcheck:
+    PACKAGE_POSTCHECK_BUILD=1 PACKAGE_POSTCHECK_RUN_ARTIFACTS=1 ./scripts/package_postcheck.sh
 
 renderer-parent-smoke:
     ./scripts/renderer_parent_smoke.sh

@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEFAULT_PLUSHIE_RUST_SOURCE_PATH="$(cd "$ROOT/../plushie-rust" 2>/dev/null && pwd || true)"
 LANGUAGE="${1:-all}"
-SMOKE_TIMEOUT="${PACKAGE_SMOKE_TIMEOUT:-10}"
-BUILD_PAYLOADS="${PACKAGE_SMOKE_BUILD:-0}"
-RUN_ARTIFACTS="${PACKAGE_SMOKE_RUN_ARTIFACTS:-0}"
+POSTCHECK_TIMEOUT="${PACKAGE_POSTCHECK_TIMEOUT:-10}"
+BUILD_PAYLOADS="${PACKAGE_POSTCHECK_BUILD:-0}"
+RUN_ARTIFACTS="${PACKAGE_POSTCHECK_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
 ARTIFACT_READY_MARKER="${PACKAGE_ARTIFACT_READY_MARKER:-plushie renderer-parent: ready}"
 ARTIFACT_RUNTIME_PATH="${PACKAGE_ARTIFACT_RUNTIME_PATH:-}"
@@ -95,7 +95,7 @@ ensure_display_env() {
       return 0
     fi
 
-    echo "failed: package artifact smoke - headless weston stopped before artifact run" >&2
+    echo "failed: package artifact postcheck - headless weston stopped before artifact run" >&2
     [ -z "$HEADLESS_WESTON_LOG" ] || sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
     return 1
   fi
@@ -131,7 +131,7 @@ start_headless_weston() {
   fi
 
   if ! command -v weston >/dev/null 2>&1; then
-    echo "skip: package artifact smoke - no display server is available and weston is unavailable" >&2
+    echo "skip: package artifact postcheck - no display server is available and weston is unavailable" >&2
     return 2
   fi
 
@@ -139,7 +139,7 @@ start_headless_weston() {
   HEADLESS_WESTON_LOG="$(mktemp "${TMPDIR:-/tmp}/plushie-package-weston-log.XXXXXXXXXX")"
   chmod 700 "$HEADLESS_WESTON_RUNTIME_DIR"
 
-  socket_name="plushie-package-smoke-$$"
+  socket_name="plushie-package-postcheck-$$"
   socket_path="$HEADLESS_WESTON_RUNTIME_DIR/$socket_name"
   HEADLESS_WESTON_SOCKET_PATH="$socket_path"
 
@@ -153,14 +153,14 @@ start_headless_weston() {
       export WAYLAND_DISPLAY="$socket_name"
       unset WAYLAND_SOCKET
       HEADLESS_WESTON_STARTED=1
-      echo "==> started headless weston for artifact smoke"
+      echo "==> started headless weston for artifact postcheck"
       echo "    XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
       echo "    WAYLAND_DISPLAY=$WAYLAND_DISPLAY"
       return 0
     fi
 
     if ! kill -0 "$HEADLESS_WESTON_PID" >/dev/null 2>&1; then
-      echo "failed: package artifact smoke - headless weston exited before creating $socket_name" >&2
+      echo "failed: package artifact postcheck - headless weston exited before creating $socket_name" >&2
       sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
       return 1
     fi
@@ -168,14 +168,14 @@ start_headless_weston() {
     sleep 0.1
   done
 
-  echo "failed: package artifact smoke - timed out waiting for headless weston socket $socket_name" >&2
+  echo "failed: package artifact postcheck - timed out waiting for headless weston socket $socket_name" >&2
   sed -n '1,120p' "$HEADLESS_WESTON_LOG" >&2
   return 1
 }
 
 run_clean_from_temp_cwd() {
   local scrubbed_env_args=()
-  local smoke_cwd
+  local postcheck_cwd
   local status
 
   while IFS='=' read -r name _; do
@@ -185,11 +185,11 @@ run_clean_from_temp_cwd() {
     esac
   done < <(env)
 
-  smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-smoke-cwd.XXXXXXXXXX")"
+  postcheck_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-postcheck-cwd.XXXXXXXXXX")"
 
   if (
     set -e
-    cd "$smoke_cwd"
+    cd "$postcheck_cwd"
 
     env "${scrubbed_env_args[@]}" "$@"
   ); then
@@ -198,7 +198,7 @@ run_clean_from_temp_cwd() {
     status=$?
   fi
 
-  rm -rf "$smoke_cwd"
+  rm -rf "$postcheck_cwd"
   return "$status"
 }
 
@@ -229,7 +229,7 @@ artifact_runtime_path() {
 
 run_artifact_from_temp_cwd() {
   local scrubbed_env_args=()
-  local smoke_cwd
+  local postcheck_cwd
   local status
 
   while IFS='=' read -r name _; do
@@ -260,11 +260,11 @@ run_artifact_from_temp_cwd() {
     esac
   done < <(env)
 
-  smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cwd.XXXXXXXXXX")"
+  postcheck_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cwd.XXXXXXXXXX")"
 
   if (
     set -e
-    cd "$smoke_cwd"
+    cd "$postcheck_cwd"
 
     env "${scrubbed_env_args[@]}" PATH="$ARTIFACT_LAUNCH_PATH" "$@"
   ); then
@@ -273,7 +273,7 @@ run_artifact_from_temp_cwd() {
     status=$?
   fi
 
-  rm -rf "$smoke_cwd"
+  rm -rf "$postcheck_cwd"
   return "$status"
 }
 
@@ -310,14 +310,14 @@ run_package_command() {
   PACKAGE_COMMAND_BUILT=0
 
   if ! command -v cargo >/dev/null 2>&1; then
-    echo "skip: package smoke - cargo is unavailable; install Rust or set up cargo-plushie" >&2
+    echo "skip: package postcheck - cargo is unavailable; install Rust or set up cargo-plushie" >&2
     return 0
   fi
 
   if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
     cargo_plushie_dir="$(cd "$PLUSHIE_RUST_SOURCE_PATH" && pwd)"
   elif ! command -v cargo-plushie >/dev/null 2>&1; then
-    echo "skip: package smoke - cargo-plushie is unavailable; install cargo-plushie or set PLUSHIE_RUST_SOURCE_PATH" >&2
+    echo "skip: package postcheck - cargo-plushie is unavailable; install cargo-plushie or set PLUSHIE_RUST_SOURCE_PATH" >&2
     return 0
   fi
 
@@ -327,15 +327,15 @@ run_package_command() {
       --manifest-path "$cargo_plushie_dir/Cargo.toml" \
       -- package \
       --manifest "$manifest" \
-      --smoke \
-      --smoke-timeout "$SMOKE_TIMEOUT" \
+      --postcheck \
+      --postcheck-timeout "$POSTCHECK_TIMEOUT" \
       --out "$out"
   else
     run_clean_from_temp_cwd \
       cargo plushie package \
       --manifest "$manifest" \
-      --smoke \
-      --smoke-timeout "$SMOKE_TIMEOUT" \
+      --postcheck \
+      --postcheck-timeout "$POSTCHECK_TIMEOUT" \
       --out "$out"
   fi
   PACKAGE_COMMAND_BUILT=1
@@ -361,7 +361,7 @@ extract_payload_archive() {
   fi
 }
 
-resolve_stock_renderer_for_negative_smoke() {
+resolve_stock_renderer_for_negative_postcheck() {
   if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
     cargo build --release -p plushie-renderer --manifest-path "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml"
     printf '%s\n' "$PLUSHIE_RUST_SOURCE_PATH/target/release/plushie-renderer"
@@ -391,7 +391,7 @@ write_native_negative_manifest() {
         printf 'kind = "stock"\n'
         ;;
       'source = "local-build"')
-        printf 'source = "negative-smoke"\n'
+        printf 'source = "negative-postcheck"\n'
         ;;
       *)
         printf '%s\n' "$line"
@@ -481,12 +481,12 @@ assert_native_package_rejects_missing_widget() {
     *) return "$display_status" ;;
   esac
 
-  if stock_renderer="$(resolve_stock_renderer_for_negative_smoke)"; then
+  if stock_renderer="$(resolve_stock_renderer_for_negative_postcheck)"; then
     :
   else
     case "$?" in
       2)
-        echo "skip: native widget negative smoke - no stock renderer available" >&2
+        echo "skip: native widget negative postcheck - no stock renderer available" >&2
         return 0
         ;;
       *) return 1 ;;
@@ -504,7 +504,7 @@ assert_native_package_rejects_missing_widget() {
   payload_size="$(file_size "$tmp/dist/payload.tar.zst")"
   write_native_negative_manifest "$manifest" "$tmp/dist/plushie-package.toml" "$payload_hash" "$payload_size"
 
-  out="$tmp/dist/package-smoke/$safe-stock-renderer"
+  out="$tmp/dist/package-postcheck/$safe-stock-renderer"
   echo "==> assert $demo rejects renderer without gauge widget"
   run_package_command "$tmp/dist/plushie-package.toml" "$out"
 
@@ -535,12 +535,12 @@ run_artifact_command() {
   fi
 
   if [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
-    echo "skip: package artifact smoke - launcher was not built in this run" >&2
+    echo "skip: package artifact postcheck - launcher was not built in this run" >&2
     return 0
   fi
 
   if [ -z "$ARTIFACT_READY_MARKER" ]; then
-    echo "failed: package artifact smoke - PACKAGE_ARTIFACT_READY_MARKER must not be empty" >&2
+    echo "failed: package artifact postcheck - PACKAGE_ARTIFACT_READY_MARKER must not be empty" >&2
     return 1
   fi
 
@@ -557,13 +557,13 @@ run_artifact_command() {
   esac
 
   if ! command -v timeout >/dev/null 2>&1; then
-    echo "skip: package artifact smoke - timeout is unavailable" >&2
+    echo "skip: package artifact postcheck - timeout is unavailable" >&2
     return 0
   fi
   timeout_bin="$(command -v timeout)"
 
   if [ ! -x "$artifact" ]; then
-    echo "failed: package artifact smoke - launcher is not executable: $artifact" >&2
+    echo "failed: package artifact postcheck - launcher is not executable: $artifact" >&2
     return 1
   fi
 
@@ -592,8 +592,8 @@ run_artifact_command() {
 
   write_artifact_report "$report" "$manifest" "$artifact" "$artifact_path" "$status" "$log"
 
-  if grep -q "plushie launcher: smoke ok" "$log"; then
-    echo "failed: artifact used launcher smoke mode" >&2
+  if grep -q "plushie launcher: postcheck ok" "$log"; then
+    echo "failed: artifact used launcher postcheck mode" >&2
     print_artifact_log "$log"
     rm -f "$log"
     rm -rf "$cache_dir"
@@ -998,7 +998,7 @@ manifests_for_language() {
   esac
 }
 
-smoke_language() {
+postcheck_language() {
   local language="$1"
   local count=0
 
@@ -1009,13 +1009,13 @@ smoke_language() {
     local rel="${manifest#$ROOT/}"
     local demo="${rel%%/dist/*}"
     local safe="${demo//\//-}"
-    local out="$ROOT/$demo/dist/package-smoke/$safe"
+    local out="$ROOT/$demo/dist/package-postcheck/$safe"
 
-    echo "==> smoke $rel"
+    echo "==> postcheck $rel"
     assert_version_alignment "$manifest"
     run_package_command "$manifest" "$out"
     if [ "$language" = "rust" ] && [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
-      echo "failed: rust package smoke could not run cargo plushie package --smoke" >&2
+      echo "failed: rust package postcheck could not run cargo plushie package --postcheck" >&2
       return 1
     fi
     run_artifact_command "$out" "$manifest"
@@ -1036,6 +1036,6 @@ esac
 
 for language in elixir gleam python ruby rust typescript; do
   if should_run_language "$language"; then
-    smoke_language "$language"
+    postcheck_language "$language"
   fi
 done

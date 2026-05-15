@@ -24,5 +24,5 @@ preflight:
       ); \
     done
 
-package-smoke:
-    PACKAGE_SMOKE_BUILD=1 ../scripts/package_smoke.sh typescript
+package-postcheck:
+    PACKAGE_POSTCHECK_BUILD=1 ../scripts/package_postcheck.sh typescript

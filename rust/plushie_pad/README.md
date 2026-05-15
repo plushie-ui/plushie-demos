@@ -29,17 +29,17 @@ plushie = "0.7.1"
 For local SDK development, temporarily point that dependency at a
 sibling `plushie-rust` checkout.
 
-## Standalone smoke
+## Standalone postcheck
 
 Rust direct mode links the renderer into the app process, so a release
 build is already the standalone runtime artifact for this demo. The
-language-level package smoke builds the release binary, starts headless
+language-level package postcheck builds the release binary, starts headless
 Weston when no display is available, and runs the app from a temporary
 working directory:
 
 ```sh
 cd ..
-just package-smoke
+just package-postcheck
 ```
 
 The current pad embeds its source snippets with `include_str!` and does

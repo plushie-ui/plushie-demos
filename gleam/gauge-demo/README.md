@@ -63,8 +63,8 @@ the runtime copy and keep the PATH-based behavior.
 
 This is a prototype runtime bundle, not a full OTP release. It copies
 the local ERTS plus `kernel`, `stdlib`, `sasl`, and `crypto`, which is
-enough for this demo's shipment. `just package-artifact-smoke` writes a
-package-smoke report with the payload archive size from the manifest and
+enough for this demo's shipment. `just package-artifact-postcheck` writes a
+package-postcheck report with the payload archive size from the manifest and
 the generated executable size. The shared archive helper rejects
 symlinks, hard links, and special files before archiving. Runtime
 pruning keeps OTP application directories intact, including licenses and

@@ -56,7 +56,7 @@ Ruby SDK. It writes `dist/payload.tar.zst` and
 
     cargo plushie package --manifest dist/plushie-package.toml --release
 
-`just package-artifact-smoke` writes a package-smoke report with the
+`just package-artifact-postcheck` writes a package-postcheck report with the
 payload archive size from the manifest and the generated executable
 size. The SDK helper dereferences runtime symlinks before archiving and
 rejects symlinks, hard links, and special files.
