@@ -94,7 +94,7 @@ the shared-launcher path.
 Build the final launcher from the generated manifest:
 
 ```sh
-cargo plushie package portable --manifest dist/shared-launcher/plushie-package.toml --release
+bin/plushie package portable --manifest dist/shared-launcher/plushie-package.toml
 ```
 
 ### Size breakdown

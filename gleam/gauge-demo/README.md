@@ -76,7 +76,7 @@ only narrows the copy to applications proven necessary for the shipment.
 Build the standalone launcher with:
 
 ```bash
-cargo plushie package portable --manifest dist/plushie-package.toml --release
+bin/plushie package portable --manifest dist/plushie-package.toml
 ```
 
 ## How it works

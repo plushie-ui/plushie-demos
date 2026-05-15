@@ -42,4 +42,4 @@ fi
 echo ""
 echo "Payload manifest: $DEMO_DIR/dist/plushie-package.toml"
 echo "Payload archive:  $DEMO_DIR/dist/payload.tar.zst"
-echo "Package handoff:  cargo plushie package portable --manifest $DEMO_DIR/dist/plushie-package.toml --release"
+echo "Package handoff:  bin/plushie package portable --manifest $DEMO_DIR/dist/plushie-package.toml"

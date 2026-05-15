@@ -54,7 +54,7 @@ The script is a thin wrapper around `Plushie::Package`, provided by the
 Ruby SDK. It writes `dist/payload.tar.zst` and
 `dist/plushie-package.toml`. Build the standalone launcher with:
 
-    cargo plushie package portable --manifest dist/plushie-package.toml --release
+    bin/plushie package portable --manifest dist/plushie-package.toml
 
 `just package-postcheck` validates the manifest and launcher
 extraction/cache behavior. `just package-release-check` is the strict
