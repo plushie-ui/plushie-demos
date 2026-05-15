@@ -3,6 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TIMEOUT="${RUST_DIRECT_SMOKE_TIMEOUT:-4s}"
+STRICT="${RUST_DIRECT_SMOKE_STRICT:-0}"
+ALLOW_LOCAL_SKIPS="${RUST_DIRECT_SMOKE_ALLOW_LOCAL_SKIPS:-0}"
 HEADLESS_WESTON_PID=""
 HEADLESS_WESTON_RUNTIME_DIR=""
 HEADLESS_WESTON_LOG=""
@@ -18,6 +20,22 @@ cleanup() {
 }
 
 trap cleanup EXIT
+
+strict_mode() {
+  [ "$STRICT" = "1" ] && [ "$ALLOW_LOCAL_SKIPS" != "1" ]
+}
+
+skip_or_fail() {
+  local reason="$1"
+
+  if strict_mode; then
+    echo "failed: rust direct smoke - $reason" >&2
+    return 1
+  fi
+
+  echo "skip: rust direct smoke - $reason" >&2
+  return 2
+}
 
 has_display_env() {
   local socket_path
@@ -56,8 +74,8 @@ start_headless_weston() {
   fi
 
   if ! command -v weston >/dev/null 2>&1; then
-    echo "skip: rust direct smoke - no display server is available and weston is unavailable" >&2
-    return 2
+    skip_or_fail "no display server is available and weston is unavailable"
+    return $?
   fi
 
   HEADLESS_WESTON_RUNTIME_DIR="$(mktemp -d "${TMPDIR:-/tmp}/plushie-rust-weston.XXXXXXXXXX")"
@@ -102,8 +120,10 @@ run_from_temp_cwd() {
   local timeout_args
 
   if ! command -v timeout >/dev/null 2>&1; then
-    echo "skip: rust direct smoke - timeout is unavailable" >&2
-    return 0
+    skip_or_fail "timeout is unavailable"
+    status=$?
+    [ "$status" = "2" ] && return 0
+    return "$status"
   fi
 
   smoke_cwd="$(mktemp -d "${TMPDIR:-/tmp}/plushie-rust-direct-cwd.XXXXXXXXXX")"

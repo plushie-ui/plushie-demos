@@ -18,11 +18,18 @@ preflight:
 package-postcheck:
     PACKAGE_POSTCHECK_BUILD=1 ./scripts/package_postcheck.sh
 
+package-source-postcheck:
+    PACKAGE_POSTCHECK_BUILD=1 ./scripts/package_postcheck.sh
+
 package-lib-test:
     ./scripts/package_lib_test.sh
 
 package-artifact-postcheck:
     PACKAGE_POSTCHECK_BUILD=1 PACKAGE_POSTCHECK_RUN_ARTIFACTS=1 ./scripts/package_postcheck.sh
+
+package-release-check:
+    PACKAGE_POSTCHECK_BUILD=1 PACKAGE_POSTCHECK_RUN_ARTIFACTS=1 PACKAGE_POSTCHECK_STRICT=1 ./scripts/package_postcheck.sh
+    RUST_DIRECT_SMOKE_STRICT=1 rust/scripts/direct_smoke.sh
 
 renderer-parent-smoke:
     ./scripts/renderer_parent_smoke.sh

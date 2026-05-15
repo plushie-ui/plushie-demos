@@ -61,6 +61,27 @@ The canonical first native-widget packaging proof is
 custom renderer with the gauge Rust crate linked into the payload, so
 the proof does not rely on a stock renderer.
 
+Postcheck targets prove different things:
+
+- `just package-postcheck` and `just package-source-postcheck` rebuild
+  demo payloads where supported and run `cargo plushie package
+  --postcheck`. This validates manifests, launcher extraction, and
+  cache behavior. It is not a proof that every packaged GUI app starts.
+- `just package-artifact-postcheck` also runs generated launchers when
+  local display support is available. Local tool or display gaps may
+  still skip artifact runs.
+- `just package-release-check` is the strict release-oriented proof. It
+  requires real artifact runs, the renderer-parent ready-marker smoke,
+  and the Rust direct-mode release smoke. Missing cargo,
+  cargo-plushie, timeout, display support, or artifact runs fail unless
+  an explicit local-skip mode is set.
+
+The shared package launcher is host-first. It extracts the payload, sets
+`PLUSHIE_BINARY_PATH` to the packaged renderer, and starts the
+SDK-owned host command. Renderer-parent startup remains covered by the
+smoke script as an embedding and debug path, not the default shared
+package launch shape.
+
 ## Ruby
 
 | Demo | Description |

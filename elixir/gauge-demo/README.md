@@ -51,13 +51,13 @@ startup, making the `"gauge"` widget type available on the wire.
 mix plushie.gui GaugeDemo.TemperatureMonitor
 ```
 
-Renderer-parent startup for standalone packaging:
+Renderer-parent startup for embedding and debug proofs:
 
 ```sh
 _build/plushie/package/gauge-demo-plushie --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "GaugeDemo.Connect.main()"
 ```
 
-Release-safe renderer-parent startup:
+Release-safe renderer-parent startup for the same proof path:
 
 ```sh
 _build/plushie/package/gauge-demo-plushie --listen --exec-bin _build/prod/rel/gauge_demo/bin/gauge_demo --exec-arg eval --exec-arg "GaugeDemo.Connect.main()"
@@ -95,6 +95,11 @@ The script writes `dist/payload.tar.zst` and
 ```sh
 cargo plushie package --manifest dist/plushie-package.toml --release
 ```
+
+The generated shared launcher uses host-first startup: it sets
+`PLUSHIE_BINARY_PATH` to the packaged custom renderer and starts the Mix
+release command from the manifest. Renderer-parent startup above is
+kept as a separate embedding and debug proof.
 
 ## Project structure
 

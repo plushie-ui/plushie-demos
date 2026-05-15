@@ -23,7 +23,7 @@ gleam run -m plushie/download
 gleam run -m notes
 ```
 
-Renderer-parent startup for standalone packaging:
+Renderer-parent startup for embedding and debug proofs:
 
 ```bash
 plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg notes/connect
@@ -68,12 +68,15 @@ enough for this demo's shipment. Remaining gaps:
 - Demos that need additional OTP applications must extend the copied
   runtime set.
 
-`just package-artifact-postcheck` writes a package-postcheck report with the
-payload archive size from the manifest and the generated executable
-size. The shared archive helper rejects symlinks, hard links, and
-special files before archiving. Runtime pruning keeps OTP application
-directories intact, including licenses and notices, and only narrows the
-copy to applications proven necessary for the shipment.
+`just package-postcheck` validates the manifest and launcher
+extraction/cache behavior. `just package-release-check` is the strict
+release-oriented proof that also runs the generated host-first launcher
+under display support and writes a report with the payload archive size
+from the manifest and the generated executable size. The shared archive
+helper rejects symlinks, hard links, and special files before archiving.
+Runtime pruning keeps OTP application directories intact, including
+licenses and notices, and only narrows the copy to applications proven
+necessary for the shipment.
 
 Build the standalone launcher with:
 

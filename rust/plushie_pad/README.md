@@ -33,14 +33,18 @@ sibling `plushie-rust` checkout.
 
 Rust direct mode links the renderer into the app process, so a release
 build is already the standalone runtime artifact for this demo. The
-language-level package postcheck builds the release binary, starts headless
-Weston when no display is available, and runs the app from a temporary
-working directory:
+Rust direct smoke builds the release binary, starts headless Weston
+when no display is available, and runs the app from a temporary working
+directory:
 
 ```sh
 cd ..
-just package-postcheck
+just direct-smoke
 ```
+
+The root `just package-release-check` includes this direct-mode proof in
+the strict release path. Missing display support fails there unless
+explicit local-skip mode is set.
 
 The current pad embeds its source snippets with `include_str!` and does
 not need adjacent runtime assets.

@@ -75,5 +75,8 @@ The shared launcher handoff is:
 cargo plushie package --manifest dist/package/plushie-package.toml --release
 ```
 
-When `PLUSHIE_SOCKET` is set, the packaged host connects to the
-renderer-parent socket instead of spawning its bundled renderer.
+The generated shared launcher starts the packaged host first and sets
+`PLUSHIE_BINARY_PATH` to the renderer in the payload. When
+`PLUSHIE_SOCKET` is set by a separate renderer-parent proof, the same
+host can connect to that socket instead of spawning its bundled
+renderer.

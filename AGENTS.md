@@ -27,6 +27,12 @@ Shared infrastructure lives at the repository root:
 Use `just preflight` at the repository root for the full demos sweep.
 Use `just preflight` inside a language directory for only that SDK.
 
+Use `just package-postcheck` for the source package check. It proves
+manifest validity plus launcher extraction and cache behavior through
+`cargo plushie package --postcheck`; it does not prove every packaged app
+starts. Use `just package-release-check` for the strict release-oriented
+path that requires real generated artifact runs and Rust direct mode.
+
 Use `just renderer-parent-smoke` at the repository root for the
 cross-SDK renderer-parent startup smoke. It needs a renderer binary on
 `PATH`, or `PLUSHIE_RENDERER_BINARY` or `PLUSHIE_BINARY_PATH` set.

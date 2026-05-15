@@ -30,7 +30,7 @@ No Rust toolchain needed.
 
     bundle exec ruby lib/notes.rb
 
-Renderer-parent startup for standalone packaging:
+Renderer-parent startup for embedding and debug proofs:
 
     plushie-renderer --listen --exec-bin bundle --exec-arg exec --exec-arg ruby --exec-arg bin/connect
 
@@ -56,10 +56,13 @@ Ruby SDK. It writes `dist/payload.tar.zst` and
 
     cargo plushie package --manifest dist/plushie-package.toml --release
 
-`just package-artifact-postcheck` writes a package-postcheck report with the
-payload archive size from the manifest and the generated executable
-size. The SDK helper dereferences runtime symlinks before archiving and
-rejects symlinks, hard links, and special files.
+`just package-postcheck` validates the manifest and launcher
+extraction/cache behavior. `just package-release-check` is the strict
+release-oriented proof that also runs the generated host-first launcher
+under display support and writes a report with the payload archive size
+from the manifest and the generated executable size. The SDK helper
+dereferences runtime symlinks before archiving and rejects symlinks,
+hard links, and special files.
 
 This is a prototype runtime bundle, not a minimized Ruby distribution.
 It copies the active Ruby prefix and then installs production gems into

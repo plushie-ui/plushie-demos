@@ -35,13 +35,13 @@ mix plushie.download
 mix plushie.gui Notes.App
 ```
 
-Renderer-parent startup for standalone packaging:
+Renderer-parent startup for embedding and debug proofs:
 
 ```sh
 plushie-renderer --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "Notes.Connect.main()"
 ```
 
-Release-safe renderer-parent startup:
+Release-safe renderer-parent startup for the same proof path:
 
 ```sh
 plushie-renderer --listen --exec-bin _build/prod/rel/notes/bin/notes --exec-arg eval --exec-arg "Notes.Connect.main()"
@@ -71,6 +71,11 @@ The script writes `dist/payload.tar.zst` and
 ```sh
 cargo plushie package --manifest dist/plushie-package.toml --release
 ```
+
+The generated shared launcher uses host-first startup: it sets
+`PLUSHIE_BINARY_PATH` to the packaged renderer and starts the Mix
+release command from the manifest. Renderer-parent startup above is
+kept as a separate embedding and debug proof.
 
 ## Project structure
 

@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SMOKE_TIMEOUT="${SMOKE_TIMEOUT:-10s}"
 SMOKE_LANGUAGES="${SMOKE_LANGUAGES:-}"
+READY_MARKER="plushie renderer-parent: ready"
 
 renderer="${PLUSHIE_RENDERER_BINARY:-${PLUSHIE_BINARY_PATH:-}}"
 
@@ -55,13 +56,13 @@ run_case() {
   if [ "$mode" = "listen" ]; then
     (
       cd "$ROOT/$cwd"
-      timeout --kill-after=2s "$SMOKE_TIMEOUT" "$renderer" --mock --listen "$@"
+      timeout --kill-after=2s "$SMOKE_TIMEOUT" "$renderer" --mock --listen --ready-marker "$@"
     ) >"$log" 2>&1
     status=$?
   else
     (
       cd "$ROOT/$cwd"
-      timeout --kill-after=2s "$SMOKE_TIMEOUT" "$renderer" --mock "$@"
+      timeout --kill-after=2s "$SMOKE_TIMEOUT" "$renderer" --mock --ready-marker "$@"
     ) >"$log" 2>&1
     status=$?
   fi
@@ -82,6 +83,14 @@ run_case() {
       ;;
   esac
 
+  if ! grep -q "$READY_MARKER" "$log"; then
+    echo "failed: ready marker was not emitted" >&2
+    sed -n '1,120p' "$log" >&2
+    rm -f "$log"
+    return 1
+  fi
+
+  echo "ok: ready marker observed"
   rm -f "$log"
 }
 

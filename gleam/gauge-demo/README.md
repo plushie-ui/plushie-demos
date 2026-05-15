@@ -27,7 +27,7 @@ the gauge widget compiled in.
 gleam run -m gauge_demo
 ```
 
-Renderer-parent startup for standalone packaging:
+Renderer-parent startup for embedding and debug proofs:
 
 ```bash
 plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg gauge_demo/connect
@@ -63,13 +63,15 @@ the runtime copy and keep the PATH-based behavior.
 
 This is a prototype runtime bundle, not a full OTP release. It copies
 the local ERTS plus `kernel`, `stdlib`, `sasl`, and `crypto`, which is
-enough for this demo's shipment. `just package-artifact-postcheck` writes a
-package-postcheck report with the payload archive size from the manifest and
-the generated executable size. The shared archive helper rejects
-symlinks, hard links, and special files before archiving. Runtime
-pruning keeps OTP application directories intact, including licenses and
-notices, and only narrows the copy to applications proven necessary for
-the shipment.
+enough for this demo's shipment. `just package-postcheck` validates the
+manifest and launcher extraction/cache behavior. `just
+package-release-check` is the strict release-oriented proof that also
+runs the generated host-first launcher under display support and writes
+a report with the payload archive size from the manifest and the
+generated executable size. The shared archive helper rejects symlinks,
+hard links, and special files before archiving. Runtime pruning keeps
+OTP application directories intact, including licenses and notices, and
+only narrows the copy to applications proven necessary for the shipment.
 
 Build the standalone launcher with:
 

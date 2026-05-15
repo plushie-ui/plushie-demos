@@ -9,6 +9,8 @@ BUILD_PAYLOADS="${PACKAGE_POSTCHECK_BUILD:-0}"
 RUN_ARTIFACTS="${PACKAGE_POSTCHECK_RUN_ARTIFACTS:-0}"
 ARTIFACT_TIMEOUT="${PACKAGE_ARTIFACT_TIMEOUT:-10s}"
 ARTIFACT_RUNTIME_PATH="${PACKAGE_ARTIFACT_RUNTIME_PATH:-}"
+STRICT="${PACKAGE_POSTCHECK_STRICT:-0}"
+ALLOW_LOCAL_SKIPS="${PACKAGE_POSTCHECK_ALLOW_LOCAL_SKIPS:-0}"
 PACKAGE_COMMAND_BUILT=0
 HEADLESS_WESTON_STARTED=0
 HEADLESS_WESTON_PID=""
@@ -18,6 +20,45 @@ HEADLESS_WESTON_SOCKET_PATH=""
 
 # shellcheck source=package_lib.sh
 source "$ROOT/scripts/package_lib.sh"
+
+strict_mode() {
+  [ "$STRICT" = "1" ] && [ "$ALLOW_LOCAL_SKIPS" != "1" ]
+}
+
+skip_or_fail() {
+  local context="$1"
+  local reason="$2"
+
+  if strict_mode; then
+    echo "failed: $context - $reason" >&2
+    return 1
+  fi
+
+  echo "skip: $context - $reason" >&2
+  return 0
+}
+
+skip_or_fail_status() {
+  local context="$1"
+  local reason="$2"
+
+  if strict_mode; then
+    echo "failed: $context - $reason" >&2
+    return 1
+  fi
+
+  echo "skip: $context - $reason" >&2
+  return 2
+}
+
+if [ "$STRICT" = "1" ] && [ "$RUN_ARTIFACTS" != "1" ]; then
+  if [ "$ALLOW_LOCAL_SKIPS" = "1" ]; then
+    echo "skip: strict package release check - artifact runs disabled by explicit local-skip mode" >&2
+  else
+    echo "failed: strict package release check - artifact runs are disabled" >&2
+    exit 1
+  fi
+fi
 
 if [ -z "${PLUSHIE_RUST_SOURCE_PATH:-}" ] &&
   [ -n "$DEFAULT_PLUSHIE_RUST_SOURCE_PATH" ] &&
@@ -130,8 +171,8 @@ start_headless_weston() {
   fi
 
   if ! command -v weston >/dev/null 2>&1; then
-    echo "skip: package artifact postcheck - no display server is available and weston is unavailable" >&2
-    return 2
+    skip_or_fail_status "package artifact postcheck" "no display server is available and weston is unavailable"
+    return $?
   fi
 
   HEADLESS_WESTON_RUNTIME_DIR="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-weston.XXXXXXXXXX")"
@@ -309,15 +350,15 @@ run_package_command() {
   PACKAGE_COMMAND_BUILT=0
 
   if ! command -v cargo >/dev/null 2>&1; then
-    echo "skip: package postcheck - cargo is unavailable; install Rust or set up cargo-plushie" >&2
-    return 0
+    skip_or_fail "package postcheck" "cargo is unavailable; install Rust or set up cargo-plushie"
+    return $?
   fi
 
   if [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
     cargo_plushie_dir="$(cd "$PLUSHIE_RUST_SOURCE_PATH" && pwd)"
   elif ! command -v cargo-plushie >/dev/null 2>&1; then
-    echo "skip: package postcheck - cargo-plushie is unavailable; install cargo-plushie or set PLUSHIE_RUST_SOURCE_PATH" >&2
-    return 0
+    skip_or_fail "package postcheck" "cargo-plushie is unavailable; install cargo-plushie or set PLUSHIE_RUST_SOURCE_PATH"
+    return $?
   fi
 
   if [ -n "$cargo_plushie_dir" ]; then
@@ -485,8 +526,8 @@ assert_native_package_rejects_missing_widget() {
   else
     case "$?" in
       2)
-        echo "skip: native widget negative postcheck - no stock renderer available" >&2
-        return 0
+        skip_or_fail "native widget negative postcheck" "no stock renderer available"
+        return $?
         ;;
       *) return 1 ;;
     esac
@@ -506,6 +547,10 @@ assert_native_package_rejects_missing_widget() {
   out="$tmp/dist/package-postcheck/$safe-stock-renderer"
   echo "==> assert $demo rejects renderer without gauge widget"
   run_package_command "$tmp/dist/plushie-package.toml" "$out"
+  if [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
+    rm -rf "$tmp"
+    return 0
+  fi
 
   if run_artifact_command "$out" "$tmp/dist/plushie-package.toml"; then
     echo "failed: $demo ran with a renderer missing the gauge widget" >&2
@@ -530,12 +575,16 @@ run_artifact_command() {
   local timeout_args
 
   if [ "$RUN_ARTIFACTS" != "1" ]; then
+    if strict_mode; then
+      echo "failed: package artifact postcheck - artifact runs are disabled" >&2
+      return 1
+    fi
     return 0
   fi
 
   if [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
-    echo "skip: package artifact postcheck - launcher was not built in this run" >&2
-    return 0
+    skip_or_fail "package artifact postcheck" "launcher was not built in this run"
+    return $?
   fi
 
   if ensure_display_env; then
@@ -551,8 +600,8 @@ run_artifact_command() {
   esac
 
   if ! command -v timeout >/dev/null 2>&1; then
-    echo "skip: package artifact postcheck - timeout is unavailable" >&2
-    return 0
+    skip_or_fail "package artifact postcheck" "timeout is unavailable"
+    return $?
   fi
   timeout_bin="$(command -v timeout)"
 
@@ -1003,6 +1052,11 @@ postcheck_language() {
   done < <(manifests_for_language "$language")
 
   if [ "$count" -eq 0 ]; then
+    if strict_mode; then
+      echo "failed: $language - no package manifest found" >&2
+      return 1
+    fi
+
     echo "skip: $language - no package manifest found"
   fi
 }

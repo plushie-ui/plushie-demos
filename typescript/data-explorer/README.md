@@ -79,18 +79,17 @@ Copy it to another machine; no installation needed.
 
 ### Shared launcher payload
 
-The shared Plushie launcher expects the renderer to be a payload file
-that it can start with `--listen --exec-bin`. For that path, the SDK
-command builds a host-only SEA at `bin/data-explorer-host` and stores
-the renderer separately at `bin/plushie-renderer...` inside
+The shared Plushie launcher uses host-first startup. For that path, the
+SDK command builds a host-only SEA at `bin/data-explorer-host` and
+stores the renderer separately at `bin/plushie-renderer...` inside
 `payload.tar.zst`.
 
 That host SEA deliberately does not embed the renderer. When the
-shared launcher starts the renderer, the renderer starts the host with
-`PLUSHIE_SOCKET`; `app().run()` detects that environment and connects
-back over the socket transport instead of resolving or extracting its
-own renderer. Embedding the renderer in that SEA would only duplicate
-bytes and would not be used on the shared-launcher path.
+shared launcher starts the host, it sets `PLUSHIE_BINARY_PATH` to the
+packaged renderer. `app().run()` then uses the SDK's normal host-first
+desktop startup and spawns that packaged renderer. Embedding the
+renderer in the SEA would only duplicate bytes and would not be used on
+the shared-launcher path.
 
 Build the final launcher from the generated manifest:
 
