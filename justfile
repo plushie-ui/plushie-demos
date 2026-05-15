@@ -29,6 +29,7 @@ package-artifact-postcheck:
 
 package-release-check:
     PACKAGE_POSTCHECK_BUILD=1 PACKAGE_POSTCHECK_RUN_ARTIFACTS=1 PACKAGE_POSTCHECK_STRICT=1 ./scripts/package_postcheck.sh
+    just renderer-parent-smoke
     RUST_DIRECT_SMOKE_STRICT=1 rust/scripts/direct_smoke.sh
 
 renderer-parent-smoke:

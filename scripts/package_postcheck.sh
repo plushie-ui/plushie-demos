@@ -506,7 +506,8 @@ assert_native_package_rejects_missing_widget() {
   safe="${demo//\//-}"
 
   if [ ! -f "$manifest" ] || [ ! -f "$archive" ]; then
-    return 0
+    skip_or_fail "native widget negative postcheck" "$demo package artifact is missing"
+    return $?
   fi
 
   if ensure_display_env; then
@@ -1028,11 +1029,61 @@ manifests_for_language() {
   esac
 }
 
+expected_manifests_for_language() {
+  local language="$1"
+
+  case "$language" in
+    elixir)
+      printf '%s\n' \
+        "$ROOT/elixir/gauge-demo/dist/plushie-package.toml" \
+        "$ROOT/elixir/notes/dist/plushie-package.toml"
+      ;;
+    gleam)
+      printf '%s\n' \
+        "$ROOT/gleam/gauge-demo/dist/plushie-package.toml" \
+        "$ROOT/gleam/notes/dist/plushie-package.toml"
+      ;;
+    python)
+      printf '%s\n' \
+        "$ROOT/python/data-explorer/dist/package/plushie-package.toml"
+      ;;
+    ruby)
+      printf '%s\n' \
+        "$ROOT/ruby/notes/dist/plushie-package.toml"
+      ;;
+    rust)
+      printf '%s\n' \
+        "$ROOT/rust/plushie_pad/dist/plushie-package.toml"
+      ;;
+    typescript)
+      printf '%s\n' \
+        "$ROOT/typescript/data-explorer/dist/shared-launcher/plushie-package.toml"
+      ;;
+  esac
+}
+
+assert_expected_manifests_for_language() {
+  local language="$1"
+  local manifest
+
+  if ! strict_mode; then
+    return 0
+  fi
+
+  while IFS= read -r manifest; do
+    if [ ! -f "$manifest" ]; then
+      echo "failed: $language - expected package manifest is missing: ${manifest#$ROOT/}" >&2
+      return 1
+    fi
+  done < <(expected_manifests_for_language "$language")
+}
+
 postcheck_language() {
   local language="$1"
   local count=0
 
   build_payloads_for_language "$language"
+  assert_expected_manifests_for_language "$language"
 
   while IFS= read -r manifest; do
     count=$((count + 1))
