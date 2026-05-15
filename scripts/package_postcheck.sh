@@ -346,8 +346,13 @@ run_package_command() {
   local manifest="$1"
   local out="$2"
   local cargo_plushie_dir=""
+  local strict_args=()
 
   PACKAGE_COMMAND_BUILT=0
+
+  if strict_mode; then
+    strict_args=(--strict-tools)
+  fi
 
   if ! command -v cargo >/dev/null 2>&1; then
     skip_or_fail "package postcheck" "cargo is unavailable; install Rust or set up cargo-plushie"
@@ -367,6 +372,7 @@ run_package_command() {
       --manifest-path "$cargo_plushie_dir/Cargo.toml" \
       -- package check \
       --manifest "$manifest" \
+      "${strict_args[@]}" \
       --postcheck \
       --postcheck-timeout "$POSTCHECK_TIMEOUT" \
       --out "$out"
@@ -374,6 +380,7 @@ run_package_command() {
     run_clean_from_temp_cwd \
       cargo plushie package check \
       --manifest "$manifest" \
+      "${strict_args[@]}" \
       --postcheck \
       --postcheck-timeout "$POSTCHECK_TIMEOUT" \
       --out "$out"
