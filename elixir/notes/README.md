@@ -66,10 +66,11 @@ PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
 ```
 
 The script writes `dist/payload.tar.zst` and
-`dist/plushie-package.toml`. Build the standalone launcher with:
+`dist/plushie-package.toml`. Run the strict release handoff with:
 
 ```sh
-bin/plushie package portable --manifest dist/plushie-package.toml
+bin/plushie package check --manifest dist/plushie-package.toml --strict-tools --postcheck
+bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
 ```
 
 The generated shared launcher uses host-first startup: it sets

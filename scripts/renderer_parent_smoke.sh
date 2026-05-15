@@ -11,10 +11,8 @@ renderer="${PLUSHIE_RENDERER_BINARY:-${PLUSHIE_BINARY_PATH:-}}"
 if [ -z "$renderer" ]; then
   if command -v plushie-renderer >/dev/null 2>&1; then
     renderer="$(command -v plushie-renderer)"
-  elif command -v plushie >/dev/null 2>&1; then
-    renderer="$(command -v plushie)"
   else
-    echo "No renderer binary found. Set PLUSHIE_RENDERER_BINARY or PLUSHIE_BINARY_PATH." >&2
+    echo "No renderer binary found. Set PLUSHIE_RENDERER_BINARY, PLUSHIE_BINARY_PATH, or put plushie-renderer on PATH." >&2
     exit 1
   fi
 fi

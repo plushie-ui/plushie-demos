@@ -32,10 +32,11 @@ python -m plushie package \
     --hidden-import plushie \
     --collect-submodules plushie \
     --renderer-kind stock \
+    --strict-tools
 
 echo ""
 echo "Built: dist/DataExplorer/"
 echo "Run:   ./dist/DataExplorer/DataExplorer"
 echo "Payload manifest: dist/package/plushie-package.toml"
 echo "Payload archive:  dist/package/payload.tar.zst"
-echo "Package handoff:  bin/plushie package portable --manifest dist/package/plushie-package.toml"
+echo "Package handoff:  bin/plushie package portable --manifest dist/package/plushie-package.toml --strict-tools"

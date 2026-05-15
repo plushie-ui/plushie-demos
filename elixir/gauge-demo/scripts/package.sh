@@ -18,8 +18,10 @@ export PLUSHIE_ELIXIR_DIR
 
 MIX_ENV=prod mix deps.get --only prod
 MIX_ENV=prod mix deps.compile --force
+MIX_ENV=prod mix run --no-start -e 'Mix.PlushiePackage.ensure_package_tools_available!()'
 MIX_ENV=prod mix plushie.package GaugeDemo.TemperatureMonitor \
   --app-id dev.plushie.demos.elixir.gauge \
   --app-name "Elixir Gauge" \
   --renderer "$RENDERER_KIND" \
+  --strict-tools \
   --load GaugeDemo.Gauge

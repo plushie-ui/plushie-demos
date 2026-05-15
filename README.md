@@ -64,14 +64,14 @@ the proof does not rely on a stock renderer.
 Postcheck targets prove different things:
 
 - `just package-postcheck` and `just package-source-postcheck` rebuild
-  demo payloads where supported and run `cargo plushie package check
+  demo payloads where supported and run `bin/plushie package check
   --postcheck`. This validates manifests, launcher extraction, and
   cache behavior. It is not a proof that every packaged GUI app starts.
 - `just package-artifact-postcheck` also runs generated launchers when
   local display support is available. Local tool or display gaps may
   still skip artifact runs.
 - `just package-release-check` is the strict release-oriented proof. It
-  requires `cargo plushie package check --strict-tools --postcheck`,
+  requires `bin/plushie package check --strict-tools --postcheck`,
   real artifact runs, the renderer-parent ready-marker smoke, and the
   Rust direct-mode release smoke. Missing cargo, cargo-plushie, timeout,
   display support, stale native tools, or artifact runs fail unless an

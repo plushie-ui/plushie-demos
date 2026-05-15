@@ -30,4 +30,5 @@ node scripts/bundle.mjs
   --main dist/app.cjs \
   --sea-output dist/data-explorer \
   --output dist/shared-launcher \
-  --default-icon
+  --default-icon \
+  --strict-tools

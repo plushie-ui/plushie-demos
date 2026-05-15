@@ -91,10 +91,11 @@ desktop startup and spawns that packaged renderer. Embedding the
 renderer in the SEA would only duplicate bytes and would not be used on
 the shared-launcher path.
 
-Build the final launcher from the generated manifest:
+Build the final launcher from the generated manifest with the strict
+tool gate:
 
 ```sh
-bin/plushie package portable --manifest dist/shared-launcher/plushie-package.toml
+bin/plushie package portable --manifest dist/shared-launcher/plushie-package.toml --strict-tools
 ```
 
 ### Size breakdown

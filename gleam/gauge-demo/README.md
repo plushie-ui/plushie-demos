@@ -73,10 +73,10 @@ hard links, and special files before archiving. Runtime pruning keeps
 OTP application directories intact, including licenses and notices, and
 only narrows the copy to applications proven necessary for the shipment.
 
-Build the standalone launcher with:
+Build the standalone launcher with the strict tool gate:
 
 ```bash
-bin/plushie package portable --manifest dist/plushie-package.toml
+bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
 ```
 
 ## How it works

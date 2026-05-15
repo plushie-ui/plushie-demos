@@ -14,4 +14,5 @@ exec gleam run -m plushie/package -- \
   --app-version 0.1.0 \
   --connect-module notes@connect \
   --renderer-kind stock \
+  --strict-tools \
   "$@"

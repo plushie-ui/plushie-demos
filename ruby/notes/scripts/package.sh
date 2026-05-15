@@ -20,6 +20,7 @@ args=(
   --entrypoint bin/connect
   --renderer-kind stock
   --renderer-source local-resolve
+  --strict-tools
 )
 
 if [ -n "$PLUSHIE_RUBY_DIR" ] && [ -d "$PLUSHIE_RUBY_DIR/lib/plushie" ]; then

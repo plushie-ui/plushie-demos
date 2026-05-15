@@ -17,7 +17,9 @@ export PLUSHIE_ELIXIR_DIR
 
 MIX_ENV=prod mix deps.get --only prod
 MIX_ENV=prod mix deps.compile --force
+MIX_ENV=prod mix plushie.download
 MIX_ENV=prod mix plushie.package Notes.App \
   --app-id dev.plushie.demos.elixir.notes \
   --app-name "Elixir Notes" \
-  --renderer stock
+  --renderer stock \
+  --strict-tools

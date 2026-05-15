@@ -16,4 +16,5 @@ exec gleam run -m plushie/package -- \
   --connect-module gauge_demo@connect \
   --renderer-kind "$RENDERER_KIND" \
   --release \
+  --strict-tools \
   "$@"
