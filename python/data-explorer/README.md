@@ -60,7 +60,7 @@ Bundle the app into a self-contained executable with PyInstaller:
 
 This downloads the plushie binary, bundles it alongside the Python app
 and sample data, and produces `dist/DataExplorer/DataExplorer`. The
-renderer is staged as `plushie-renderer`, which is the bundled filename
+renderer is bundled as `plushie-renderer`, which is the bundled filename
 the SDK resolver checks at runtime.
 
 The script also emits shared launcher inputs under `dist/package/`:

@@ -42,7 +42,7 @@ Renderer-parent startup for embedding and debug proofs:
 
 The practical first Ruby path in this repo is a directory-runtime
 payload: the active Ruby prefix, runtime gems, app files, and renderer
-are staged into one payload for the shared launcher. Tebako is a later
+are assembled into one payload for the shared launcher. Tebako is a later
 candidate once a project config and native-extension story are settled;
 it is not required for this demo.
 
