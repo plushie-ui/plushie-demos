@@ -2,4 +2,5 @@
 /build/
 **/target/
 Cargo.lock
-/bin/plushie
+/bin/plushie-renderer
+/bin/plushie-renderer.exe

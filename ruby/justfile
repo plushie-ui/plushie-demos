@@ -23,7 +23,7 @@ preflight:
         bundle check || bundle install; \
         if [ -d native ]; then \
           bundle exec rake plushie:build; \
-          PLUSHIE_BINARY_PATH="$(find _build/plushie/bin -maxdepth 1 -type f -perm -111 | sort | head -n 1)"; \
+          PLUSHIE_BINARY_PATH="$(find bin -maxdepth 1 -type f -perm -111 | sort | head -n 1)"; \
           export PLUSHIE_BINARY_PATH; \
         fi; \
         bundle exec rake \

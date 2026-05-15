@@ -69,7 +69,7 @@ The script writes `dist/payload.tar.zst` and
 `dist/plushie-package.toml`. Build the standalone launcher with:
 
 ```sh
-cargo plushie package --manifest dist/plushie-package.toml --release
+cargo plushie package portable --manifest dist/plushie-package.toml --release
 ```
 
 The generated shared launcher uses host-first startup: it sets

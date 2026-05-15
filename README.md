@@ -64,7 +64,7 @@ the proof does not rely on a stock renderer.
 Postcheck targets prove different things:
 
 - `just package-postcheck` and `just package-source-postcheck` rebuild
-  demo payloads where supported and run `cargo plushie package
+  demo payloads where supported and run `cargo plushie package check
   --postcheck`. This validates manifests, launcher extraction, and
   cache behavior. It is not a proof that every packaged GUI app starts.
 - `just package-artifact-postcheck` also runs generated launchers when

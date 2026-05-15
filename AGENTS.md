@@ -29,7 +29,7 @@ Use `just preflight` inside a language directory for only that SDK.
 
 Use `just package-postcheck` for the source package check. It proves
 manifest validity plus launcher extraction and cache behavior through
-`cargo plushie package --postcheck`; it does not prove every packaged app
+`cargo plushie package check --postcheck`; it does not prove every packaged app
 starts. Use `just package-release-check` for the strict release-oriented
 path that requires real generated artifact runs and Rust direct mode.
 

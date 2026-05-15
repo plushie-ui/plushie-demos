@@ -81,7 +81,7 @@ Copy it to another machine; no installation needed.
 
 The shared Plushie launcher uses host-first startup. For that path, the
 SDK command builds a host-only SEA at `bin/data-explorer-host` and
-stores the renderer separately at `bin/plushie-renderer...` inside
+stores the renderer separately at `bin/plushie-renderer` inside
 `payload.tar.zst`.
 
 That host SEA deliberately does not embed the renderer. When the
@@ -94,7 +94,7 @@ the shared-launcher path.
 Build the final launcher from the generated manifest:
 
 ```sh
-cargo plushie package --manifest dist/shared-launcher/plushie-package.toml --release
+cargo plushie package portable --manifest dist/shared-launcher/plushie-package.toml --release
 ```
 
 ### Size breakdown

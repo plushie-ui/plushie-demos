@@ -1,4 +1,5 @@
 /_build/
 /build/
 /dist/
-/bin/plushie
+/bin/plushie-renderer
+/bin/plushie-renderer.exe

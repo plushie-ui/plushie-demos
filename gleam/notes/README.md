@@ -81,7 +81,7 @@ necessary for the shipment.
 Build the standalone launcher with:
 
 ```bash
-cargo plushie package --manifest dist/plushie-package.toml --release
+cargo plushie package portable --manifest dist/plushie-package.toml --release
 ```
 
 ## How it works

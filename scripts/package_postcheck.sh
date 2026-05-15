@@ -365,14 +365,14 @@ run_package_command() {
     run_clean_from_temp_cwd \
       cargo run -q -p cargo-plushie \
       --manifest-path "$cargo_plushie_dir/Cargo.toml" \
-      -- package \
+      -- package check \
       --manifest "$manifest" \
       --postcheck \
       --postcheck-timeout "$POSTCHECK_TIMEOUT" \
       --out "$out"
   else
     run_clean_from_temp_cwd \
-      cargo plushie package \
+      cargo plushie package check \
       --manifest "$manifest" \
       --postcheck \
       --postcheck-timeout "$POSTCHECK_TIMEOUT" \
@@ -1096,7 +1096,7 @@ postcheck_language() {
     assert_version_alignment "$manifest"
     run_package_command "$manifest" "$out"
     if [ "$language" = "rust" ] && [ "$PACKAGE_COMMAND_BUILT" != "1" ]; then
-      echo "failed: rust package postcheck could not run cargo plushie package --postcheck" >&2
+      echo "failed: rust package postcheck could not run cargo plushie package check --postcheck" >&2
       return 1
     fi
     run_artifact_command "$out" "$manifest"

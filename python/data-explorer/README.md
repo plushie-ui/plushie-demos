@@ -72,7 +72,7 @@ The script also emits shared launcher inputs under `dist/package/`:
 The shared launcher handoff is:
 
 ```sh
-cargo plushie package --manifest dist/package/plushie-package.toml --release
+cargo plushie package portable --manifest dist/package/plushie-package.toml --release
 ```
 
 The generated shared launcher starts the packaged host first and sets
