@@ -28,7 +28,7 @@ if [ -n "$PLUSHIE_RUST_SOURCE_PATH" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.t
     --out-dir "$DEMO_DIR/dist" \
     --release \
     --no-default-features \
-    --features wire \
+    --features wire
 else
   cargo plushie package assemble \
     --manifest-path "$DEMO_DIR/Cargo.toml" \

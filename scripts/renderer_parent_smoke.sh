@@ -2,17 +2,31 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+DEFAULT_PLUSHIE_RUST_SOURCE_PATH="$(cd "$ROOT/../plushie-rust" 2>/dev/null && pwd || true)"
 SMOKE_TIMEOUT="${SMOKE_TIMEOUT:-10s}"
 SMOKE_LANGUAGES="${SMOKE_LANGUAGES:-}"
 READY_MARKER="plushie renderer-parent: ready"
 
 renderer="${PLUSHIE_RENDERER_BINARY:-${PLUSHIE_BINARY_PATH:-}}"
 
+source_renderer() {
+  local source_path="${PLUSHIE_RUST_SOURCE_PATH:-$DEFAULT_PLUSHIE_RUST_SOURCE_PATH}"
+
+  if [ -z "$source_path" ] || [ ! -f "$source_path/Cargo.toml" ]; then
+    return 1
+  fi
+
+  cargo build --release -p plushie-renderer --manifest-path "$source_path/Cargo.toml" >&2
+  printf '%s\n' "$source_path/target/release/plushie-renderer"
+}
+
 if [ -z "$renderer" ]; then
   if command -v plushie-renderer >/dev/null 2>&1; then
     renderer="$(command -v plushie-renderer)"
+  elif command -v cargo >/dev/null 2>&1 && renderer="$(source_renderer)"; then
+    :
   else
-    echo "No renderer binary found. Set PLUSHIE_RENDERER_BINARY, PLUSHIE_BINARY_PATH, or put plushie-renderer on PATH." >&2
+    echo "No renderer binary found. Set PLUSHIE_RENDERER_BINARY, PLUSHIE_BINARY_PATH, put plushie-renderer on PATH, or provide a sibling plushie-rust checkout." >&2
     exit 1
   fi
 fi

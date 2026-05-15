@@ -12,6 +12,7 @@ ARTIFACT_RUNTIME_PATH="${PACKAGE_ARTIFACT_RUNTIME_PATH:-}"
 STRICT="${PACKAGE_POSTCHECK_STRICT:-0}"
 ALLOW_LOCAL_SKIPS="${PACKAGE_POSTCHECK_ALLOW_LOCAL_SKIPS:-0}"
 PACKAGE_COMMAND_BUILT=0
+SOURCE_PACKAGE_TOOLS_SYNCED=0
 HEADLESS_WESTON_STARTED=0
 HEADLESS_WESTON_PID=""
 HEADLESS_WESTON_RUNTIME_DIR=""
@@ -242,6 +243,71 @@ run_clean_from_temp_cwd() {
   return "$status"
 }
 
+run_clean_from_root_cwd() {
+  local scrubbed_env_args=()
+  local status
+
+  while IFS='=' read -r name _; do
+    case "$name" in
+      PLUSHIE_CACHE_DIR) ;;
+      PLUSHIE_*) scrubbed_env_args+=("-u" "$name") ;;
+    esac
+  done < <(env)
+
+  if (
+    set -e
+    cd "$ROOT"
+
+    env "${scrubbed_env_args[@]}" "$@"
+  ); then
+    status=0
+  else
+    status=$?
+  fi
+
+  return "$status"
+}
+
+managed_tool_names() {
+  case "$(uname -s 2>/dev/null || true)" in
+    MINGW*|MSYS*|CYGWIN*)
+      printf '%s\n' plushie.exe plushie-renderer.exe plushie-launcher.exe
+      ;;
+    *)
+      printf '%s\n' plushie plushie-renderer plushie-launcher
+      ;;
+  esac
+}
+
+clean_managed_tool_bin() {
+  local project_dir="$1"
+  local name
+
+  while IFS= read -r name; do
+    rm -f "$project_dir/bin/$name"
+  done < <(managed_tool_names)
+}
+
+ensure_source_package_tools_synced() {
+  local cargo_plushie_dir="$1"
+  local required_version
+
+  if [ "$SOURCE_PACKAGE_TOOLS_SYNCED" = "1" ]; then
+    return 0
+  fi
+
+  required_version="$(awk -F '"' '/^version = / { print $2; exit }' "$cargo_plushie_dir/Cargo.toml")"
+  clean_managed_tool_bin "$ROOT"
+  (
+    cd "$ROOT"
+    cargo run -q -p cargo-plushie \
+      --manifest-path "$cargo_plushie_dir/Cargo.toml" \
+      -- tools sync \
+      --required-version "$required_version"
+  )
+  SOURCE_PACKAGE_TOOLS_SYNCED=1
+}
+
 default_artifact_runtime_path() {
   local path=""
   local dir
@@ -367,15 +433,28 @@ run_package_command() {
   fi
 
   if [ -n "$cargo_plushie_dir" ]; then
-    run_clean_from_temp_cwd \
-      cargo run -q -p cargo-plushie \
-      --manifest-path "$cargo_plushie_dir/Cargo.toml" \
-      -- package check \
-      --manifest "$manifest" \
-      "${strict_args[@]}" \
-      --postcheck \
-      --postcheck-timeout "$POSTCHECK_TIMEOUT" \
-      --out "$out"
+    if strict_mode; then
+      ensure_source_package_tools_synced "$cargo_plushie_dir"
+      run_clean_from_root_cwd \
+        cargo run -q -p cargo-plushie \
+        --manifest-path "$cargo_plushie_dir/Cargo.toml" \
+        -- package check \
+        --manifest "$manifest" \
+        "${strict_args[@]}" \
+        --postcheck \
+        --postcheck-timeout "$POSTCHECK_TIMEOUT" \
+        --out "$out"
+    else
+      run_clean_from_temp_cwd \
+        cargo run -q -p cargo-plushie \
+        --manifest-path "$cargo_plushie_dir/Cargo.toml" \
+        -- package check \
+        --manifest "$manifest" \
+        "${strict_args[@]}" \
+        --postcheck \
+        --postcheck-timeout "$POSTCHECK_TIMEOUT" \
+        --out "$out"
+    fi
   else
     run_clean_from_temp_cwd \
       cargo plushie package check \
@@ -1028,6 +1107,9 @@ build_payloads_for_language() {
     elixir|gleam|python|ruby|typescript)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
+        if strict_mode && [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+          clean_managed_tool_bin "$(cd "$(dirname "$script")/.." && pwd)"
+        fi
         (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh </dev/null)
       done < <(find "$ROOT/$language" -path '*/scripts/package.sh' -type f | sort)
       assert_native_package_rejects_missing_widget "$language"
@@ -1035,6 +1117,9 @@ build_payloads_for_language() {
     rust)
       while IFS= read -r script; do
         echo "==> build ${script#$ROOT/}"
+        if strict_mode && [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml" ]; then
+          clean_managed_tool_bin "$(cd "$(dirname "$script")/.." && pwd)"
+        fi
         (cd "$(dirname "$script")/.." && run_with_language_mise_config "$language" ./scripts/package.sh </dev/null)
       done < <(find "$ROOT/rust" -path '*/scripts/package.sh' -type f | sort)
       ;;

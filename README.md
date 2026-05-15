@@ -66,7 +66,10 @@ Postcheck targets prove different things:
 - `just package-postcheck` and `just package-source-postcheck` rebuild
   demo payloads where supported and run `bin/plushie package check
   --postcheck`. This validates manifests, launcher extraction, and
-  cache behavior. It is not a proof that every packaged GUI app starts.
+  cache behavior. In source mode, the check refreshes managed native
+  tools from the sibling `plushie-rust` checkout before strict release
+  checks so stale local `bin/` contents cannot satisfy the proof. It is
+  not a proof that every packaged GUI app starts.
 - `just package-artifact-postcheck` also runs generated launchers when
   local display support is available. Local tool or display gaps may
   still skip artifact runs.
@@ -81,7 +84,9 @@ The shared package launcher is host-first. It extracts the payload, sets
 `PLUSHIE_BINARY_PATH` to the packaged renderer, and starts the
 SDK-owned host command. Renderer-parent startup remains covered by the
 smoke script as an embedding and debug path, not the default shared
-package launch shape.
+package launch shape. The smoke script uses an explicitly configured
+renderer when present, then PATH, and can build the renderer from a
+sibling `plushie-rust` checkout when needed.
 
 ## Ruby
 
