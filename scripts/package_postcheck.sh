@@ -570,6 +570,7 @@ run_artifact_command() {
   local cache_dir
   local display_status
   local log
+  local ready_file
   local report
   local status
   local timeout_bin
@@ -612,6 +613,7 @@ run_artifact_command() {
   fi
 
   log="$(mktemp "${TMPDIR:-/tmp}/plushie-package-artifact.XXXXXXXXXX")"
+  ready_file="$(mktemp "${TMPDIR:-/tmp}/plushie-package-ready.XXXXXXXXXX")"
   cache_dir="$(mktemp -d "${TMPDIR:-/tmp}/plushie-package-artifact-cache.XXXXXXXXXX")"
   artifact_path="$(artifact_runtime_path)"
   report="$artifact.report"
@@ -627,6 +629,7 @@ run_artifact_command() {
   set +e
   (
     export PLUSHIE_CACHE_DIR="$cache_dir"
+    export PLUSHIE_PACKAGE_READY_FILE="$ready_file"
     export ARTIFACT_LAUNCH_PATH="$artifact_path"
     run_artifact_from_temp_cwd \
       "$timeout_bin" "${timeout_args[@]}"
@@ -634,12 +637,13 @@ run_artifact_command() {
   status=$?
   set -e
 
-  write_artifact_report "$report" "$manifest" "$artifact" "$artifact_path" "$status" "$log"
+  write_artifact_report "$report" "$manifest" "$artifact" "$artifact_path" "$status" "$log" "$ready_file"
 
   if grep -q "plushie launcher: postcheck ok" "$log"; then
     echo "failed: artifact used launcher postcheck mode" >&2
     print_artifact_log "$log"
     rm -f "$log"
+    rm -f "$ready_file"
     rm -rf "$cache_dir"
     return 1
   fi
@@ -648,6 +652,7 @@ run_artifact_command() {
     echo "failed: artifact did not emit launcher diagnostics" >&2
     print_artifact_log "$log"
     rm -f "$log"
+    rm -f "$ready_file"
     rm -rf "$cache_dir"
     return 1
   fi
@@ -656,6 +661,16 @@ run_artifact_command() {
     echo "failed: artifact renderer reported an unknown widget type" >&2
     print_artifact_log "$log"
     rm -f "$log"
+    rm -f "$ready_file"
+    rm -rf "$cache_dir"
+    return 1
+  fi
+
+  if [ ! -s "$ready_file" ]; then
+    echo "failed: artifact did not complete renderer handshake" >&2
+    print_artifact_log "$log"
+    rm -f "$log"
+    rm -f "$ready_file"
     rm -rf "$cache_dir"
     return 1
   fi
@@ -666,6 +681,7 @@ run_artifact_command() {
         echo "failed: artifact exited before host shutdown" >&2
         print_artifact_log "$log"
         rm -f "$log"
+        rm -f "$ready_file"
         rm -rf "$cache_dir"
         return 1
       fi
@@ -678,12 +694,14 @@ run_artifact_command() {
       echo "failed: artifact exit status $status" >&2
       print_artifact_log "$log"
       rm -f "$log"
+      rm -f "$ready_file"
       rm -rf "$cache_dir"
       return "$status"
       ;;
   esac
 
   rm -f "$log"
+  rm -f "$ready_file"
   rm -rf "$cache_dir"
 }
 
@@ -710,8 +728,10 @@ write_artifact_report() {
   local runtime_path="$4"
   local status="$5"
   local log="$6"
+  local ready_file="${7:-}"
   local demo_dir
   local alive_until_timeout="no"
+  local package_ready="no"
   local unknown_widget="no"
   local renderer_path=""
 
@@ -719,6 +739,9 @@ write_artifact_report() {
   case "$status" in
     124|137) alive_until_timeout="yes" ;;
   esac
+  if [ -n "$ready_file" ] && [ -s "$ready_file" ]; then
+    package_ready="yes"
+  fi
   grep -q "unknown node type" "$log" && unknown_widget="yes"
   renderer_path="$(sed -n 's/.* renderer=\([^ ]*\) .*/\1/p' "$log" | head -n 1)"
 
@@ -742,6 +765,7 @@ write_artifact_report() {
     printf 'runtime_path=%s\n' "$runtime_path"
     printf 'exit_status=%s\n' "$status"
     printf 'alive_until_timeout=%s\n' "$alive_until_timeout"
+    printf 'package_ready=%s\n' "$package_ready"
     printf 'unknown_widget=%s\n' "$unknown_widget"
     printf 'renderer_path=%s\n' "$renderer_path"
   } > "$report"
