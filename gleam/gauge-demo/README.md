@@ -77,7 +77,7 @@ only narrows the copy to applications proven necessary for the shipment.
 Build the standalone launcher with the strict tool gate:
 
 ```bash
-bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
+bin/plushie package portable --manifest dist/plushie-package.toml
 ```
 
 ## How it works

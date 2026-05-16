@@ -55,7 +55,7 @@ Ruby SDK. It writes `dist/payload.tar.zst` and
 `dist/plushie-package.toml`. Build the standalone launcher with the
 strict tool gate:
 
-    bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
+    bin/plushie package portable --manifest dist/plushie-package.toml
 
 `just package-postcheck` validates the manifest and launcher
 extraction/cache behavior. `just package-release-check` is the strict

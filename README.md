@@ -74,7 +74,7 @@ Postcheck targets prove different things:
   local display support is available. Local tool or display gaps may
   still skip artifact runs.
 - `just package-release-check` is the strict release-oriented proof. It
-  requires `bin/plushie package check --strict-tools --postcheck`,
+  requires `bin/plushie package check --postcheck`,
   real artifact runs, the renderer-parent ready-marker smoke, and the
   Rust direct-mode release smoke. Missing cargo, cargo-plushie, timeout,
   display support, stale native tools, or artifact runs fail unless an

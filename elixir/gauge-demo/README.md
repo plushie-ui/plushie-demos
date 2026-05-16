@@ -93,8 +93,8 @@ The script writes `dist/payload.tar.zst` and
 `dist/plushie-package.toml`. Run the strict release handoff with:
 
 ```sh
-bin/plushie package check --manifest dist/plushie-package.toml --strict-tools --postcheck
-bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
+bin/plushie package check --manifest dist/plushie-package.toml --postcheck
+bin/plushie package portable --manifest dist/plushie-package.toml
 ```
 
 The script syncs the managed `bin/plushie` and `bin/plushie-launcher`
