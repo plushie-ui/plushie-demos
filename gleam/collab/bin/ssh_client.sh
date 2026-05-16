@@ -2,7 +2,7 @@
 # Mode 6: Native plushie connecting over SSH to shared state
 # Requires the SSH server to be running (mode 5: ./bin/ssh_server.sh)
 cd "$(dirname "$0")/.."
-plushie \
+bin/plushie \
   --exec-bin ssh \
   --exec-arg -T \
   --exec-arg -s \

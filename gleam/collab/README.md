@@ -11,13 +11,12 @@ Gleam 1.0+, Erlang/OTP 26+.
 ```bash
 cd gleam/collab
 gleam deps download
-gleam run -m plushie/download
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/download
 ```
 
-The download command reads `gleam.toml` and fetches both the native
-binary and the WASM browser renderer (configured in the `[plushie]`
-section). WASM files are placed in `static/` where the HTTP server
-serves them.
+The download command reads `gleam.toml`, installs the managed native
+tool set under `bin/`, and downloads the WASM browser renderer into
+`static/` (configured in the `[plushie]` section).
 
 ## Quick start
 
@@ -105,18 +104,11 @@ bin/
 
 ## Browser modes (1 and 2)
 
-The browser modes require WASM files in `static/`. Download them
-with the SDK:
+The browser modes require WASM files in `static/`. The setup command
+above installs them. To refresh just the browser assets:
 
 ```bash
-gleam run -m plushie/download -- --wasm --wasm-dir static
-```
-
-Or copy from a source build:
-
-```bash
-cp ~/projects/plushie-rust/crates/plushie-renderer-wasm/pkg/plushie_renderer_wasm.js static/
-cp ~/projects/plushie-rust/crates/plushie-renderer-wasm/pkg/plushie_renderer_wasm_bg.wasm static/
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/download -- --wasm
 ```
 
 ## Security

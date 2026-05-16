@@ -14,12 +14,13 @@ the optimistic update pattern, and the custom binary build workflow.
 
 ```bash
 gleam deps download
-PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/build
 ```
 
 The build pipeline reads native widget configuration from `gleam.toml`,
 generates a Cargo workspace, and builds a custom renderer binary with
-the gauge widget compiled in.
+the gauge widget compiled in. The resulting renderer is installed to
+`bin/plushie-renderer`.
 
 ## Run
 
@@ -30,7 +31,7 @@ gleam run -m gauge_demo
 Renderer-parent startup for embedding and debug proofs:
 
 ```bash
-plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg gauge_demo/connect
+bin/plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg gauge_demo/connect
 ```
 
 ## Test
@@ -48,7 +49,7 @@ gleam test
 Build the custom renderer, host shipment payload, and package manifest:
 
 ```bash
-PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust ./scripts/package.sh
 ```
 
 The script writes `dist/payload.tar.zst` and

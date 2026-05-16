@@ -14,8 +14,11 @@ only. No native Rust widget needed; runs with the stock plushie binary.
 
 ```bash
 gleam deps download
-gleam run -m plushie/download
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/download
 ```
+
+The managed download installs the native tool set under `bin/`,
+including `bin/plushie-renderer`.
 
 ## Run
 
@@ -26,7 +29,7 @@ gleam run -m notes
 Renderer-parent startup for embedding and debug proofs:
 
 ```bash
-plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg notes/connect
+bin/plushie-renderer --listen --exec-bin gleam --exec-arg run --exec-arg -m --exec-arg notes/connect
 ```
 
 ## Test
@@ -44,9 +47,12 @@ and a full user journey.
 Build the Erlang shipment payload and package manifest:
 
 ```bash
-PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
-# or
-PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust ./scripts/package.sh
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/download
+./scripts/package.sh
+
+# or rebuild the managed renderer from the sibling source checkout first
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/build
+./scripts/package.sh
 ```
 
 The script writes `dist/payload.tar.zst` and

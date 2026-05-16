@@ -2,6 +2,18 @@
 # Run local CI checks for plushie_pad.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source ../bin/bootstrap_renderer.sh
+
+echo "--- format --check"
 gleam format --check
+
+echo "--- deps"
+gleam deps download
+
+echo "--- ensure renderer"
+ensure_downloaded_renderer
+
+echo "--- build"
 gleam build
-echo "All checks passed."
+
+echo "--- all clear"

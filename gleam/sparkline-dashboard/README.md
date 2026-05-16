@@ -14,12 +14,13 @@ timer subscriptions, and simulated live data.
 
 ```bash
 gleam deps download
-PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/build
 ```
 
 The build pipeline reads native widget configuration from `gleam.toml`,
 generates a Cargo workspace, and builds a custom renderer binary with
-the sparkline widget compiled in.
+the sparkline widget compiled in. The resulting renderer is installed to
+`bin/plushie-renderer`.
 
 ## Run
 

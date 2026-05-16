@@ -33,14 +33,6 @@ bin/preflight                    # local CI
 
 ## Status
 
-Work in progress. The source here lays out the pad's architecture as
-described in the plushie-gleam guides. Some helpers
-(`undo.push_with_coalesce`, `app.with_subscribe`, `plushie.wait`,
-`text_editor.HighlightSyntax`, `text_input.Placeholder`) don't yet
-exist on the Gleam SDK; see the follow-up list in
-`~/plushie-gleam-docs/callouts.md` and
-`~/projects/plushie-sdk-parity/follow-up.md` for the missing pieces.
-
-The pad will build once the SDK changes land. In the meantime it
-serves as a reference for guide authors: the file layout and
-module boundaries match what the guides teach.
+This demo builds against the current sibling `plushie-gleam` checkout
+and serves as a guide-facing reference app. Keep it on the source
+checkout so the demo and the guides move together.

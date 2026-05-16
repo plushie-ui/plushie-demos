@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source ../bin/bootstrap_renderer.sh
 
 echo "--- format --check"
 gleam format --check
 
+echo "--- deps"
+gleam deps download
+
 echo "--- build renderer"
-gleam run -m plushie/build
+ensure_built_renderer
 
 echo "--- build"
 gleam build

@@ -1,7 +1,7 @@
 name = "plushie_demo"
 version = "0.1.0"
 target = "erlang"
-plushie_rust_version = "0.6.1"
+plushie_rust_version = "0.7.1"
 
 [dependencies]
 gleam_stdlib = ">= 0.44.0 and < 2.0.0"
@@ -10,7 +10,7 @@ gleam_otp = ">= 0.14.0 and < 2.0.0"
 gleam_json = ">= 3.0.0 and < 4.0.0"
 gleam_http = ">= 4.0.0 and < 5.0.0"
 mist = ">= 4.0.0 and < 7.0.0"
-plushie_gleam = ">= 0.6.0 and < 1.0.0"
+plushie_gleam = { path = "../../../plushie-gleam" }
 
 [plushie]
 artifacts = ["bin", "wasm"]

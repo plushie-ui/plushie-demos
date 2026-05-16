@@ -5,7 +5,7 @@
 //// process connects back to the renderer over the socket.
 ////
 //// Run: ./bin/native_rust.sh
-////   (which runs: plushie --listen --exec-bin gleam ...)
+////   (which runs: bin/plushie --listen --exec-bin gleam ...)
 
 import demo/collab
 import plushie/connect

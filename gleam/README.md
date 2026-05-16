@@ -7,8 +7,14 @@ Example Plushie applications written in Gleam using the
 
 - [Gleam](https://gleam.run/) (v1.0+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
 - [plushie-gleam](https://github.com/plushie-ui/plushie-gleam) SDK (path dependency at `../../plushie-gleam`)
+
+Each demo uses the current sibling `plushie-gleam` checkout. Pure demos
+install the managed native tools into project-local `bin/` with
+`gleam run -m plushie/download`. When the sibling `../../plushie-rust`
+checkout is present, that download flow syncs the managed tools from
+source instead of relying on published release artifacts. Native demos build their managed
+renderer into the same `bin/` location with `gleam run -m plushie/build`.
 
 ## Demos
 

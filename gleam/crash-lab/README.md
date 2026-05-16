@@ -14,12 +14,13 @@ view panics. The counter survives all three.
 
 ```bash
 gleam deps download
-PLUSHIE_RUST_SOURCE_PATH=/path/to/plushie-rust gleam run -m plushie/build
+PLUSHIE_RUST_SOURCE_PATH=../../../plushie-rust gleam run -m plushie/build
 ```
 
 The build pipeline reads native widget configuration from `gleam.toml`,
 generates a Cargo workspace, and builds a custom renderer binary with
-the crash widget compiled in.
+the crash widget compiled in. The resulting renderer is installed to
+`bin/plushie-renderer`.
 
 ## Run
 
