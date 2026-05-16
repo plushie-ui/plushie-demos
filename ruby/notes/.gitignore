@@ -1,5 +1,6 @@
 /_build/
 /.bundle/
+/bin/plushie-*
 /build/
 /dist/
 /doc/
@@ -7,5 +8,3 @@
 /tmp/
 /vendor/
 *.gem
-Gemfile.lock
-Cargo.lock

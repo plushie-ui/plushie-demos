@@ -1,3 +1,4 @@
+/bin/plushie-*
 node_modules
 dist
 .plushie

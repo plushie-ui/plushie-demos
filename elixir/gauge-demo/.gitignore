@@ -1,5 +1,7 @@
 # Elixir
 /_build/
+/bin/plushie
+/bin/plushie-*
 /deps/
 /doc/
 /dist/
@@ -8,7 +10,6 @@ erl_crash.dump
 
 # Rust build artifacts
 **/target/
-Cargo.lock
 
 # IDE
 .idea/

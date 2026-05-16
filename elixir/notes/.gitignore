@@ -1,5 +1,7 @@
 # Elixir
 /_build/
+/bin/plushie
+/bin/plushie-*
 /deps/
 /dist/
 /doc/

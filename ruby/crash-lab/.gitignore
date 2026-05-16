@@ -3,6 +3,5 @@
 /.yardoc/
 /tmp/
 *.gem
-Gemfile.lock
 **/target/
-Cargo.lock
+/bin/plushie-*

@@ -1,7 +1,6 @@
 /_build/
 /build/
-/bin/plushie-renderer
-/bin/plushie-renderer.exe
+/bin/plushie-*
 
 # Downloaded WASM artifacts (fetched by gleam run -m plushie/download)
 /static/plushie_renderer_wasm*

@@ -7,7 +7,7 @@ dist/
 build/
 
 # Plushie build artifacts
-_plushie_build/
+/bin/plushie-*
 
 # IDE
 .idea/
@@ -22,6 +22,3 @@ _plushie_build/
 .pytest_cache/
 .coverage
 .ruff_cache/
-
-# uv lockfile (not tracked in this monorepo)
-uv.lock

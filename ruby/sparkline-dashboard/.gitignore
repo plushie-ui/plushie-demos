@@ -1,8 +1,7 @@
 /_build/
+/bin/plushie-*
 /doc/
 /.yardoc/
 /tmp/
 *.gem
-Gemfile.lock
 **/target/
-Cargo.lock
