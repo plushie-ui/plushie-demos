@@ -1134,10 +1134,10 @@ manifests_for_language() {
       find "$ROOT/$language" -path '*/dist/plushie-package.toml' -type f | sort
       ;;
     python)
-      find "$ROOT/python" -path '*/dist/package/plushie-package.toml' -type f | sort
+      find "$ROOT/python" -path '*/dist/plushie-package.toml' -type f | sort
       ;;
     typescript)
-      find "$ROOT/typescript" -path '*/dist/shared-launcher/plushie-package.toml' -type f | sort
+      find "$ROOT/typescript" -path '*/dist/plushie-package.toml' -type f | sort
       ;;
     rust)
       find "$ROOT/rust" -path '*/dist/plushie-package.toml' -type f | sort
@@ -1161,7 +1161,7 @@ expected_manifests_for_language() {
       ;;
     python)
       printf '%s\n' \
-        "$ROOT/python/data-explorer/dist/package/plushie-package.toml"
+        "$ROOT/python/data-explorer/dist/plushie-package.toml"
       ;;
     ruby)
       printf '%s\n' \
@@ -1173,7 +1173,7 @@ expected_manifests_for_language() {
       ;;
     typescript)
       printf '%s\n' \
-        "$ROOT/typescript/data-explorer/dist/shared-launcher/plushie-package.toml"
+        "$ROOT/typescript/data-explorer/dist/plushie-package.toml"
       ;;
   esac
 }
