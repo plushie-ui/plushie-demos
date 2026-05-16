@@ -27,6 +27,15 @@ Shared infrastructure lives at the repository root:
 Use `just preflight` at the repository root for the full demos sweep.
 Use `just preflight` inside a language directory for only that SDK.
 
+Each language subdir's `just preflight` handles its own deps and
+works from a fresh checkout. `PLUSHIE_RUST_SOURCE_PATH` controls
+which renderer binary the tests run against:
+
+- Unset (default): auto-detected from `../plushie-rust` if it exists;
+  otherwise the existing binary resolution chain is used unchanged.
+- Set to a path: rebuild plushie-renderer from that checkout before CI.
+- Set to `""`: suppress auto-detection; use the existing resolution chain.
+
 Use `just package-postcheck` for the source package check. It proves
 manifest validity plus launcher extraction and cache behavior through
 `cargo plushie package check --postcheck`; it does not prove every packaged app

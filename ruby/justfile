@@ -13,8 +13,8 @@ preflight:
         if [ -d "$sdk_root/lib/plushie" ]; then \
           export RUBYLIB="$sdk_root/lib:${RUBYLIB:-}"; \
         fi; \
-        rust_root="${PLUSHIE_RUST_SOURCE_PATH:-$PWD/../../../plushie-rust}"; \
-        if [ -z "${PLUSHIE_RUST_SOURCE_PATH:-}" ] && [ -f "$rust_root/Cargo.toml" ]; then \
+        rust_root="${PLUSHIE_RUST_SOURCE_PATH-$PWD/../../../plushie-rust}"; \
+        if [ -z "${PLUSHIE_RUST_SOURCE_PATH+x}" ] && [ -f "$rust_root/Cargo.toml" ]; then \
           export PLUSHIE_RUST_SOURCE_PATH="$rust_root"; \
         fi; \
         if [ -z "${PLUSHIE_BINARY_PATH:-}" ] && [ -x "$rust_root/target/release/plushie-renderer" ]; then \

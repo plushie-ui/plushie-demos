@@ -9,13 +9,29 @@ preflight:
       echo "==> elixir/$demo"; \
       ( \
         cd "$demo"; \
+        default_sdk="$(cd ../../../plushie-elixir 2>/dev/null && pwd || true)"; \
+        default_source="$(cd ../../../plushie-rust 2>/dev/null && pwd || true)"; \
+        if [ -z "${PLUSHIE_ELIXIR_DIR:-}" ] && [ -n "$default_sdk" ] && [ -f "$default_sdk/mix.exs" ]; then \
+          export PLUSHIE_ELIXIR_DIR="$default_sdk"; \
+        fi; \
+        if [ -z "${PLUSHIE_ELIXIR_DIR:-}" ] || [ ! -f "$PLUSHIE_ELIXIR_DIR/mix.exs" ]; then \
+          echo "Set PLUSHIE_ELIXIR_DIR to a plushie-elixir checkout before running elixir preflight." >&2; \
+          exit 1; \
+        fi; \
+        if [ -z "${PLUSHIE_RUST_SOURCE_PATH+x}" ] && [ -n "$default_source" ] && [ -f "$default_source/Cargo.toml" ]; then \
+          export PLUSHIE_RUST_SOURCE_PATH="$default_source"; \
+        fi; \
+        if [ -L bin/plushie-renderer ]; then \
+          target="$(readlink bin/plushie-renderer || true)"; \
+          case "$target" in _build/*|build/*|*/_build/*|*/build/*) rm -f bin/plushie-renderer ;; esac; \
+        fi; \
         mix deps.get; \
         mix format --check-formatted; \
         mix compile --warnings-as-errors; \
         if [ -d native ]; then \
-          mix run --no-start -e 'app = Mix.Project.config()[:app]; Enum.each(Application.spec(app, :modules) || [], &Code.ensure_loaded/1); Plushie.WidgetRegistry.invalidate(); Mix.Task.run("plushie.build")'; \
-          PLUSHIE_BINARY_PATH="$(find bin -maxdepth 1 -type f -perm -111 | sort | head -n 1)"; \
-          export PLUSHIE_BINARY_PATH; \
+          mix plushie.build; \
+        else \
+          mix plushie.download; \
         fi; \
         mix test; \
         if grep -q "dialyxir" mix.exs; then mix dialyzer; fi \

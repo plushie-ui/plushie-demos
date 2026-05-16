@@ -4,6 +4,12 @@ default:
     just --list
 
 preflight:
+    if [ -z "${PLUSHIE_RUST_SOURCE_PATH+x}" ]; then \
+      _candidate="$(cd ../../../plushie-rust 2>/dev/null && pwd || true)"; \
+      if [ -n "$_candidate" ] && [ -f "$_candidate/Cargo.toml" ]; then \
+        export PLUSHIE_RUST_SOURCE_PATH="$_candidate"; \
+      fi; \
+    fi; \
     renderer_binary="${PLUSHIE_BINARY_PATH:-}"; \
     if [ -z "$renderer_binary" ] && [ -n "${PLUSHIE_RUST_SOURCE_PATH:-}" ]; then \
       cargo build --release -p plushie-renderer --manifest-path "$PLUSHIE_RUST_SOURCE_PATH/Cargo.toml"; \

@@ -1,4 +1,4 @@
 [tools]
-erlang = "26"
-elixir = "1.15"
-rust = "stable"
+erlang = "28.3"
+elixir = "1.19.4-otp-28"
+rust = "1.92.0"
