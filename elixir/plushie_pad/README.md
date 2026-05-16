@@ -27,8 +27,8 @@ Demonstrates:
 
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie-elixir](https://github.com/plushie-ui/plushie-elixir) SDK
-  (path dependency at `../../../plushie-elixir`)
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
 
 ## Setup
 

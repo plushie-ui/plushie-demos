@@ -17,8 +17,8 @@ Demonstrates:
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (for building the native widget binary)
-- [plushie-elixir](https://github.com/plushie-ui/plushie-elixir) SDK
-  (path dependency at `../../../plushie-elixir`)
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
 
 ## Setup
 
@@ -38,12 +38,12 @@ mix plushie.build
 
 Native widgets are auto-detected via protocol consolidation. The build
 generates a Cargo workspace with a custom `main.rs` that registers the
-gauge widget and compiles the binary.
+gauge widget and compiles `bin/plushie-renderer`.
 
-The stock (downloaded) binary does not include the gauge widget - it
-only has built-in widgets. The custom binary produced by
-`mix plushie.build` links the gauge Rust crate and registers it at
-startup, making the `"gauge"` widget type available on the wire.
+The managed stock renderer does not include the gauge widget, it only
+has built-in widgets. The custom binary produced by `mix plushie.build`
+links the gauge Rust crate and registers it at startup, making the
+`"gauge"` widget type available on the wire.
 
 ## Run
 
@@ -54,13 +54,13 @@ mix plushie.gui GaugeDemo.TemperatureMonitor
 Renderer-parent startup for embedding and debug proofs:
 
 ```sh
-_build/plushie/package/gauge-demo-plushie --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "GaugeDemo.Connect.main()"
+bin/plushie-renderer --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "GaugeDemo.Connect.main()"
 ```
 
 Release-safe renderer-parent startup for the same proof path:
 
 ```sh
-_build/plushie/package/gauge-demo-plushie --listen --exec-bin _build/prod/rel/gauge_demo/bin/gauge_demo --exec-arg eval --exec-arg "GaugeDemo.Connect.main()"
+bin/plushie-renderer --listen --exec-bin _build/prod/rel/gauge_demo/bin/gauge_demo --exec-arg eval --exec-arg "GaugeDemo.Connect.main()"
 ```
 
 ## Test
@@ -78,8 +78,8 @@ gauge widget. Build it first, then run `mix test`.
 
 This is the canonical first native-widget standalone packaging proof
 for the demo repo. It proves that the package payload contains a
-renderer rebuilt with the `native/gauge` Rust crate linked in, not a
-stock downloaded renderer.
+renderer rebuilt with the `native/gauge` Rust crate linked in, not the
+managed stock renderer from `bin/plushie-renderer`.
 
 Build the custom renderer, host release payload, and package manifest.
 The script delegates the Elixir-specific package work to
@@ -97,6 +97,8 @@ bin/plushie package check --manifest dist/plushie-package.toml --strict-tools --
 bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
 ```
 
+The script syncs the managed `bin/plushie` and `bin/plushie-launcher`
+tools, then `mix plushie.package` builds the custom renderer payload.
 The generated shared launcher uses host-first startup: it sets
 `PLUSHIE_BINARY_PATH` to the packaged custom renderer and starts the Mix
 release command from the manifest. Renderer-parent startup above is

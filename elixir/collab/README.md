@@ -7,6 +7,8 @@ app definition in `lib/collab.ex`.
 ## Setup
 
 Elixir 1.15+ and Erlang/OTP 26+.
+The demo expects a sibling `plushie-elixir` checkout by default. Set
+`PLUSHIE_ELIXIR_DIR` if yours lives elsewhere.
 
 ```bash
 cd elixir/collab
@@ -101,7 +103,9 @@ priv/static/
   index.html                   - landing page
   websocket.html               - browser renderer client
 bin/
-  plushie-renderer             - downloaded renderer binary
+  plushie                      - managed Plushie CLI
+  plushie-launcher             - managed package launcher
+  plushie-renderer             - managed renderer binary
 ```
 
 ## Security

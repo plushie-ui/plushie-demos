@@ -22,8 +22,8 @@ See also the [Ruby](../../ruby/crash-lab/),
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (for building the native widget binary)
-- [plushie-elixir](https://github.com/plushie-ui/plushie-elixir) SDK
-  (path dependency at `../../../plushie-elixir`)
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
 
 ## Setup
 
@@ -53,7 +53,8 @@ mix test
 ```
 
 The test suite uses the real custom renderer binary for the native
-crash widget. Build it first, then run `mix test`.
+crash widget. Build it first, then run `mix test`. The custom binary is
+installed at `bin/plushie-renderer`.
 
 ## Project structure
 

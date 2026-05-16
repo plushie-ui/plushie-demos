@@ -21,7 +21,8 @@ defmodule PlushiePad.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:plushie, "~> 0.7"},
+      {:plushie,
+       path: System.get_env("PLUSHIE_ELIXIR_DIR", "../../../plushie-elixir"), override: true},
       {:file_system, "~> 1.0"}
     ]
   end

@@ -19,8 +19,8 @@ See also the [Ruby](../../ruby/notes/) version of this demo.
 
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie-elixir](https://github.com/plushie-ui/plushie-elixir) SDK
-  (path dependency at `../../../plushie-elixir`)
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
 
 ## Setup
 
@@ -38,13 +38,13 @@ mix plushie.gui Notes.App
 Renderer-parent startup for embedding and debug proofs:
 
 ```sh
-plushie-renderer --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "Notes.Connect.main()"
+bin/plushie-renderer --listen --exec-bin mix --exec-arg run --exec-arg -e --exec-arg "Notes.Connect.main()"
 ```
 
 Release-safe renderer-parent startup for the same proof path:
 
 ```sh
-plushie-renderer --listen --exec-bin _build/prod/rel/notes/bin/notes --exec-arg eval --exec-arg "Notes.Connect.main()"
+bin/plushie-renderer --listen --exec-bin _build/prod/rel/notes/bin/notes --exec-arg eval --exec-arg "Notes.Connect.main()"
 ```
 
 ## Test
@@ -62,7 +62,7 @@ Build the host release payload and package manifest. The script delegates
 the Elixir-specific package work to `mix plushie.package`:
 
 ```sh
-PLUSHIE_BINARY_PATH=/path/to/plushie-renderer ./scripts/package.sh
+./scripts/package.sh
 ```
 
 The script writes `dist/payload.tar.zst` and
@@ -73,7 +73,9 @@ bin/plushie package check --manifest dist/plushie-package.toml --strict-tools --
 bin/plushie package portable --manifest dist/plushie-package.toml --strict-tools
 ```
 
-The generated shared launcher uses host-first startup: it sets
+The script uses `mix plushie.download` to sync the managed tool set and
+stock renderer into `bin/`, then `mix plushie.package` builds the host
+payload. The generated shared launcher uses host-first startup: it sets
 `PLUSHIE_BINARY_PATH` to the packaged renderer and starts the Mix
 release command from the manifest. Renderer-parent startup above is
 kept as a separate embedding and debug proof.

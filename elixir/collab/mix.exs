@@ -22,7 +22,8 @@ defmodule Collab.MixProject do
 
   defp deps do
     [
-      {:plushie, "~> 0.7"},
+      {:plushie,
+       path: System.get_env("PLUSHIE_ELIXIR_DIR", "../../../plushie-elixir"), override: true},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:bandit, "~> 1.0"},
       {:websock_adapter, "~> 0.5"},

@@ -17,8 +17,9 @@ at a plushie-rust checkout.
 Run `just preflight` in `elixir/` to verify every Elixir demo.
 
 The language preflight runs dependency resolution, format checks,
-compilation with warnings as errors, native renderer builds for demos
-with `native/`, tests, and Dialyzer where the demo declares Dialyxir.
+compilation with warnings as errors, `mix plushie.download` for pure
+demos, `mix plushie.build` for demos with `native/`, tests, and
+Dialyzer where the demo declares Dialyxir.
 
 For one demo, use the same command sequence inside that demo:
 
@@ -26,10 +27,10 @@ For one demo, use the same command sequence inside that demo:
 mix deps.get
 mix format --check-formatted
 mix compile --warnings-as-errors
-mix plushie.build
 mix test
 mix dialyzer
 ```
 
-Only run `mix plushie.build` and `mix dialyzer` when the demo supports
-or needs them.
+Run `mix plushie.download` before `mix test` in pure demos, and
+`mix plushie.build` before `mix test` in native demos. Only run
+`mix dialyzer` when the demo supports it.

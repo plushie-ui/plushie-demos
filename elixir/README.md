@@ -7,7 +7,12 @@ Example Plushie applications written in Elixir using the
 
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
-- [plushie](https://github.com/plushie-ui/plushie-rust) renderer binary
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
+
+Pure demos sync the managed tool set into each project's `bin/` with
+`mix plushie.download`. Native widget demos build their project-local
+`bin/plushie-renderer` with `mix plushie.build`.
 
 ## Demos
 

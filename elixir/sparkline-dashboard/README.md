@@ -22,8 +22,8 @@ See also the [Ruby](../../ruby/sparkline-dashboard/),
 - [Elixir](https://elixir-lang.org/) (1.15+)
 - [Erlang/OTP](https://www.erlang.org/) (26+)
 - [Rust](https://rustup.rs/) (for building the native widget binary)
-- [plushie-elixir](https://github.com/plushie-ui/plushie-elixir) SDK
-  (path dependency at `../../../plushie-elixir`)
+- sibling [plushie-elixir](https://github.com/plushie-ui/plushie-elixir)
+  checkout, or `PLUSHIE_ELIXIR_DIR` pointing at one
 
 ## Setup
 
@@ -43,10 +43,10 @@ mix plushie.build
 
 This auto-detects native widgets via protocol consolidation, generates a
 Cargo workspace with a custom `main.rs` that registers the sparkline
-widget, and builds the binary.
+widget, and builds `bin/plushie-renderer`.
 
-The stock (downloaded) binary does not include the sparkline widget.
-The custom binary links the sparkline Rust crate and registers it at
+The managed stock renderer does not include the sparkline widget. The
+custom binary links the sparkline Rust crate and registers it at
 startup, making the `"sparkline"` widget type available on the wire.
 
 ## Run
@@ -64,7 +64,8 @@ mix test
 ```
 
 The test suite uses the real custom renderer binary for the native
-sparkline widget. Build it first, then run `mix test`.
+sparkline widget. Build it first, then run `mix test`. The custom
+binary is installed at `bin/plushie-renderer`.
 
 ## Project structure
 
