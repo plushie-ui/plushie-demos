@@ -1,7 +1,17 @@
 # The directory Mix will write compiled artifacts to.
 /_build/
 /bin/plushie
-/bin/plushie-*
+/bin/plushie.exe
+/bin/plushie.sha256
+/bin/plushie.exe.sha256
+/bin/plushie-renderer
+/bin/plushie-renderer.exe
+/bin/plushie-renderer.sha256
+/bin/plushie-renderer.exe.sha256
+/bin/plushie-launcher
+/bin/plushie-launcher.exe
+/bin/plushie-launcher.sha256
+/bin/plushie-launcher.exe.sha256
 
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
