@@ -63,16 +63,16 @@ and sample data, and produces `dist/DataExplorer/DataExplorer`. The
 renderer is bundled as `plushie-renderer`, which is the bundled filename
 the SDK resolver checks at runtime.
 
-The script also emits shared launcher inputs under `dist/package/`:
+The script also emits shared launcher inputs under `dist/`:
 
 - `payload/` with `bin/plushie-renderer` and `host/DataExplorer/`
 - `payload.tar.zst`
 - `plushie-package.toml`
 
-The shared launcher handoff is:
+Build the shared launcher with:
 
 ```sh
-bin/plushie package portable --manifest dist/package/plushie-package.toml --strict-tools
+bin/plushie package portable --manifest dist/plushie-package.toml
 ```
 
 The generated shared launcher starts the packaged host first and sets

@@ -17,6 +17,6 @@ sync_managed_plushie_tools
 MIX_ENV=prod mix plushie.package GaugeDemo.TemperatureMonitor \
   --app-id dev.plushie.demos.elixir.gauge \
   --app-name "Elixir Gauge" \
-  --renderer "$RENDERER_KIND" \
+  --renderer-kind "$RENDERER_KIND" \
   --strict-tools \
   --load GaugeDemo.Gauge

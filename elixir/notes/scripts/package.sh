@@ -16,5 +16,5 @@ MIX_ENV=prod mix plushie.download
 MIX_ENV=prod mix plushie.package Notes.App \
   --app-id dev.plushie.demos.elixir.notes \
   --app-name "Elixir Notes" \
-  --renderer stock \
+  --renderer-kind stock \
   --strict-tools

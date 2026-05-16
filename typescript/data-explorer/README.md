@@ -50,7 +50,7 @@ This produces `dist/data-explorer` (~60 MB) containing:
 - The Node.js runtime
 - The plushie renderer binary (as a SEA asset)
 
-It also writes shared-launcher inputs under `dist/shared-launcher/`:
+It also writes shared-launcher inputs under `dist/`:
 - `payload.tar.zst`
 - `plushie-package.toml`
 
@@ -91,11 +91,10 @@ desktop startup and spawns that packaged renderer. Embedding the
 renderer in the SEA would only duplicate bytes and would not be used on
 the shared-launcher path.
 
-Build the final launcher from the generated manifest with the strict
-tool gate:
+Build the launcher with:
 
 ```sh
-bin/plushie package portable --manifest dist/shared-launcher/plushie-package.toml --strict-tools
+bin/plushie package portable --manifest dist/plushie-package.toml
 ```
 
 ### Size breakdown
