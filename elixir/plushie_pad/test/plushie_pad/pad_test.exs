@@ -3,17 +3,24 @@ defmodule PlushiePad.PadTest do
 
   @moduletag capture_log: true
 
-  @experiments_dir "priv/experiments"
-
   setup do
-    # Clean up experiment files between tests to ensure isolation.
-    on_exit(fn ->
-      File.mkdir_p!(@experiments_dir)
+    experiments_dir = Application.get_env(:plushie_pad, :experiments_dir, "tmp/test_experiments")
 
-      @experiments_dir
+    # Clean up experiment files between tests to ensure isolation.
+    File.mkdir_p!(experiments_dir)
+
+    experiments_dir
+    |> File.ls!()
+    |> Enum.filter(&String.ends_with?(&1, ".ex"))
+    |> Enum.each(&File.rm!(Path.join(experiments_dir, &1)))
+
+    on_exit(fn ->
+      File.mkdir_p!(experiments_dir)
+
+      experiments_dir
       |> File.ls!()
       |> Enum.filter(&String.ends_with?(&1, ".ex"))
-      |> Enum.each(&File.rm!(Path.join(@experiments_dir, &1)))
+      |> Enum.each(&File.rm!(Path.join(experiments_dir, &1)))
     end)
 
     :ok

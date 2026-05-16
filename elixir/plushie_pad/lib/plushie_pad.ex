@@ -14,7 +14,7 @@ defmodule PlushiePad do
   import Plushie.UI
   import PlushiePad.Design
 
-  @experiments_dir "priv/experiments"
+  @default_experiments_dir "priv/experiments"
 
   @starter_code """
   defmodule Pad.Experiments.Hello do
@@ -550,24 +550,30 @@ defmodule PlushiePad do
   end
 
   defp list_experiments do
-    File.mkdir_p!(@experiments_dir)
+    dir = experiments_dir()
+    File.mkdir_p!(dir)
 
-    @experiments_dir
+    dir
     |> File.ls!()
     |> Enum.filter(&String.ends_with?(&1, ".ex"))
     |> Enum.sort()
   end
 
   defp save_experiment(name, source) do
-    File.mkdir_p!(@experiments_dir)
-    File.write!(Path.join(@experiments_dir, name), source)
+    dir = experiments_dir()
+    File.mkdir_p!(dir)
+    File.write!(Path.join(dir, name), source)
   end
 
   defp load_experiment(name) do
-    Path.join(@experiments_dir, name) |> File.read!()
+    Path.join(experiments_dir(), name) |> File.read!()
   end
 
   defp delete_experiment(name) do
-    Path.join(@experiments_dir, name) |> File.rm!()
+    Path.join(experiments_dir(), name) |> File.rm!()
+  end
+
+  defp experiments_dir do
+    Application.get_env(:plushie_pad, :experiments_dir, @default_experiments_dir)
   end
 end
